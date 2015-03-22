@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Yet another tech blog!">
 
-    <title>solutions to scala for the impatient - chapter4 - George's dream port</title>
+    <title>Solutions to Scala for the Impatient - Chapter4 - George's dream port</title>
 
     <link rel="canonical" href="http://codethoughts.info/scala/2014/03/08/scala-for-the-impatient-chapter4/">
 
@@ -81,7 +81,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>solutions to scala for the impatient - chapter4</h1>
+                    <h1>Solutions to Scala for the Impatient - Chapter4</h1>
                     
                     <span class="meta">Posted by George's dream port on March 8, 2014</span>
                 </div>
@@ -98,147 +98,136 @@
 
 				<p>1. Set up a map of prices for a number of gizmos that you covet. Then produce a second map with the same keys and the prices at a 10 percent discount.</p>
 
-<p><code>scala
-val books = Map("Scala for the Impatient" -&gt; 30, "Ruby under a Microscope" -&gt; 40, "Ruby Cookbook" -&gt; 35)
-val discounted = for((b, p) &lt;- books) yield (b, p * 0.9)
-</code>
-<!--more--></p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">books</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;Scala for the Impatient&quot;</span> <span class="o">-&gt;</span> <span class="mi">30</span><span class="o">,</span> <span class="s">&quot;Ruby under a Microscope&quot;</span> <span class="o">-&gt;</span> <span class="mi">40</span><span class="o">,</span> <span class="s">&quot;Ruby Cookbook&quot;</span> <span class="o">-&gt;</span> <span class="mi">35</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">discounted</span> <span class="k">=</span> <span class="k">for</span><span class="o">((</span><span class="n">b</span><span class="o">,</span> <span class="n">p</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">books</span><span class="o">)</span> <span class="k">yield</span> <span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">p</span> <span class="o">*</span> <span class="mf">0.9</span><span class="o">)</span></code></pre></div>
 
-<p>2. Write a program that reads words from a file. Use a mutable map to count how often each word appears. To read the words, simply use a <code>java.util.Scanner</code>:
-<code>scala
-val in = new java.util.Scanner(new java.io.File("myfile.txt"))
-while (in.hasNext()) 
-	process in.next()
-</code>
-Or look at Chapter 9 for a Scalaesque way.
+<!--more-->
+
+<p>2. Write a program that reads words from a file. Use a mutable map to count how often each word appears. To read the words, simply use a <code>java.util.Scanner</code>:</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">in</span> <span class="k">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Scanner</span><span class="o">(</span><span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="nc">File</span><span class="o">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="o">))</span>
+<span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="n">hasNext</span><span class="o">())</span>
+    <span class="n">process</span> <span class="n">in</span><span class="o">.</span><span class="n">next</span><span class="o">()</span></code></pre></div>
+
+<p>Or look at Chapter 9 for a Scalaesque way.
 At the end, print out all words and their counts.</p>
 
-<p><code>scala
-def count_words(file: String): Unit = {
-	val container = collection.mutable.Map[String, Int]()
-	val in = new java.util.Scanner(new java.io.File(file))
-	while (in.hasNext()) {
-		val word =  in.next()
-		if (container.contains(word))
-			container(word) += 1
-		else
-			container(word) = 1
-	}
-	for ((k, v) &lt;- container)
-		println(k + ": " + v)
-}
-</code></p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">def</span> <span class="n">count_words</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="k">val</span> <span class="n">container</span> <span class="k">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">mutable</span><span class="o">.</span><span class="nc">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]()</span>
+<span class="lineno"> 3</span>     <span class="k">val</span> <span class="n">in</span> <span class="k">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Scanner</span><span class="o">(</span><span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="nc">File</span><span class="o">(</span><span class="n">file</span><span class="o">))</span>
+<span class="lineno"> 4</span>     <span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="n">hasNext</span><span class="o">())</span> <span class="o">{</span>
+<span class="lineno"> 5</span>         <span class="k">val</span> <span class="n">word</span> <span class="k">=</span>  <span class="n">in</span><span class="o">.</span><span class="n">next</span><span class="o">()</span>
+<span class="lineno"> 6</span>         <span class="k">if</span> <span class="o">(</span><span class="n">container</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="n">word</span><span class="o">))</span>
+<span class="lineno"> 7</span>             <span class="n">container</span><span class="o">(</span><span class="n">word</span><span class="o">)</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="lineno"> 8</span>         <span class="k">else</span>
+<span class="lineno"> 9</span>             <span class="n">container</span><span class="o">(</span><span class="n">word</span><span class="o">)</span> <span class="k">=</span> <span class="mi">1</span>
+<span class="lineno">10</span>     <span class="o">}</span>
+<span class="lineno">11</span>     <span class="k">for</span> <span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">container</span><span class="o">)</span>
+<span class="lineno">12</span>         <span class="n">println</span><span class="o">(</span><span class="n">k</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">v</span><span class="o">)</span>
+<span class="lineno">13</span> <span class="o">}</span></code></pre></div>
 
-<p>3. Repeat the preceding exercise with an immutable map.
-<code>scala
-def count_words(file: String): Unit = {
-	var container = Map[String, Int]()
-	val in = new java.util.Scanner(new java.io.File(file))
-	while (in.hasNext()) {
-		val word = in.next()
-		container = container + (word -&gt; (container.getOrElse(word, 0) + 1))
-	}
-	println(container)
-}
-</code>
-Or we can achieve nearly the same more Scalaesque(the result is little different, but you get the idea)<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>:
-```scala
-import scala.io.Source</p>
+<p>3. Repeat the preceding exercise with an immutable map.</p>
 
-<p>def count_words(file: String): Unit = {
-	val source = Source.fromFile(file)
-	val words = for (word &lt;- source.getLines.toArray) yield word
-	val wordCounts = for (word &lt;- words.distinct) yield {
-  		(word, words.count(_ == word))
-	}
-	val wordCountsMap = wordCounts.toMap
-	println(wordCountsMap)
-}
-```</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">def</span> <span class="n">count_words</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno">2</span>     <span class="k">var</span> <span class="n">container</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]()</span>
+<span class="lineno">3</span>     <span class="k">val</span> <span class="n">in</span> <span class="k">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Scanner</span><span class="o">(</span><span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="nc">File</span><span class="o">(</span><span class="n">file</span><span class="o">))</span>
+<span class="lineno">4</span>     <span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="n">hasNext</span><span class="o">())</span> <span class="o">{</span>
+<span class="lineno">5</span>         <span class="k">val</span> <span class="n">word</span> <span class="k">=</span> <span class="n">in</span><span class="o">.</span><span class="n">next</span><span class="o">()</span>
+<span class="lineno">6</span>         <span class="n">container</span> <span class="k">=</span> <span class="n">container</span> <span class="o">+</span> <span class="o">(</span><span class="n">word</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">container</span><span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+<span class="lineno">7</span>     <span class="o">}</span>
+<span class="lineno">8</span>     <span class="n">println</span><span class="o">(</span><span class="n">container</span><span class="o">)</span>
+<span class="lineno">9</span> <span class="o">}</span></code></pre></div>
 
-<p>4. Repeat the preceding exercise with a sorted map, so that the words are printed in sorted order.
-<code>scala
-def count_words(file: String): Unit = {
-	var container = collection.immutable.SortedMap[String, Int]()
-	val in = new java.util.Scanner(new java.io.File(file))
-	while (in.hasNext()) {
-		val word = in.next()
-		container = container + (word -&gt; (container.getOrElse(word, 0) + 1))
-	}
-	println(container)
-}
-</code></p>
+<p>Or we can achieve nearly the same more Scalaesque(the result is little different, but you get the idea)<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>:</p>
 
-<p>5. Repeat the preceding exercise with a <code>java.util.TreeMap</code> that you adapt to the Scala API.
-<code>scala
-def count_words(file: String): Unit = {
-	val container = new java.util.TreeMap[String, Int]
-	val in = new java.util.Scanner(new java.io.File(file))
-	while (in.hasNext()) {
-		val word =  in.next()
-		if (container.containsKey(word))
-			container.put(word, container.get(word) + 1)
-		else
-			container.put(word, 1)
-	}
-	println(container)
-}
-</code></p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">import</span> <span class="nn">scala.io.Source</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="k">def</span> <span class="n">count_words</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno"> 4</span>     <span class="k">val</span> <span class="n">source</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">file</span><span class="o">)</span>
+<span class="lineno"> 5</span>     <span class="k">val</span> <span class="n">words</span> <span class="k">=</span> <span class="k">for</span> <span class="o">(</span><span class="n">word</span> <span class="k">&lt;-</span> <span class="n">source</span><span class="o">.</span><span class="n">getLines</span><span class="o">.</span><span class="n">toArray</span><span class="o">)</span> <span class="k">yield</span> <span class="n">word</span>
+<span class="lineno"> 6</span>     <span class="k">val</span> <span class="n">wordCounts</span> <span class="k">=</span> <span class="k">for</span> <span class="o">(</span><span class="n">word</span> <span class="k">&lt;-</span> <span class="n">words</span><span class="o">.</span><span class="n">distinct</span><span class="o">)</span> <span class="k">yield</span> <span class="o">{</span>
+<span class="lineno"> 7</span>         <span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">words</span><span class="o">.</span><span class="n">count</span><span class="o">(</span><span class="k">_</span> <span class="o">==</span> <span class="n">word</span><span class="o">))</span>
+<span class="lineno"> 8</span>     <span class="o">}</span>
+<span class="lineno"> 9</span>     <span class="k">val</span> <span class="n">wordCountsMap</span> <span class="k">=</span> <span class="n">wordCounts</span><span class="o">.</span><span class="n">toMap</span>
+<span class="lineno">10</span>     <span class="n">println</span><span class="o">(</span><span class="n">wordCountsMap</span><span class="o">)</span>
+<span class="lineno">11</span> <span class="o">}</span></code></pre></div>
 
-<p>6. Define a linked hash map that maps “Monday” to <code>java.util.Calendar.MONDAY</code>, and similarly for the other weekdays. Demonstrate that the elements are visited in insertion order.
-```scala
-val daysOfTheWeek = LinkedHashMap(“Monday” -&gt; java.util.Calendar.MONDAY,
-    “Tuesday” -&gt; java.util.Calendar.TUESDAY,
-    “Wednesday” -&gt; java.util.Calendar.WEDNESDAY,
-    “Thursday” -&gt; java.util.Calendar.THURSDAY,
-    “Friday” -&gt; java.util.Calendar.FRIDAY,
-    “Saturday” -&gt; java.util.Calendar.SATURDAY,
-    “Sunday” -&gt; java.util.Calendar.SUNDAY)</p>
+<p>4. Repeat the preceding exercise with a sorted map, so that the words are printed in sorted order.</p>
 
-<p>println(daysOfTheWeek)
-```</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">def</span> <span class="n">count_words</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno">2</span>     <span class="k">var</span> <span class="n">container</span> <span class="k">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">immutable</span><span class="o">.</span><span class="nc">SortedMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]()</span>
+<span class="lineno">3</span>     <span class="k">val</span> <span class="n">in</span> <span class="k">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Scanner</span><span class="o">(</span><span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="nc">File</span><span class="o">(</span><span class="n">file</span><span class="o">))</span>
+<span class="lineno">4</span>     <span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="n">hasNext</span><span class="o">())</span> <span class="o">{</span>
+<span class="lineno">5</span>         <span class="k">val</span> <span class="n">word</span> <span class="k">=</span> <span class="n">in</span><span class="o">.</span><span class="n">next</span><span class="o">()</span>
+<span class="lineno">6</span>         <span class="n">container</span> <span class="k">=</span> <span class="n">container</span> <span class="o">+</span> <span class="o">(</span><span class="n">word</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">container</span><span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+<span class="lineno">7</span>     <span class="o">}</span>
+<span class="lineno">8</span>     <span class="n">println</span><span class="o">(</span><span class="n">container</span><span class="o">)</span>
+<span class="lineno">9</span> <span class="o">}</span></code></pre></div>
 
-<p>7. Print a table of all Java properties, like this:
-<code>
-java.runtime.name             | Java(TM) SE Runtime Environment
-sun.boot.library.path         | /home/apps/jdk1.6.0_21/jre/lib/i386
-java.vm.version               | 17.0-b16
-java.vm.vendor                | Sun Microsystems Inc.
-java.vendor.url               | http://java.sun.com/
-path.separator                | :
-java.vm.name                  | Java HotSpot(TM) Server VM
-</code>
-You need to find the length of the longest key before you can print the table.
-<code>scala
-import scala.collection.JavaConversions.propertiesAsScalaMap
-val props: scala.collection.Map[String, String] = System.getProperties
-val len = props.keys.maxBy(_.length).length // java.vm.specification.version
-for ((k, v) &lt;- props) printf("%-"+ len + "s|%s\n", k, v)
-</code></p>
+<p>5. Repeat the preceding exercise with a <code>java.util.TreeMap</code> that you adapt to the Scala API.</p>
 
-<p>8. Write a function <code>min_max(values: Array[Int])</code> that returns a pair containing the smallest and largest values in the array.
-<code>scala
-def min_max(values: Array[Int]): Tuple2[Int, Int] = {
-	(values.min, values.max)
-}
-</code></p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">def</span> <span class="n">count_words</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="k">val</span> <span class="n">container</span> <span class="k">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">TreeMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]</span>
+<span class="lineno"> 3</span>     <span class="k">val</span> <span class="n">in</span> <span class="k">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Scanner</span><span class="o">(</span><span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="nc">File</span><span class="o">(</span><span class="n">file</span><span class="o">))</span>
+<span class="lineno"> 4</span>     <span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="n">hasNext</span><span class="o">())</span> <span class="o">{</span>
+<span class="lineno"> 5</span>         <span class="k">val</span> <span class="n">word</span> <span class="k">=</span>  <span class="n">in</span><span class="o">.</span><span class="n">next</span><span class="o">()</span>
+<span class="lineno"> 6</span>         <span class="k">if</span> <span class="o">(</span><span class="n">container</span><span class="o">.</span><span class="n">containsKey</span><span class="o">(</span><span class="n">word</span><span class="o">))</span>
+<span class="lineno"> 7</span>             <span class="n">container</span><span class="o">.</span><span class="n">put</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">container</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">word</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+<span class="lineno"> 8</span>         <span class="k">else</span>
+<span class="lineno"> 9</span>             <span class="n">container</span><span class="o">.</span><span class="n">put</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span>
+<span class="lineno">10</span>     <span class="o">}</span>
+<span class="lineno">11</span>     <span class="n">println</span><span class="o">(</span><span class="n">container</span><span class="o">)</span>
+<span class="lineno">12</span> <span class="o">}</span></code></pre></div>
 
-<p>9. Write a function lt_eq_gt(values: Array[Int], v: Int) that returns a triple containing the counts of values less than v, equal to v, and greater than v.
-<code>scala
-def lt_eg_gt(values: Array[Int], v: Int): Tuple3[Int, Int, Int] = {
-	(values.count(_ &lt; v), values.count(_ == v), values.count(_&gt; v))
-}
-</code></p>
+<p>6. Define a linked hash map that maps “Monday” to <code>java.util.Calendar.MONDAY</code>, and similarly for the other weekdays. Demonstrate that the elements are visited in insertion order.</p>
 
-<p>10. What happens when you zip together two strings, such as <code>"Hello".zip("World")</code>? Come up with a plausible use case.
-<code>scala
-// produce: scala.collection.immutable.IndexedSeq[(Char, Char)] = Vector((H,W), (e,o), (l,r), (l,l), (o,d))
-"Hello".zip("World") 
-</code>
-From above code we can see that the zip of two String will produce a immutable Vector, which contains Tuples. The Tuples contains a pair of characters in the same position. A possible use case is to produce a immutable map with left characters as keys and right side characters as values, you can transfer the zipped characters to a immutable map via:
-<code>scala
-val map = "Hello".zip("World").toMap
-</code></p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">val</span> <span class="n">daysOfTheWeek</span> <span class="k">=</span> <span class="nc">LinkedHashMap</span><span class="o">(</span><span class="s">&quot;Monday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">MONDAY</span><span class="o">,</span>
+<span class="lineno">2</span>     <span class="s">&quot;Tuesday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">TUESDAY</span><span class="o">,</span>
+<span class="lineno">3</span>     <span class="s">&quot;Wednesday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">WEDNESDAY</span><span class="o">,</span>
+<span class="lineno">4</span>     <span class="s">&quot;Thursday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">THURSDAY</span><span class="o">,</span>
+<span class="lineno">5</span>     <span class="s">&quot;Friday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">FRIDAY</span><span class="o">,</span>
+<span class="lineno">6</span>     <span class="s">&quot;Saturday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">SATURDAY</span><span class="o">,</span>
+<span class="lineno">7</span>     <span class="s">&quot;Sunday&quot;</span> <span class="o">-&gt;</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Calendar</span><span class="o">.</span><span class="nc">SUNDAY</span><span class="o">)</span>
+<span class="lineno">8</span> 
+<span class="lineno">9</span> <span class="n">println</span><span class="o">(</span><span class="n">daysOfTheWeek</span><span class="o">)</span></code></pre></div>
+
+<p>7. Print a table of all Java properties, like this:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">java.runtime.name             <span class="p">|</span> Java<span class="o">(</span>TM<span class="o">)</span> SE Runtime Environment
+sun.boot.library.path         <span class="p">|</span> /home/apps/jdk1.6.0_21/jre/lib/i386
+java.vm.version               <span class="p">|</span> 17.0-b16
+java.vm.vendor                <span class="p">|</span> Sun Microsystems Inc.
+java.vendor.url               <span class="p">|</span> http://java.sun.com/
+path.separator                <span class="p">|</span> :
+java.vm.name                  <span class="p">|</span> Java HotSpot<span class="o">(</span>TM<span class="o">)</span> Server VM</code></pre></div>
+
+<p>You need to find the length of the longest key before you can print the table.</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">import</span> <span class="nn">scala.collection.JavaConversions.propertiesAsScalaMap</span>
+<span class="lineno">2</span> <span class="k">val</span> <span class="n">props</span><span class="k">:</span> <span class="kt">scala.collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">getProperties</span>
+<span class="lineno">3</span> <span class="k">val</span> <span class="n">len</span> <span class="k">=</span> <span class="n">props</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">maxBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">length</span><span class="o">).</span><span class="n">length</span> <span class="c1">// java.vm.specification.version</span>
+<span class="lineno">4</span> <span class="k">for</span> <span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">props</span><span class="o">)</span> <span class="n">printf</span><span class="o">(</span><span class="s">&quot;%-&quot;</span><span class="o">+</span> <span class="n">len</span> <span class="o">+</span> <span class="s">&quot;s|%s\n&quot;</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span></code></pre></div>
+
+<p>8. Write a function <code>min_max(values: Array[Int])</code> that returns a pair containing the smallest and largest values in the array.</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">min_max</span><span class="o">(</span><span class="n">values</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Tuple2</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="o">(</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="o">,</span> <span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="o">)</span>
+<span class="o">}</span></code></pre></div>
+
+<p>9. Write a function lt_eq_gt(values: Array[Int], v: Int) that returns a triple containing the counts of values less than v, equal to v, and greater than v.</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">lt_eg_gt</span><span class="o">(</span><span class="n">values</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="n">v</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Tuple3</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span>, <span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="o">(</span><span class="n">values</span><span class="o">.</span><span class="n">count</span><span class="o">(</span><span class="k">_</span> <span class="o">&lt;</span> <span class="n">v</span><span class="o">),</span> <span class="n">values</span><span class="o">.</span><span class="n">count</span><span class="o">(</span><span class="k">_</span> <span class="o">==</span> <span class="n">v</span><span class="o">),</span> <span class="n">values</span><span class="o">.</span><span class="n">count</span><span class="o">(</span><span class="k">_</span><span class="o">&gt;</span> <span class="n">v</span><span class="o">))</span>
+<span class="o">}</span></code></pre></div>
+
+<p>10. What happens when you zip together two strings, such as <code>"Hello".zip("World")</code>? Come up with a plausible use case.</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// produce: scala.collection.immutable.IndexedSeq[(Char, Char)] = Vector((H,W), (e,o), (l,r), (l,l), (o,d))</span>
+<span class="s">&quot;Hello&quot;</span><span class="o">.</span><span class="n">zip</span><span class="o">(</span><span class="s">&quot;World&quot;</span><span class="o">)</span></code></pre></div>
+
+<p>From above code we can see that the zip of two String will produce a immutable Vector, which contains Tuples. The Tuples contains a pair of characters in the same position. A possible use case is to produce a immutable map with left characters as keys and right side characters as values, you can transfer the zipped characters to a immutable map via:</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">map</span> <span class="k">=</span> <span class="s">&quot;Hello&quot;</span><span class="o">.</span><span class="n">zip</span><span class="o">(</span><span class="s">&quot;World&quot;</span><span class="o">).</span><span class="n">toMap</span></code></pre></div>
 
 <div class="footnotes">
   <ol>
