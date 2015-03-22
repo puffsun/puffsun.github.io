@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Yet another tech blog!">
 
-    <title>Enum, EnumSet, and EnumMap sample - George's dream port</title>
+    <title>Enum, EnumSet, and EnumMap Sample - George's dream port</title>
 
     <link rel="canonical" href="http://codethoughts.info/java/2014/04/06/enum-enumset-enummap-sample/">
 
@@ -81,7 +81,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>Enum, EnumSet, and EnumMap sample</h1>
+                    <h1>Enum, EnumSet, and EnumMap Sample</h1>
                     
                     <span class="meta">Posted by George's dream port on April 6, 2014</span>
                 </div>
@@ -98,129 +98,146 @@
 
 				<p><a href="http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html">Enum</a> was introduced in Java 1.5, although the Java enum can be used with any Java collection, its full power is best leveraged when used with the <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>.</p>
 
-<p>Why should you use <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>, rather than their counterparts <a href="http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html">HashMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html">HashSet</a>. The primary reason boil down to performance and memory usage advantage. Let’s see their JavaDoc firstly.
-<!-- more -->
-Document of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a>:
-&gt; A specialized Map implementation for use with enum type keys. All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created. Enum maps are represented internally as arrays. This representation is extremely compact and efficient.
-&gt; …
-&gt; Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be faster than their HashMap counterparts.</p>
+<p>Why should you use <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>, rather than their counterparts <a href="http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html">HashMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html">HashSet</a>. The primary reason boil down to performance and memory usage advantage. Let’s see their JavaDoc firstly.</p>
 
-<p>Document of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>:
-&gt; A specialized Set implementation for use with enum types. All of the elements in an enum set must come from a single enum type that is specified, explicitly or implicitly, when the set is created. Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient. The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional int-based “bit flags.” Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.
-&gt; …
-&gt; Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be much faster than their HashSet counterparts. Even bulk operations execute in constant time if their argument is also an enum set.</p>
+<!-- more -->
+
+<h2 id="document-of-enummaphttpdocsoraclecomjavase7docsapijavautilenummaphtml">Document of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a>:</h2>
+<blockquote>
+  <p>A specialized Map implementation for use with enum type keys. All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created. Enum maps are represented internally as arrays. This representation is extremely compact and efficient.</p>
+</blockquote>
+
+<p>…</p>
+
+<blockquote>
+  <p>Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be faster than their HashMap counterparts.</p>
+</blockquote>
+
+<h2 id="document-of-enumsethttpdocsoraclecomjavase7docsapijavautilenumsethtml">Document of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>:</h2>
+<blockquote>
+  <p>A specialized Set implementation for use with enum types. All of the elements in an enum set must come from a single enum type that is specified, explicitly or implicitly, when the set is created. Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient. The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional int-based “bit flags.” Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.</p>
+</blockquote>
+
+<p>…</p>
+
+<blockquote>
+  <p>Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be much faster than their HashSet counterparts. Even bulk operations execute in constant time if their argument is also an enum set.</p>
+</blockquote>
 
 <p>Both of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a> belong to <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html">Java Collections Framework</a>, so they’re easy to use because as Java developer, you should familiar with <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html">Java Collections Framework</a>; in the mean time, they’re compact and efficient,  they’re also enum-powered collections which are easy to use, you can see that in below sample code.</p>
 
-<p>First, let’s see an enum deifiniation:
-```java
-import java.util.EnumSet;</p>
+<p>First, let’s see an enum deifiniation:</p>
 
-<p>public enum Weekday {
-    MONDAY {
-        @Override
-        public String getDetail() {
-            return “Monday”;
-        }
-    },</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.util.EnumSet</span><span class="o">;</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Weekday</span> <span class="o">{</span>
+<span class="lineno"> 4</span>     <span class="n">MONDAY</span> <span class="o">{</span>
+<span class="lineno"> 5</span>         <span class="nd">@Override</span>
+<span class="lineno"> 6</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 7</span>             <span class="k">return</span> <span class="s">&quot;Monday&quot;</span><span class="o">;</span>
+<span class="lineno"> 8</span>         <span class="o">}</span>
+<span class="lineno"> 9</span>     <span class="o">},</span>
+<span class="lineno">10</span> 
+<span class="lineno">11</span>     <span class="n">TUESDAY</span> <span class="o">{</span>
+<span class="lineno">12</span>         <span class="nd">@Override</span>
+<span class="lineno">13</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">14</span>             <span class="k">return</span> <span class="s">&quot;Tuesday&quot;</span><span class="o">;</span>
+<span class="lineno">15</span>         <span class="o">}</span>
+<span class="lineno">16</span>     <span class="o">},</span>
+<span class="lineno">17</span> 
+<span class="lineno">18</span>     <span class="n">WEDNESDAY</span> <span class="o">{</span>
+<span class="lineno">19</span>         <span class="nd">@Override</span>
+<span class="lineno">20</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">21</span>             <span class="k">return</span> <span class="s">&quot;Wednesday&quot;</span><span class="o">;</span>
+<span class="lineno">22</span>         <span class="o">}</span>
+<span class="lineno">23</span>     <span class="o">},</span>
+<span class="lineno">24</span> 
+<span class="lineno">25</span>     <span class="n">THURSDAY</span> <span class="o">{</span>
+<span class="lineno">26</span>         <span class="nd">@Override</span>
+<span class="lineno">27</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">28</span>             <span class="k">return</span> <span class="s">&quot;Thursday&quot;</span><span class="o">;</span>
+<span class="lineno">29</span>         <span class="o">}</span>
+<span class="lineno">30</span>     <span class="o">},</span>
+<span class="lineno">31</span> 
+<span class="lineno">32</span>     <span class="n">FRIDAY</span> <span class="o">{</span>
+<span class="lineno">33</span>         <span class="nd">@Override</span>
+<span class="lineno">34</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">35</span>             <span class="k">return</span> <span class="s">&quot;Friday&quot;</span><span class="o">;</span>
+<span class="lineno">36</span>         <span class="o">}</span>
+<span class="lineno">37</span>     <span class="o">},</span>
+<span class="lineno">38</span> 
+<span class="lineno">39</span>     <span class="n">SATURDAY</span> <span class="o">{</span>
+<span class="lineno">40</span>         <span class="nd">@Override</span>
+<span class="lineno">41</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">42</span>             <span class="k">return</span> <span class="s">&quot;Saturday&quot;</span><span class="o">;</span>
+<span class="lineno">43</span>         <span class="o">}</span>
+<span class="lineno">44</span>     <span class="o">},</span>
+<span class="lineno">45</span> 
+<span class="lineno">46</span>     <span class="n">SUNDAY</span> <span class="o">{</span>
+<span class="lineno">47</span>         <span class="nd">@Override</span>
+<span class="lineno">48</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">49</span>             <span class="k">return</span> <span class="s">&quot;Sunday&quot;</span><span class="o">;</span>
+<span class="lineno">50</span>         <span class="o">}</span>
+<span class="lineno">51</span>     <span class="o">};</span>
+<span class="lineno">52</span> 
+<span class="lineno">53</span>     <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getDetail</span><span class="o">();</span>
+<span class="lineno">54</span> 
+<span class="lineno">55</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">EnumSet</span><span class="o">&lt;</span><span class="n">Weekday</span><span class="o">&gt;</span> <span class="n">WORKDAYS</span> <span class="o">=</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">range</span><span class="o">(</span><span class="n">MONDAY</span><span class="o">,</span> <span class="n">FRIDAY</span><span class="o">);</span>
+<span class="lineno">56</span> 
+<span class="lineno">57</span>     <span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">isWorkday</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">58</span>         <span class="k">return</span> <span class="n">WORKDAYS</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+<span class="lineno">59</span>     <span class="o">}</span>
+<span class="lineno">60</span> 
+<span class="lineno">61</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">EnumSet</span><span class="o">&lt;</span><span class="n">Weekday</span><span class="o">&gt;</span> <span class="n">THE_WHOLE_WEEK</span> <span class="o">=</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">allOf</span><span class="o">(</span><span class="n">Weekday</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="lineno">62</span> <span class="o">}</span></code></pre></div>
 
-<pre><code>TUESDAY {
-    @Override
-    public String getDetail() {
-        return "Tuesday";
-    }
-},
-
-WEDNESDAY {
-    @Override
-    public String getDetail() {
-        return "Wednesday";
-    }
-},
-
-THURSDAY {
-    @Override
-    public String getDetail() {
-        return "Thursday";
-    }
-},
-
-FRIDAY {
-    @Override
-    public String getDetail() {
-        return "Friday";
-    }
-},
-
-SATURDAY {
-    @Override
-    public String getDetail() {
-        return "Saturday";
-    }
-},
-
-SUNDAY {
-    @Override
-    public String getDetail() {
-        return "Sunday";
-    }
-};
-
-public abstract String getDetail();
-
-public static final EnumSet&lt;Weekday&gt; WORKDAYS = EnumSet.range(MONDAY, FRIDAY);
-
-public final boolean isWorkday() {
-    return WORKDAYS.contains(this);
-}
-
-public static final EnumSet&lt;Weekday&gt; THE_WHOLE_WEEK = EnumSet.allOf(Weekday.class); } ``` You can see that one of interesting feature of Java enum is that you can declare **abstract methods**, in above example getDetail() is the abstract method and all the enum fields have implemented it. You can check some other details of Java enum [here](http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
-</code></pre>
+<p>You can see that one of interesting feature of Java enum is that you can declare <strong>abstract methods</strong>, in above example getDetail() is the abstract method and all the enum fields have implemented it. You can check some other details of Java enum <a href="http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html">here</a>.</p>
 
 <p>Let’s move on to our sample code of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>.</p>
 
-<p>```java
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.util.EnumMap</span><span class="o">;</span>
+<span class="lineno"> 2</span> <span class="kn">import</span> <span class="nn">java.util.EnumSet</span><span class="o">;</span>
+<span class="lineno"> 3</span> <span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="lineno"> 4</span> 
+<span class="lineno"> 5</span> <span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">EnumSetExample</span> <span class="o">{</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 8</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Work Schedule:&quot;</span><span class="o">);</span>
+<span class="lineno"> 9</span> 
+<span class="lineno">10</span>         <span class="k">for</span> <span class="o">(</span><span class="n">Weekday</span> <span class="n">weekday</span> <span class="o">:</span> <span class="n">Weekday</span><span class="o">.</span><span class="na">THE_WHOLE_WEEK</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">11</span>             <span class="n">String</span> <span class="n">action</span> <span class="o">=</span> <span class="n">weekday</span><span class="o">.</span><span class="na">isWorkday</span><span class="o">()</span>
+<span class="lineno">12</span>                     <span class="o">?</span> <span class="s">&quot;have to work&quot;</span>
+<span class="lineno">13</span>                     <span class="o">:</span> <span class="s">&quot;can relax&quot;</span><span class="o">;</span>
+<span class="lineno">14</span>             <span class="c1">// Enum.ordinal starts with 0</span>
+<span class="lineno">15</span>             <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;%d. On %s you &quot;</span> <span class="o">+</span> <span class="n">action</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span><span class="o">,</span> <span class="n">weekday</span><span class="o">.</span><span class="na">ordinal</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">weekday</span><span class="o">));</span>
+<span class="lineno">16</span>         <span class="o">}</span>
+<span class="lineno">17</span> 
+<span class="lineno">18</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Do I have to work the whole week?&quot;</span><span class="o">);</span>
+<span class="lineno">19</span> 
+<span class="lineno">20</span>         <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Weekday</span><span class="o">.</span><span class="na">WORKDAYS</span><span class="o">.</span><span class="na">containsAll</span><span class="o">(</span><span class="n">Weekday</span><span class="o">.</span><span class="na">THE_WHOLE_WEEK</span><span class="o">)</span>
+<span class="lineno">21</span>                 <span class="o">?</span> <span class="s">&quot;Yes, unfortunately.&quot;</span>
+<span class="lineno">22</span>                 <span class="o">:</span> <span class="s">&quot;Certainly not.&quot;</span><span class="o">;</span>
+<span class="lineno">23</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="lineno">24</span> 
+<span class="lineno">25</span>         <span class="kd">final</span> <span class="n">EnumSet</span><span class="o">&lt;</span><span class="n">Weekday</span><span class="o">&gt;</span> <span class="n">weekend</span> <span class="o">=</span> <span class="n">Weekday</span><span class="o">.</span><span class="na">THE_WHOLE_WEEK</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+<span class="lineno">26</span>         <span class="n">weekend</span><span class="o">.</span><span class="na">removeAll</span><span class="o">(</span><span class="n">Weekday</span><span class="o">.</span><span class="na">WORKDAYS</span><span class="o">);</span>
+<span class="lineno">27</span> 
+<span class="lineno">28</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;The weekend is %d days long.&quot;</span><span class="o">,</span> <span class="n">weekend</span><span class="o">.</span><span class="na">size</span><span class="o">()));</span>
+<span class="lineno">29</span> 
+<span class="lineno">30</span>         <span class="c1">// EnumMap example</span>
+<span class="lineno">31</span>         <span class="n">EnumMap</span><span class="o">&lt;</span><span class="n">Weekday</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">eMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EnumMap</span><span class="o">&lt;&gt;(</span><span class="n">Weekday</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="lineno">32</span>         <span class="k">for</span> <span class="o">(</span><span class="n">Weekday</span> <span class="n">day</span> <span class="o">:</span> <span class="n">Weekday</span><span class="o">.</span><span class="na">THE_WHOLE_WEEK</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">33</span>             <span class="n">eMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">day</span><span class="o">,</span> <span class="n">day</span><span class="o">.</span><span class="na">getDetail</span><span class="o">());</span>
+<span class="lineno">34</span>         <span class="o">}</span>
+<span class="lineno">35</span> 
+<span class="lineno">36</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Print weekdays:&quot;</span><span class="o">);</span>
+<span class="lineno">37</span>         <span class="k">for</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Weekday</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">eMap</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+<span class="lineno">38</span>             <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;\t&quot;</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+<span class="lineno">39</span>         <span class="o">}</span>
+<span class="lineno">40</span>     <span class="o">}</span>
+<span class="lineno">41</span> <span class="o">}</span></code></pre></div>
 
-<p>public final class EnumSetExample {</p>
-
-<pre><code>public static void main(String... args) {
-    System.out.println("Work Schedule:");
-
-    for (Weekday weekday : Weekday.THE_WHOLE_WEEK) {
-        String action = weekday.isWorkday()
-                ? "have to work"
-                : "can relax";
-        // Enum.ordinal starts with 0
-        System.out.println(String.format("%d. On %s you " + action + ".", weekday.ordinal() + 1, weekday));
-    }
-
-    System.out.println("Do I have to work the whole week?");
-
-    String result = Weekday.WORKDAYS.containsAll(Weekday.THE_WHOLE_WEEK)
-            ? "Yes, unfortunately."
-            : "Certainly not.";
-    System.out.println(result);
-
-    final EnumSet&lt;Weekday&gt; weekend = Weekday.THE_WHOLE_WEEK.clone();
-    weekend.removeAll(Weekday.WORKDAYS);
-
-    System.out.println(String.format("The weekend is %d days long.", weekend.size()));
-
-    // EnumMap example
-    EnumMap&lt;Weekday, String&gt; eMap = new EnumMap&lt;&gt;(Weekday.class);
-    for (Weekday day : Weekday.THE_WHOLE_WEEK) {
-        eMap.put(day, day.getDetail());
-    }
-
-    System.out.println("Print weekdays:");
-    for (Map.Entry&lt;Weekday, String&gt; entry : eMap.entrySet()) {
-        System.out.println(entry.getKey() + "\t" + entry.getValue());
-    }
-} } ``` You can run above source code by yourself, check the result then find related API of [EnumMap](http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html) and [EnumSet](http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html). The above source code makes use of the following features in Java.[^1]
-</code></pre>
+<p>You can run above source code by yourself, check the result then find related API of <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html">EnumMap</a> and <a href="http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html">EnumSet</a>. The above source code makes use of the following features in Java.<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></p>
 
 <ul>
   <li>enum keyword</li>
@@ -236,6 +253,13 @@ import java.util.Map;</p>
   <li>EnumMap construction and iteration</li>
 </ul>
 
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://weblogs.java.net/blog/mkarg/archive/2010/01/03/fun-enumset">Fun with EnumSet</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
 
 
                 <hr>

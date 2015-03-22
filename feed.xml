@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 22 Mar 2015 17:32:35 +0800</pubDate>
-    <lastBuildDate>Sun, 22 Mar 2015 17:32:35 +0800</lastBuildDate>
+    <pubDate>Sun, 22 Mar 2015 17:47:15 +0800</pubDate>
+    <lastBuildDate>Sun, 22 Mar 2015 17:47:15 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -618,132 +618,149 @@ The provider-lookup mechanism always executes in the security context of the cal
       </item>
     
       <item>
-        <title>Enum, EnumSet, and EnumMap sample</title>
+        <title>Enum, EnumSet, and EnumMap Sample</title>
         <description>&lt;p&gt;&lt;a href=&quot;http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html&quot;&gt;Enum&lt;/a&gt; was introduced in Java 1.5, although the Java enum can be used with any Java collection, its full power is best leveraged when used with the &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;Why should you use &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;, rather than their counterparts &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html&quot;&gt;HashMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html&quot;&gt;HashSet&lt;/a&gt;. The primary reason boil down to performance and memory usage advantage. Let’s see their JavaDoc firstly.
-&lt;!-- more --&gt;
-Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt;:
-&amp;gt; A specialized Map implementation for use with enum type keys. All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created. Enum maps are represented internally as arrays. This representation is extremely compact and efficient.
-&amp;gt; …
-&amp;gt; Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be faster than their HashMap counterparts.&lt;/p&gt;
+&lt;p&gt;Why should you use &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;, rather than their counterparts &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html&quot;&gt;HashMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html&quot;&gt;HashSet&lt;/a&gt;. The primary reason boil down to performance and memory usage advantage. Let’s see their JavaDoc firstly.&lt;/p&gt;
 
-&lt;p&gt;Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;:
-&amp;gt; A specialized Set implementation for use with enum types. All of the elements in an enum set must come from a single enum type that is specified, explicitly or implicitly, when the set is created. Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient. The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional int-based “bit flags.” Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.
-&amp;gt; …
-&amp;gt; Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be much faster than their HashSet counterparts. Even bulk operations execute in constant time if their argument is also an enum set.&lt;/p&gt;
+&lt;!-- more --&gt;
+
+&lt;h2 id=&quot;document-of-enummaphttpdocsoraclecomjavase7docsapijavautilenummaphtml&quot;&gt;Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt;:&lt;/h2&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;A specialized Map implementation for use with enum type keys. All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created. Enum maps are represented internally as arrays. This representation is extremely compact and efficient.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;…&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be faster than their HashMap counterparts.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;document-of-enumsethttpdocsoraclecomjavase7docsapijavautilenumsethtml&quot;&gt;Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;:&lt;/h2&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;A specialized Set implementation for use with enum types. All of the elements in an enum set must come from a single enum type that is specified, explicitly or implicitly, when the set is created. Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient. The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional int-based “bit flags.” Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;…&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be much faster than their HashSet counterparts. Even bulk operations execute in constant time if their argument is also an enum set.&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;p&gt;Both of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt; belong to &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html&quot;&gt;Java Collections Framework&lt;/a&gt;, so they’re easy to use because as Java developer, you should familiar with &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html&quot;&gt;Java Collections Framework&lt;/a&gt;; in the mean time, they’re compact and efficient,  they’re also enum-powered collections which are easy to use, you can see that in below sample code.&lt;/p&gt;
 
-&lt;p&gt;First, let’s see an enum deifiniation:
-```java
-import java.util.EnumSet;&lt;/p&gt;
+&lt;p&gt;First, let’s see an enum deifiniation:&lt;/p&gt;
 
-&lt;p&gt;public enum Weekday {
-    MONDAY {
-        @Override
-        public String getDetail() {
-            return “Monday”;
-        }
-    },&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;MONDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Monday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;TUESDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Tuesday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;WEDNESDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Wednesday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;THURSDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Thursday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;30&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;31&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;32&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;FRIDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;33&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;34&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;35&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Friday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;36&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;37&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;38&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;39&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;SATURDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;40&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;41&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;42&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Saturday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;43&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;44&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;45&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;46&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;SUNDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;47&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;48&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;49&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Sunday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;50&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;51&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;52&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;53&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;54&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;55&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WORKDAYS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MONDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FRIDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;56&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;57&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;isWorkday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;58&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WORKDAYS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;59&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;60&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;61&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;allOf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;62&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;pre&gt;&lt;code&gt;TUESDAY {
-    @Override
-    public String getDetail() {
-        return &quot;Tuesday&quot;;
-    }
-},
-
-WEDNESDAY {
-    @Override
-    public String getDetail() {
-        return &quot;Wednesday&quot;;
-    }
-},
-
-THURSDAY {
-    @Override
-    public String getDetail() {
-        return &quot;Thursday&quot;;
-    }
-},
-
-FRIDAY {
-    @Override
-    public String getDetail() {
-        return &quot;Friday&quot;;
-    }
-},
-
-SATURDAY {
-    @Override
-    public String getDetail() {
-        return &quot;Saturday&quot;;
-    }
-},
-
-SUNDAY {
-    @Override
-    public String getDetail() {
-        return &quot;Sunday&quot;;
-    }
-};
-
-public abstract String getDetail();
-
-public static final EnumSet&amp;lt;Weekday&amp;gt; WORKDAYS = EnumSet.range(MONDAY, FRIDAY);
-
-public final boolean isWorkday() {
-    return WORKDAYS.contains(this);
-}
-
-public static final EnumSet&amp;lt;Weekday&amp;gt; THE_WHOLE_WEEK = EnumSet.allOf(Weekday.class); } ``` You can see that one of interesting feature of Java enum is that you can declare **abstract methods**, in above example getDetail() is the abstract method and all the enum fields have implemented it. You can check some other details of Java enum [here](http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can see that one of interesting feature of Java enum is that you can declare &lt;strong&gt;abstract methods&lt;/strong&gt;, in above example getDetail() is the abstract method and all the enum fields have implemented it. You can check some other details of Java enum &lt;a href=&quot;http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Let’s move on to our sample code of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;```java
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.EnumMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EnumSetExample&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Work Schedule:&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isWorkday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt;                     &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;have to work&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt;                     &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;can relax&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt;             &lt;span class=&quot;c1&quot;&gt;// Enum.ordinal starts with 0&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%d. On %s you &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Do I have to work the whole week?&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;WORKDAYS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt;                 &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Yes, unfortunately.&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt;                 &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Certainly not.&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekend&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;clone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;weekend&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;removeAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;WORKDAYS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;The weekend is %d days long.&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekend&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()));&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;30&lt;/span&gt;         &lt;span class=&quot;c1&quot;&gt;// EnumMap example&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;31&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;EnumMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eMap&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;32&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;33&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;eMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;34&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;35&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;36&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Print weekdays:&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;37&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;entrySet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;38&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;\t&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;39&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;40&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;41&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;public final class EnumSetExample {&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public static void main(String... args) {
-    System.out.println(&quot;Work Schedule:&quot;);
-
-    for (Weekday weekday : Weekday.THE_WHOLE_WEEK) {
-        String action = weekday.isWorkday()
-                ? &quot;have to work&quot;
-                : &quot;can relax&quot;;
-        // Enum.ordinal starts with 0
-        System.out.println(String.format(&quot;%d. On %s you &quot; + action + &quot;.&quot;, weekday.ordinal() + 1, weekday));
-    }
-
-    System.out.println(&quot;Do I have to work the whole week?&quot;);
-
-    String result = Weekday.WORKDAYS.containsAll(Weekday.THE_WHOLE_WEEK)
-            ? &quot;Yes, unfortunately.&quot;
-            : &quot;Certainly not.&quot;;
-    System.out.println(result);
-
-    final EnumSet&amp;lt;Weekday&amp;gt; weekend = Weekday.THE_WHOLE_WEEK.clone();
-    weekend.removeAll(Weekday.WORKDAYS);
-
-    System.out.println(String.format(&quot;The weekend is %d days long.&quot;, weekend.size()));
-
-    // EnumMap example
-    EnumMap&amp;lt;Weekday, String&amp;gt; eMap = new EnumMap&amp;lt;&amp;gt;(Weekday.class);
-    for (Weekday day : Weekday.THE_WHOLE_WEEK) {
-        eMap.put(day, day.getDetail());
-    }
-
-    System.out.println(&quot;Print weekdays:&quot;);
-    for (Map.Entry&amp;lt;Weekday, String&amp;gt; entry : eMap.entrySet()) {
-        System.out.println(entry.getKey() + &quot;\t&quot; + entry.getValue());
-    }
-} } ``` You can run above source code by yourself, check the result then find related API of [EnumMap](http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html) and [EnumSet](http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html). The above source code makes use of the following features in Java.[^1]
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can run above source code by yourself, check the result then find related API of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;. The above source code makes use of the following features in Java.&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;enum keyword&lt;/li&gt;
@@ -759,6 +776,13 @@ import java.util.Map;&lt;/p&gt;
   &lt;li&gt;EnumMap construction and iteration&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://weblogs.java.net/blog/mkarg/archive/2010/01/03/fun-enumset&quot;&gt;Fun with EnumSet&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
 </description>
         <pubDate>Sun, 06 Apr 2014 20:50:38 +0800</pubDate>
         <link>http://codethoughts.info/java/2014/04/06/enum-enumset-enummap-sample/</link>
