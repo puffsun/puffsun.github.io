@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Yet another tech blog!">
 
-    <title>solutions to scala for the impatient - chapter5 - George's dream port</title>
+    <title>Solutions to Scala for the Impatient - Chapter5 - George's dream port</title>
 
     <link rel="canonical" href="http://codethoughts.info/scala/2014/03/09/scala-for-the-impatient-chapter5/">
 
@@ -81,7 +81,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>solutions to scala for the impatient - chapter5</h1>
+                    <h1>Solutions to Scala for the Impatient - Chapter5</h1>
                     
                     <span class="meta">Posted by George's dream port on March 9, 2014</span>
                 </div>
@@ -98,229 +98,218 @@
 
 				<p>1. Improve the Counter class in Section 5.1, “Simple Classes and Parameterless Methods,” on page 49 so that it doesn’t turn negative at <code>Int.MaxValue</code>.</p>
 
-<p>```scala
-class Counter {
-  private var value = 0</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">class</span> <span class="nc">Counter</span> <span class="o">{</span>
+<span class="lineno">2</span>   <span class="k">private</span> <span class="k">var</span> <span class="n">value</span> <span class="k">=</span> <span class="mi">0</span>
+<span class="lineno">3</span> 
+<span class="lineno">4</span>   <span class="k">def</span> <span class="n">increment</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">5</span>     <span class="k">if</span> <span class="o">((</span><span class="n">value</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&lt;</span> <span class="nc">Int</span><span class="o">.</span><span class="nc">MaxValue</span><span class="o">)</span>
+<span class="lineno">6</span>       <span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="lineno">7</span>   <span class="o">}</span>
+<span class="lineno">8</span>   <span class="k">def</span> <span class="n">current</span> <span class="k">=</span> <span class="n">value</span>
+<span class="lineno">9</span> <span class="o">}</span></code></pre></div>
 
-<p>def increment() {
-    if ((value + 1) &lt; Int.MaxValue)
-      value += 1
-  }
-  def current = value
-}
-```
 <!--more-->
-2. Write a class <code>BankAccount</code> with methods <code>deposit</code> and <code>withdraw</code>, and a read-only property <code>balance</code>.</p>
 
-<p>```scala
-class BankAccount(private var _balance: Double = 0.0) {</p>
+<p>2. Write a class <code>BankAccount</code> with methods <code>deposit</code> and <code>withdraw</code>, and a read-only property <code>balance</code>.</p>
 
-<p>def deposit(amount: Double) = {
-    _balance += amount
-  }</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">class</span> <span class="nc">BankAccount</span><span class="o">(</span><span class="k">private</span> <span class="k">var</span> <span class="nc">_balance</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span>   <span class="k">def</span> <span class="n">deposit</span><span class="o">(</span><span class="n">amount</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+<span class="lineno"> 4</span>     <span class="nc">_balance</span> <span class="o">+=</span> <span class="n">amount</span>
+<span class="lineno"> 5</span>   <span class="o">}</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>   <span class="k">def</span> <span class="n">withdraw</span><span class="o">(</span><span class="n">amount</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+<span class="lineno"> 8</span>     <span class="k">if</span> <span class="o">(</span><span class="n">balance</span> <span class="o">&gt;</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 9</span>       <span class="nc">_balance</span> <span class="o">-=</span> <span class="n">amount</span>
+<span class="lineno">10</span>       <span class="kc">true</span>
+<span class="lineno">11</span>     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+<span class="lineno">12</span>       <span class="kc">false</span>
+<span class="lineno">13</span>     <span class="o">}</span>
+<span class="lineno">14</span>   <span class="o">}</span>
+<span class="lineno">15</span> 
+<span class="lineno">16</span>   <span class="k">def</span> <span class="n">balance</span> <span class="k">=</span> <span class="nc">_balance</span>
+<span class="lineno">17</span> <span class="o">}</span></code></pre></div>
 
-<p>def withdraw(amount: Double) = {
-    if (balance &gt; amount) {
-      _balance -= amount
-      true
-    } else {
-      false
-    }
-  }</p>
+<p>3. Write a class <code>Time</code> with read-only properties <code>hours</code> and <code>minutes</code> and a method <code>before(other: Time): Boolean</code> that checks whether this time comes before the other. A <code>Time</code> object should be constructed as <code>new Time(hrs, min)</code>, where hrs is in military time format (between 0 and 23).</p>
 
-<p>def balance = _balance
-}
-```</p>
-
-<p>3. Write a class <code>Time</code> with read-only properties <code>hours</code> and <code>minutes</code> and a method <code>before(other: Time): Boolean</code> that checks whether this time comes before the other. A <code>Time</code> object should be constructed as <code>new Time(hrs, min)</code>, where hrs is in military time format (between 0 and 23).
-```scala
-class Time(val hours: Int, val minutes: Int) {
-  // Validations goes here.
-  if (hours &gt; 23 || hours &lt; 0) {
-    throw new IllegalArgumentException(“should larger than 0 or smaller than 23”)
-  }</p>
-
-<p>if (minutes &lt; 0 || minutes &gt; 59) {
-    throw new IllegalArgumentException(“should larger than 0 or small than 59”)
-  }</p>
-
-<p>def before(other: Time): Boolean = {
-    if (hours &lt; other.hours) {
-      if (minutes &lt;  other.minutes) {
-        return true
-      }
-    }
-    false
-  }
-}
-```</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">class</span> <span class="nc">Time</span><span class="o">(</span><span class="k">val</span> <span class="n">hours</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="k">val</span> <span class="n">minutes</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 2</span>   <span class="c1">// Validations goes here.</span>
+<span class="lineno"> 3</span>   <span class="k">if</span> <span class="o">(</span><span class="n">hours</span> <span class="o">&gt;</span> <span class="mi">23</span> <span class="o">||</span> <span class="n">hours</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 4</span>     <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;should larger than 0 or smaller than 23&quot;</span><span class="o">)</span>
+<span class="lineno"> 5</span>   <span class="o">}</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>   <span class="k">if</span> <span class="o">(</span><span class="n">minutes</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">minutes</span> <span class="o">&gt;</span> <span class="mi">59</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 8</span>     <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;should larger than 0 or small than 59&quot;</span><span class="o">)</span>
+<span class="lineno"> 9</span>   <span class="o">}</span>
+<span class="lineno">10</span> 
+<span class="lineno">11</span>   <span class="k">def</span> <span class="n">before</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Time</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno">12</span>     <span class="k">if</span> <span class="o">(</span><span class="n">hours</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">hours</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">13</span>       <span class="k">if</span> <span class="o">(</span><span class="n">minutes</span> <span class="o">&lt;</span>  <span class="n">other</span><span class="o">.</span><span class="n">minutes</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">14</span>         <span class="k">return</span> <span class="kc">true</span>
+<span class="lineno">15</span>       <span class="o">}</span>
+<span class="lineno">16</span>     <span class="o">}</span>
+<span class="lineno">17</span>     <span class="kc">false</span>
+<span class="lineno">18</span>   <span class="o">}</span>
+<span class="lineno">19</span> <span class="o">}</span></code></pre></div>
 
 <p>4. Reimplement the Time class from the preceding exercise so that the internal representation is the number of minutes since midnight (between 0 and 24 × 60 – 1). Do not change the public interface. That is, client code should be unaffected by your change.</p>
 
-<p>```scala
-class Time(private val _hours: Int, private val _minutes: Int) {</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">class</span> <span class="nc">Time</span><span class="o">(</span><span class="k">private</span> <span class="k">val</span> <span class="nc">_hours</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="k">private</span> <span class="k">val</span> <span class="nc">_minutes</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span>   <span class="k">if</span> <span class="o">(</span><span class="n">hours</span> <span class="o">&gt;</span> <span class="mi">23</span> <span class="o">||</span> <span class="n">hours</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 4</span>     <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;should larger than 0 or smaller than 23&quot;</span><span class="o">)</span>
+<span class="lineno"> 5</span>   <span class="o">}</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>   <span class="k">if</span> <span class="o">(</span><span class="n">minutes</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">minutes</span> <span class="o">&gt;</span> <span class="mi">59</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 8</span>     <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;should larger than 0 or small than 59&quot;</span><span class="o">)</span>
+<span class="lineno"> 9</span>   <span class="o">}</span>
+<span class="lineno">10</span> 
+<span class="lineno">11</span>   <span class="k">private</span> <span class="k">val</span> <span class="nc">_total_minutes</span> <span class="k">=</span> <span class="nc">_hours</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nc">_minutes</span>
+<span class="lineno">12</span> 
+<span class="lineno">13</span>   <span class="k">def</span> <span class="n">minutes</span> <span class="k">=</span> <span class="nc">_minutes</span>
+<span class="lineno">14</span>   <span class="k">def</span> <span class="n">hours</span> <span class="k">=</span> <span class="nc">_hours</span>
+<span class="lineno">15</span> 
+<span class="lineno">16</span>   <span class="k">def</span> <span class="n">before</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Time</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+<span class="lineno">17</span>     <span class="k">if</span> <span class="o">(</span><span class="nc">_total_minutes</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="nc">_total_minutes</span><span class="o">)</span>
+<span class="lineno">18</span>       <span class="kc">true</span>
+<span class="lineno">19</span>     <span class="k">else</span>
+<span class="lineno">20</span>       <span class="kc">false</span>
+<span class="lineno">21</span>   <span class="o">}</span>
+<span class="lineno">22</span> <span class="o">}</span></code></pre></div>
 
-<p>if (hours &gt; 23 || hours &lt; 0) {
-    throw new IllegalArgumentException(“should larger than 0 or smaller than 23”)
-  }</p>
+<p>5. Make a class <code>Student</code> with read-write JavaBeans properties name (of type <code>String</code>) and id (of type <code>Long</code>). What methods are generated? (Use javap to check.) Can you call the JavaBeans getters and setters in Scala Should you?<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></p>
 
-<p>if (minutes &lt; 0 || minutes &gt; 59) {
-    throw new IllegalArgumentException(“should larger than 0 or small than 59”)
-  }</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">import</span> <span class="nn">scala.reflect.BeanProperty</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="k">class</span> <span class="nc">Student</span><span class="o">(</span><span class="nd">@BeanProperty</span> <span class="k">var</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="nd">@BeanProperty</span> <span class="k">var</span> <span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>  
+<span class="lineno"> 4</span> <span class="o">}</span>
+<span class="lineno"> 5</span> 
+<span class="lineno"> 6</span> <span class="k">object</span> <span class="nc">Main</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+<span class="lineno"> 7</span>   <span class="k">val</span> <span class="n">human</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Student</span><span class="o">(</span><span class="s">&quot;Dave Grohl&quot;</span><span class="o">,</span> <span class="mi">1337</span><span class="o">)</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span>   <span class="c1">// You can call the JavaBeans getter and setter, just like this</span>
+<span class="lineno">10</span>   <span class="n">human</span><span class="o">.</span><span class="n">setName</span><span class="o">(</span><span class="s">&quot;Kurt Cobain&quot;</span><span class="o">)</span>
+<span class="lineno">11</span>   <span class="n">human</span><span class="o">.</span><span class="n">setId</span><span class="o">(</span><span class="mi">5000</span><span class="o">)</span>
+<span class="lineno">12</span> 
+<span class="lineno">13</span>   <span class="c1">// But why would you, when the Scala-esque methods are generated?</span>
+<span class="lineno">14</span>   <span class="n">human</span><span class="o">.</span><span class="n">name</span> <span class="k">=</span> <span class="s">&quot;Krist Novoselic&quot;</span>
+<span class="lineno">15</span>   <span class="n">human</span><span class="o">.</span><span class="n">id</span> <span class="k">=</span> <span class="mi">5001</span>
+<span class="lineno">16</span> <span class="o">}</span></code></pre></div>
 
-<p>private val _total_minutes = _hours * 60 + _minutes</p>
+<p>The output of javap as below:</p>
 
-<p>def minutes = _minutes
-  def hours = _hours</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="n">$</span> <span class="n">javap</span> <span class="n">Student</span>
+<span class="lineno"> 2</span> <span class="c1">// Compiled from &quot;ch5_exercises.scala&quot;</span>
+<span class="lineno"> 3</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Student</span> <span class="o">{</span>
+<span class="lineno"> 4</span>   <span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span> <span class="nf">name</span><span class="o">();</span>
+<span class="lineno"> 5</span>   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">name_$eq</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">);</span>
+<span class="lineno"> 6</span>   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">);</span>
+<span class="lineno"> 7</span>   <span class="kd">public</span> <span class="kt">long</span> <span class="nf">id</span><span class="o">();</span>
+<span class="lineno"> 8</span>   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">id_$eq</span><span class="o">(</span><span class="kt">long</span><span class="o">);</span>
+<span class="lineno"> 9</span>   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="kt">long</span><span class="o">);</span>
+<span class="lineno">10</span>   <span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span> <span class="nf">getName</span><span class="o">();</span>
+<span class="lineno">11</span>   <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getId</span><span class="o">();</span>
+<span class="lineno">12</span>   <span class="kd">public</span> <span class="nf">Student</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">,</span> <span class="kt">long</span><span class="o">);</span>
+<span class="lineno">13</span> <span class="o">}</span></code></pre></div>
 
-<p>def before(other: Time): Boolean = {
-    if (_total_minutes &lt; other._total_minutes)
-      true
-    else
-      false
-  }
-}
-```</p>
+<p>You can see that Scala generate getters/setters for you, as well as <code>name</code>, <code>name\_=</code>, <code>id</code>, and <code>id_=</code>.</p>
 
-<p>5. Make a class <code>Student</code> with read-write JavaBeans properties name (of type <code>String</code>) and id (of type <code>Long</code>). What methods are generated? (Use javap to check.) Can you call the JavaBeans getters and setters in Scala Should you?<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>
-```scala
-import scala.reflect.BeanProperty</p>
+<p>6. In the <code>Person</code> class of Section 5.1, “Simple Classes and Parameterless Methods,” on page 49, provide a primary constructor that turns negative ages to 0.</p>
 
-<p>class Student(@BeanProperty var name: String, @BeanProperty var id: Long) {<br />
-}</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno"> 1</span> <span class="k">class</span> <span class="nc">Person</span><span class="o">(</span><span class="k">val</span> <span class="nc">_name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">var</span> <span class="nc">_age</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 2</span>   <span class="k">if</span> <span class="o">(</span><span class="nc">_age</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
+<span class="lineno"> 3</span>     <span class="nc">_age</span> <span class="k">=</span> <span class="mi">0</span>
+<span class="lineno"> 4</span> 
+<span class="lineno"> 5</span>   <span class="k">def</span> <span class="n">age</span> <span class="k">=</span> <span class="nc">_age</span>
+<span class="lineno"> 6</span>   <span class="k">def</span> <span class="n">age_=</span><span class="o">(</span><span class="n">new_age</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 7</span>     <span class="k">if</span> <span class="o">(</span><span class="n">new_age</span> <span class="o">&gt;</span> <span class="nc">_age</span><span class="o">)</span>
+<span class="lineno"> 8</span>       <span class="nc">_age</span> <span class="k">=</span> <span class="n">new_age</span>
+<span class="lineno"> 9</span>   <span class="o">}</span>
+<span class="lineno">10</span> <span class="o">}</span></code></pre></div>
 
-<p>object Main extends App {
-  val human = new Student(“Dave Grohl”, 1337)</p>
+<p>7. Write a class <code>Person</code> with a primary constructor that accepts a string containing a first name, a space, and a last name, such as <code>new Person("Fred Smith")</code>. Supply read-only properties <code>firstName</code> and <code>lastName</code>. Should the primary constructor parameter be a var, a val, or a plain parameter? Why?</p>
 
-<p>// You can call the JavaBeans getter and setter, just like this
-  human.setName(“Kurt Cobain”)
-  human.setId(5000)</p>
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">class</span> <span class="nc">Person</span><span class="o">(</span><span class="k">val</span> <span class="n">fullname</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">2</span>   <span class="k">if</span> <span class="o">(</span><span class="n">fullname</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">fullname</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">).</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span>
+<span class="lineno">3</span>     <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Name is not be in format of first_name last_name&quot;</span><span class="o">)</span>
+<span class="lineno">4</span>   <span class="k">private</span> <span class="k">val</span> <span class="n">tmp_name</span> <span class="k">=</span> <span class="n">fullname</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">)</span>
+<span class="lineno">5</span>   <span class="k">val</span> <span class="n">firstName</span> <span class="k">=</span> <span class="n">tmp_name</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+<span class="lineno">6</span>   <span class="k">val</span> <span class="n">lastName</span> <span class="k">=</span> <span class="n">tmp_name</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+<span class="lineno">7</span> <span class="o">}</span></code></pre></div>
 
-<p>// But why would you, when the Scala-esque methods are generated?
-  human.name = “Krist Novoselic”
-  human.id = 5001
-}
-```</p>
-
-<p>The output of javap as below:
-<code>
-$ javap Student
-// Compiled from "ch5_exercises.scala"
-public class Student {
-  public java.lang.String name();
-  public void name_$eq(java.lang.String);
-  public void setName(java.lang.String);
-  public long id();
-  public void id_$eq(long);
-  public void setId(long);
-  public java.lang.String getName();
-  public long getId();
-  public Student(java.lang.String, long);
-}
-</code>
-You can see that Scala generate getters/setters for you, as well as <code>name</code>, <code>name\_=</code>, <code>id</code>, and <code>id_=</code>.</p>
-
-<p>6. In the <code>Person</code> class of Section 5.1, “Simple Classes and Parameterless Methods,” on page 49, provide a primary constructor that turns negative ages to 0.
-```scala
-class Person(val _name: String, var _age: Int) {
-  if (_age &lt; 0)
-    _age = 0</p>
-
-<p>def age = <em>age
-  def age</em>=(new_age: Int) {
-    if (new_age &gt; _age)
-      _age = new_age
-  }
-}
-```</p>
-
-<p>7. Write a class <code>Person</code> with a primary constructor that accepts a string containing a first name, a space, and a last name, such as <code>new Person("Fred Smith")</code>. Supply read-only properties <code>firstName</code> and <code>lastName</code>. Should the primary constructor parameter be a var, a val, or a plain parameter? Why?
-<code>scala
-class Person(val fullname: String) {
-  if (fullname == null || fullname.split(" ").size &lt; 2)
-    throw new IllegalArgumentException("Name is not be in format of first_name last_name")
-  private val tmp_name = fullname.split(" ")
-  val firstName = tmp_name(0)
-  val lastName = tmp_name(1)
-}
-</code>
-As the primary constructor parameter name suggests, it should be a val to prevent it from being changed, at the same time, it should have a public getter method so that others can get the person’s full name.</p>
+<p>As the primary constructor parameter name suggests, it should be a val to prevent it from being changed, at the same time, it should have a public getter method so that others can get the person’s full name.</p>
 
 <p>8. Make a class <code>Car</code> with read-only properties for <code>manufacturer</code>, <code>model name</code>, and <code>model year</code>, and a read-write property for the <code>license plate</code>. Supply four constructors. All require the <code>manufacturer</code> and <code>model name</code>. Optionally, <code>model year</code> and <code>license plate</code> can also be specified in the constructor. If not, the <code>model year</code> is set to -1 and the <code>license plate</code> to the empty string. Which constructor are you choosing as the primary constructor? Why?</p>
 
-<p>We only need primary constructor here, it can take default parameters, which we can leverage to eliminate the auxiliary constructor, as below code shown:
-<code>scala
-class Car(val manufacturer: String, 
-    val modelName: String, 
-    val modelYear: Int = -1, 
-    var licensePlate: String = "") {
-}
-</code></p>
+<p>We only need primary constructor here, it can take default parameters, which we can leverage to eliminate the auxiliary constructor, as below code shown:</p>
+
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="lineno">1</span> <span class="k">class</span> <span class="nc">Car</span><span class="o">(</span><span class="k">val</span> <span class="n">manufacturer</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> 
+<span class="lineno">2</span>     <span class="k">val</span> <span class="n">modelName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> 
+<span class="lineno">3</span>     <span class="k">val</span> <span class="n">modelYear</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> 
+<span class="lineno">4</span>     <span class="k">var</span> <span class="n">licensePlate</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">5</span> <span class="o">}</span></code></pre></div>
 
 <p>9. Reimplement the class of the preceding exercise in Java, C#, or C++ (your choice). How much shorter is the Scala class?</p>
 
-<p>Equivalent Java code as below: 
-```java
-public class Car {
-    private String manufacturer;
-    private String modelName;
-    private int modelYear;
-    private String licensePlate;</p>
+<p>Equivalent Java code as below:</p>
 
-<pre><code>public Car(String manufacturer, String modelName, int modelYear, String licensePlate) {
-    this.manufacturer = manufacturer;
-    this.modelName = modelName;
-    this.modelYear = modelYear;
-    this.licensePlate = licensePlate;
-}
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Car</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="n">String</span> <span class="n">manufacturer</span><span class="o">;</span>
+<span class="lineno"> 3</span>     <span class="kd">private</span> <span class="n">String</span> <span class="n">modelName</span><span class="o">;</span>
+<span class="lineno"> 4</span>     <span class="kd">private</span> <span class="kt">int</span> <span class="n">modelYear</span><span class="o">;</span>
+<span class="lineno"> 5</span>     <span class="kd">private</span> <span class="n">String</span> <span class="n">licensePlate</span><span class="o">;</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>     <span class="kd">public</span> <span class="nf">Car</span><span class="o">(</span><span class="n">String</span> <span class="n">manufacturer</span><span class="o">,</span> <span class="n">String</span> <span class="n">modelName</span><span class="o">,</span> <span class="kt">int</span> <span class="n">modelYear</span><span class="o">,</span> <span class="n">String</span> <span class="n">licensePlate</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 8</span>         <span class="k">this</span><span class="o">.</span><span class="na">manufacturer</span> <span class="o">=</span> <span class="n">manufacturer</span><span class="o">;</span>
+<span class="lineno"> 9</span>         <span class="k">this</span><span class="o">.</span><span class="na">modelName</span> <span class="o">=</span> <span class="n">modelName</span><span class="o">;</span>
+<span class="lineno">10</span>         <span class="k">this</span><span class="o">.</span><span class="na">modelYear</span> <span class="o">=</span> <span class="n">modelYear</span><span class="o">;</span>
+<span class="lineno">11</span>         <span class="k">this</span><span class="o">.</span><span class="na">licensePlate</span> <span class="o">=</span> <span class="n">licensePlate</span><span class="o">;</span>
+<span class="lineno">12</span>     <span class="o">}</span>
+<span class="lineno">13</span> 
+<span class="lineno">14</span>     <span class="kd">public</span> <span class="nf">Car</span><span class="o">(</span><span class="n">String</span> <span class="n">manufacturer</span><span class="o">,</span> <span class="n">String</span> <span class="n">modelName</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">15</span>         <span class="k">this</span><span class="o">(</span><span class="n">manufacturer</span><span class="o">,</span> <span class="n">modelName</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+<span class="lineno">16</span>     <span class="o">}</span>
+<span class="lineno">17</span> 
+<span class="lineno">18</span>     <span class="kd">public</span> <span class="nf">Car</span><span class="o">(</span><span class="n">String</span> <span class="n">manufacturer</span><span class="o">,</span> <span class="n">String</span> <span class="n">modelName</span><span class="o">,</span> <span class="kt">int</span> <span class="n">modelYear</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">19</span>         <span class="k">this</span><span class="o">(</span><span class="n">manufacturer</span><span class="o">,</span> <span class="n">modelName</span><span class="o">,</span> <span class="n">modelYear</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+<span class="lineno">20</span>     <span class="o">}</span>
+<span class="lineno">21</span> 
+<span class="lineno">22</span>     <span class="kd">public</span> <span class="nf">Car</span><span class="o">(</span><span class="n">String</span> <span class="n">manufacturer</span><span class="o">,</span> <span class="n">String</span> <span class="n">modelName</span><span class="o">,</span> <span class="n">String</span> <span class="n">licensePlate</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">23</span>         <span class="k">this</span><span class="o">(</span><span class="n">manufacturer</span><span class="o">,</span> <span class="n">modelName</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">licensePlate</span><span class="o">);</span>
+<span class="lineno">24</span>     <span class="o">}</span>
+<span class="lineno">25</span> 
+<span class="lineno">26</span>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">getManufacturer</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">27</span>         <span class="k">return</span> <span class="n">manufacturer</span><span class="o">;</span>
+<span class="lineno">28</span>     <span class="o">}</span>
+<span class="lineno">29</span> 
+<span class="lineno">30</span>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">getModelName</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">31</span>         <span class="k">return</span> <span class="n">modelName</span><span class="o">;</span>
+<span class="lineno">32</span>     <span class="o">}</span>
+<span class="lineno">33</span> 
+<span class="lineno">34</span>     <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getModelYear</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">35</span>         <span class="k">return</span> <span class="n">modelYear</span><span class="o">;</span>
+<span class="lineno">36</span>     <span class="o">}</span>
+<span class="lineno">37</span> 
+<span class="lineno">38</span>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLicensePlate</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">39</span>         <span class="k">return</span> <span class="n">licensePlate</span><span class="o">;</span>
+<span class="lineno">40</span>     <span class="o">}</span>
+<span class="lineno">41</span> 
+<span class="lineno">42</span>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLicensePlate</span><span class="o">(</span><span class="n">String</span> <span class="n">licensePlate</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">43</span>         <span class="k">this</span><span class="o">.</span><span class="na">licensePlate</span> <span class="o">=</span> <span class="n">licensePlate</span><span class="o">;</span>
+<span class="lineno">44</span>     <span class="o">}</span>
+<span class="lineno">45</span> <span class="o">}</span></code></pre></div>
 
-public Car(String manufacturer, String modelName) {
-    this(manufacturer, modelName, -1, "");
-}
+<p>10. Consider the class</p>
 
-public Car(String manufacturer, String modelName, int modelYear) {
-    this(manufacturer, modelName, modelYear, "");
-}
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">Employee</span><span class="o">(</span><span class="k">val</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">var</span> <span class="n">salary</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="k">this</span><span class="o">()</span> <span class="o">{</span> <span class="k">this</span><span class="o">(</span><span class="s">&quot;John Q. Public&quot;</span><span class="o">,</span> <span class="mf">0.0</span><span class="o">)</span> <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
 
-public Car(String manufacturer, String modelName, String licensePlate) {
-    this(manufacturer, modelName, -1, licensePlate);
-}
+<p>Rewrite it to use explicit fields and a default primary constructor. Which form do you prefer? Why?</p>
 
-public String getManufacturer() {
-    return manufacturer;
-}
+<div class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">Employee</span><span class="o">(</span><span class="k">val</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;John Q. Public&quot;</span><span class="o">,</span> <span class="k">var</span> <span class="n">salary</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">)</span> <span class="o">{}</span></code></pre></div>
 
-public String getModelName() {
-    return modelName;
-}
-
-public int getModelYear() {
-    return modelYear;
-}
-
-public String getLicensePlate() {
-    return licensePlate;
-}
-
-public void setLicensePlate(String licensePlate) {
-    this.licensePlate = licensePlate;
-} }
-</code></pre>
-
-<p>```</p>
-
-<p>10. Consider the class
-<code>scala
-class Employee(val name: String, var salary: Double) {
-  def this() { this("John Q. Public", 0.0) }
-}
-</code>
-Rewrite it to use explicit fields and a default primary constructor. Which form do you prefer? Why?</p>
-
-<p><code>scala
-class Employee(val name: String = "John Q. Public", var salary: Double = 0.0) {}
-</code>
-I prefer to above code, using primary constructor with default parameters, also there’s no explicit getters/setters. After falling love with Ruby programming language, I prefer to any coding style that can lead to concise and short code, most of time, short code is easy to maintain, to test and to develop.</p>
+<p>I prefer to above code, using primary constructor with default parameters, also there’s no explicit getters/setters. After falling love with Ruby programming language, I prefer to any coding style that can lead to concise and short code, most of time, short code is easy to maintain, to test and to develop.</p>
 
 <div class="footnotes">
   <ol>
