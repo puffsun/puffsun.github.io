@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>understanding java.lang.ref package - George's dream port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/java/2014/04/07/understanding-java-dot-lang-dot-ref-package/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's dream port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>understanding java.lang.ref package</h1>
+                    
+                    <span class="meta">Posted by George's dream port on April 7, 2014</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>There’re several useful classes under package <code>java.lang.ref.*</code>, which seems to be a little-known feature. That’s what I’m going to talk about in this blog post.</p>
+
+<h3 id="a-program-with-memory-leak">A Program with Memory Leak</h3>
+<p>As Java developer, most of time, you should not pay attention to memory management, JVM GC do that job for you automatically. It can easily lead to the impression that you don’t have to think about memory management, but this isn’t quite true. Consider the following simple cache implementation:
+<!--more-->
+```java
+import java.util.HashMap;
+import java.util.Map;
+/<em>ATTENTION, BUGS AHEAD.</em>/
+public class UserDataCache {
+    private Map&lt;String, Object&gt; cache = new HashMap&lt;&gt;();</p>
+
+<pre><code>public Object getData(String key) {
+    if (key == null) {
+        throw new NullPointerException("Key should not be null.");
+    }
+    return cache.get(key);
+}
+
+public void putData(String key, Object data) {
+    if (key == null) {
+        throw new NullPointerException("Key should not be null.");
+    }
+    cache.put(key, data);
+} } ``` If you check above code carefully, you may find that there's a memory leak in side the &lt;code&gt;getData()&lt;/code&gt; method. If a cache grows and then shrinks, the objects that were cached will not be garbage collected, even if the program using the cache has no more references to them. This is because the cache maintains obsolete references to these objects. An obsolete reference is simply a reference that will never be dereferenced again. In this case, any references outside of the “active portion” of the element map are obsolete. The active portion consists of the elements whose index is less than size.[^1]
+</code></pre>
+
+<h3 id="solutions-to-the-memory-leak">Solutions to the Memory Leak</h3>
+<p>Now comes the solutions to this memory leak issue. Here I will present several solutions to memory leak in Java program briefly. Since the point of this blog post is about Reference type, I’ll talk more on that.</p>
+
+<p>Solution 1: use <code>java.util.LinkedHashMap</code> instead, code shown as below:
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;</p>
+
+<p>public class LinkedHashMapCache {</p>
+
+<pre><code>private final static int CACHE_MAX_SIZE = 100;
+private LinkedHashMap&lt;String, Object&gt; cache;
+
+public LinkedHashMapCache() {
+    this.cache = new LinkedHashMap&lt;String, Object&gt;(CACHE_MAX_SIZE, 0.75f, true) {
+        protected boolean removeEldestEntry(
+                Map.Entry&lt;String, Object&gt; eldest) {
+            // Remove the eldest entry if the size of the cache exceeds the maximum size
+            return size() &gt; CACHE_MAX_SIZE;
+        }
+    };
+}
+
+public Object getData(String key) {
+    if (key == null)
+        throw new NullPointerException("Key should not be null.");
+    return cache.get(key);
+}
+
+public void putData(String key, Object data) {
+    if (key == null)
+        throw new NullPointerException("Key should not be null.");
+    cache.put(key, data);
+} } ``` In above code, whenever the total entries exceed the maximum size of the map, the eldest entry will be overwritten as the latest one, so the memory leak issue is eliminated. More commonly, the useful lifetime of a cache entry is less well defined, with entries becoming less valuable over time. Under these circumstances, the cache should occasionally be cleaned of entries that have fallen into disuse. This can be done by a background thread (perhaps a &lt;code&gt;Timer&lt;/code&gt; or &lt;code&gt;ScheduledThreadPoolExecutor&lt;/code&gt;) or as a side effect of adding new entries to the cache. The &lt;code&gt;LinkedHashMap&lt;/code&gt; class facilitates the latter approach with its &lt;code&gt;removeEldestEntry&lt;/code&gt; method.
+</code></pre>
+
+<p>Solution 2: this is the real meat of this blog post, use <code>java.lang.ref.WeakHashMap</code> instead of <code>java.util.HashMap</code>
+```java
+import java.util.Map;
+import java.util.WeakHashMap;</p>
+
+<p>public class WeakHashMapCache {
+    private Map&lt;String, Object&gt; map = new WeakHashMap&lt;&gt;();</p>
+
+<pre><code>/* This put() will return any data associated with key. */
+public void put(String key, Object data) {
+    if (key == null)
+        throw new NullPointerException("Key cannot be null.");
+    map.put(key, data);
+}
+
+/* This get() will return the data specified by key, or null if no
+ data was put there, or if the object was garbage collected. */
+public Object get(String key) {
+    if (key == null)
+        throw new NullPointerException("Key cannot be null.");
+    return map.get(key);
+} } ``` Why could the &lt;code&gt;java.lang.ref.WeakHashMap&lt;/code&gt; come to rescue? Let's dig deeper into what is weak references, how to use them, and when to use them.
+</code></pre>
+
+<h3 id="description-in-javadoc-package-summaryhttpdocsoraclecomjavase7docsapijavalangrefpackage-summaryhtml-of-javalangref">Description in <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/ref/package-summary.html">Javadoc package summary</a> of java.lang.ref</h3>
+<blockquote>
+  <p>Provides reference-object classes, which support a limited degree of interaction with the garbage collector. A program may use a reference object to maintain a reference to some other object in such a way that the latter object may still be reclaimed by the collector. A program may also arrange to be notified some time after the collector has determined that the reachability of a given object has changed.</p>
+</blockquote>
+
+<p>So what is reachability, here is the explanation from that document too:
+&gt;Going from strongest to weakest, the different levels of reachability reflect the life cycle of an object. They are operationally defined as follows:</p>
+
+<ul>
+  <li>An object is strongly reachable if it can be reached by some thread without traversing any reference objects. A newly-created * object is strongly reachable by the thread that created it.</li>
+  <li>An object is softly reachable if it is not strongly reachable but can be reached by traversing a soft reference.</li>
+  <li>An object is weakly reachable if it is neither strongly nor softly reachable but can be reached by traversing a weak reference. When the weak references to a weakly-reachable object are cleared, the object becomes eligible for finalization.</li>
+  <li>An object is phantom reachable if it is neither strongly, softly, nor weakly reachable, it has been finalized, and some phantom reference refers to it.</li>
+  <li>Finally, an object is unreachable, and therefore eligible for reclamation, when it is not reachable in any of the above ways.</li>
+</ul>
+
+<p>At this point, you must be wondering about the difference, and the need, to have three different levels of weaker referencing mechanisms. In the order of strength, the references can be arranged as:
+<strong>Strong References &gt; Soft References &gt; Weak References &gt; Phantom References</strong></p>
+
+<h3 id="strong-references-2">Strong References <sup id="fnref:2"><a href="#fn:2" class="footnote">1</a></sup></h3>
+<p>The references that we create using the assignment operator are known as strong references, because the instance is strongly referred by the application, making it ineligible for garbage collection.
+<code>java
+Object o = new Object();
+</code>
+Soft, Weak and Phantom references are the weaker counterparts of referencing, where the garbage collection algorithm is allowed to mark an instance to be garbage collected, even though such a reference exists. What this means is that, even though you hold a weak reference to a particular instance, the JVM can sweep it out of the memory if it needs to. This works out great for the problem we discussed before, since instances in our cache will be automatically released if the JVM thinks it needs more memory for other parts.</p>
+
+<h3 id="soft-references">Soft References</h3>
+<p>According to the document of <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/ref/SoftReference.html">SoftReference</a>, the JVM implementations are encouraged not to clear out a soft reference if the JVM has enough memory. That is, if free heap space is available, chances are that a soft reference will not be freed during a garbage collection cycle (so it survives from GC).  However, before throwing an <code>OutOfMemoryError</code>, JVM will attempt to reclaim memory by releasing instances that are softly reachable.  This makes Soft References ideal for implementing memory sensitive caches (as in our example problem).
+```java
+public class SoftReferenceSample {
+    public static void main(String[] args) {</p>
+
+<pre><code>    // Initial Strong Ref
+    Object obj = new Object();
+    System.out.println("Instance : " + obj);
+
+    // Make a Soft Reference on obj
+    SoftReference&lt;Object&gt; softReference = new SoftReference&lt;&gt;(obj);
+
+    // Make obj eligible for GC !
+    obj = null;
+    System.gc();    // Run GC
+    // should be null if GC collected
+    System.out.println("Instance : " + softReference.get());
+} } ```
+</code></pre>
+
+<h3 id="weak-references">Weak References</h3>
+<p>Unlike Soft References, Weak References can be reclaimed by the JVM during a GC cycle, even though there’s enough free memory available. As long as GC does not occur, we can retrieve a strong reference out of a weak reference by calling the <code>WeakReference#get()</code> method.</p>
+
+<p>Below is an example code of WeakReference, two of other References can be found under <code>java.lang.ref.*</code> package:
+```java
+import java.lang.ref.WeakReference;</p>
+
+<p>public class WeakReferenceSample {
+    public static void main(String[] args) {
+        // Initial Strong Ref
+        Object obj = new Object();
+        System.out.println(“Instance : “ + obj);</p>
+
+<pre><code>    // Create a Weak Ref on obj
+    WeakReference&lt;Object&gt; weakRef = new WeakReference&lt;&gt;(obj);
+    // Make obj eligible for GC !
+    obj = null;
+    // Get a strong reference again. Now its not eligible for GC
+    Object strongRef = weakRef.get();
+    System.out.println("Instance : " + strongRef);
+    // Make the instance eligible for GC again
+    strongRef = null;
+    // Keep your fingers crossed
+    System.gc();
+    // should be null if GC collected
+    System.out.println("Instance : " + weakRef.get());
+} } ``` From the little toy program you can see how to create WeakReference instances and how to store/get data into/from it either.
+</code></pre>
+
+<h3 id="phantom-references">Phantom References</h3>
+<p>Phantom references are the weakest form of referencing. Instances that are referred via a phantom reference cannot be accessed directly using a get() method (it always returns null), as in case of Soft / Weak references. Instead, we need to rely on Reference Queues to make use of Phantom References. One use case of Phantom references is to keep track of active references within an application, and to know when those instances will be garbage collected. If we use strong references, then the instance will not be eligible for GC due to the strong reference we maintain. Instead, we could rely on a phantom reference with the support of a reference queue to handle the situation.</p>
+
+<h3 id="reference-queues">Reference Queues</h3>
+<p>ReferenceQueue is the mechanism provided by the JVM to be notified when a referenced instance is about to be garbage collected. Reference Queues can be used with all of the reference types by passing it to the constructor. When creating a PhantomReference, it is a must to provide a Reference Queue.</p>
+
+<p>Let’s see an example of reference queue:
+```java
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;</p>
+
+<p>public class PhantomRefQueueSample {</p>
+
+<pre><code>public static void main(String[] args) throws InterruptedException {
+
+    Object obj = new Object();
+    ReferenceQueue&lt;Object&gt; queue = new ReferenceQueue&lt;&gt;();
+    PhantomReference&lt;Object&gt; pRef = new PhantomReference&lt;&gt;(obj, queue);
+    obj = null;
+
+    new Thread(new Runnable() {
+        public void run() {
+            try {
+                System.out.println("Awaiting for GC");
+                // This will block till it is reclaimed by JVM
+                PhantomReference pRef = (PhantomReference) queue.remove();
+                System.out.println("Referenced reclaimed");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+
+    // Wait for 2nd thread to start
+    Thread.sleep(2000);
+
+    System.out.println("Invoking GC");
+    System.gc();
+} } ```
+</code></pre>
+
+<h3 id="weakhashmap">WeakHashMap</h3>
+<p><code>java.util.WeakHashMap</code> is a special version of the HashMap, which uses weak references as the key. Therefore, when a particular key is not in use anymore, and it is eligible for garbage collection, the corresponding entry in the WeakHashMap will magically disappear from the map. And the magic relies on ReferenceQueue mechanism explained before to identify when a particular weak reference is to be garbage collected. This is useful when you want to build a cache based on weak references. In more sophisticated requirements, it is better to write your own cache implementation.</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:2">
+      <p><a href="http://blog.yohanliyanage.com/2010/10/ktjs-3-soft-weak-phantom-references/">Know the JVM Series -3- When Weaker is Better: Understanding Soft, Weak and Phantom References</a> <a href="#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/java/2014/04/07/singleton-pattern-in-java/" data-toggle="tooltip" data-placement="top" title="Singleton pattern in Java">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2014/06/10/dinosaurs/" data-toggle="tooltip" data-placement="top" title="Dinosaurs are extinct today">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's dream port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

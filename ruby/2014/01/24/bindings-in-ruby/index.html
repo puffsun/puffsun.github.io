@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>Bindings In Ruby - George's dream port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/ruby/2014/01/24/bindings-in-ruby/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's dream port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Bindings In Ruby</h1>
+                    
+                    <span class="meta">Posted by George's dream port on January 24, 2014</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="binding-overview">Binding overview</h3>
+<p>In Ruby, bindings can be made available by calling binding method, which is a Kernel method that returns Binding object. Let’s see the <a href="http://www.ruby-doc.org/core-2.1.0/Binding.html">rdoc</a> of Binding object:</p>
+
+<blockquote>
+  <p>Objects of class Binding encapsulate the execution context at some particular place in the code and retain this context for future use. The variables, methods, value of self, and possibly an iterator block that can be accessed in this context are all retained. Binding objects can be created using Kernel#binding, and are made available to the callback of Kernel#set_trace_func. These binding objects can be passed as the second argument of the Kernel#eval method, establishing an environment for the evaluation.
+<!--more-->
+Like rdoc said, with bindings, mostly you can do is pass it as a second parameter to Kernel#eval, Ruby will use the binding to resolve open variable references by evaluating a string, other than that, bindings are pretty opaque.</p>
+</blockquote>
+
+<p>```ruby
+class Demo
+  def initialize(n)
+    @secret = n
+  end
+  def get_binding
+    return binding()
+  end
+end</p>
+
+<p>k1 = Demo.new(99)
+b1 = k1.get_binding
+k2 = Demo.new(-3)
+b2 = k2.get_binding</p>
+
+<p>eval(“@secret”, b1)   #=&gt; 99
+eval(“@secret”, b2)   #=&gt; -3
+eval(“@secret”)       #=&gt; nil
+eval(“a = 101”, b1)   #Bind ‘a’ to 101
+```</p>
+
+<h3 id="binding-in-practise">Binding in practise</h3>
+<p>#### Local Scope Bindings
+With Binding object along with Kernel#binding method, we can capture the variable bindings available at a particular point in the execution context, then pass the binding to another place for further reference, let’s see an example:
+```ruby
+def value_of(bind)
+    eval “b”, bind
+  end</p>
+
+<p>def my_scope
+    b = 123
+    value_of(binding)
+  end</p>
+
+<p>my_scope               # =&gt; 33
+```
+Bindings can be returned from a function as well. This example shows that a binding continues to exist after the function that defines the binding has exited[^1].</p>
+
+<p>```ruby
+def func
+  a = 22
+  b = 33
+  binding
+end</p>
+
+<p>func_vars = func()</p>
+
+<p>eval “a”, func_vars         # =&gt; 22
+eval “b”, func_vars         # =&gt; 33
+eval “a = 101”, func_vars
+eval “a”, func_vars         # =&gt; 101
+```
+The bizarre feature of this example shows that not only does binding persist beyond the scope of the function that created them, but that you can modify these bindings just by evaluating an assignment within their context.</p>
+
+<h4 id="blocks-and-bindings">Blocks and Bindings</h4>
+
+<p>A block in Ruby is a chunk of code that can be called like a function. The block automatically carries with it the bindings from the code location where it was created. For example:
+<code>ruby
+  a = 33
+  block = lambda { a }
+  def redefine_a(b)
+    a = 44
+    b.call
+  end
+  redefine_a(block)      # =&gt; 33
+</code>
+The block returns the value of a in the binding where the block was defined (a == 33), not the binding where the block was called (a == 44).</p>
+
+<p>This combination of code block and binding is called a closure, and is a very powerful tool in a Ruby programmers toolbox.</p>
+
+<h4 id="erubyhttpenwikipediaorgwikieruby-and-bindings"><a href="http://en.wikipedia.org/wiki/ERuby">ERuby</a> and Bindings</h4>
+<p>ERuby stands for Embened Ruby, it’s a templating system that used to embed Ruby code into text document. One of it’s implementation in Ruby is called erb. With erb, you can write your template like this:
+<code>ruby
+template = "&lt;html&gt;&lt;body&gt;&lt;%= @title %&gt;&lt;/body&gt;&lt;/html&gt;"
+</code>
+Later, you can evaluate the template with Ruby code:
+<code>ruby
+@title = "The web and all that jazz"
+erb = ERB.new(template)
+html = erb.result(binding)
+</code>
+Note the binding call in the last line of code snippet, it pass in current execution context, which contains the @title variable definition. If we call erg like this:
+<code>ruby
+html = erb.result
+</code>
+Ruby will assumes that the binding as TOPLEVEL_BINDING, which is not what we want obviously.</p>
+
+<h4 id="bindings-for-everyday-use">Bindings for everyday use</h4>
+<p>Here I’ll show you how to use binding to do quick debugging, first of all, we open the Array class, add a debug method[^2]:
+<code>ruby
+class Array
+  def debug binding
+    each do |arg|
+      puts "arg = #{eval(arg, binding).inspect}"
+    end
+  end
+end
+</code></p>
+
+<p>You can use this method to inspect a list of snippets of Ruby code to see what each snippet returns:
+<code>ruby
+['user','current_resource', 'user.owns?(current_resource)'].debug(binding)
+</code>
+Keep mind that each element in the array will be evaluated as Ruby code, then return the execution result of the code snippet. In this example, the current execution context was captured by calling Kernel#binding method, then these code snippet was execution in the context that binding method captured.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+<p>Being able to pass around binding lead to very powerful Ruby code under certain circumstances. Someone would say that passing around execution context could violate encapsulation, but in my opinion, it’s ok to break some rules once a while, at least Ruby give the power of breaking rule to you, a programmer. Not even to say one of most powerful features in Ruby that comes along with Binding: Closure.</p>
+
+<p>Resources:
+[^1]:<a href="http://onestepback.org/index.cgi/Tech/Ruby/RubyBindings.rdoc">Variable Bindings in Ruby</a>
+[^2]:http://stackoverflow.com/questions/1605774/real-world-use-of-binding-objects-in-ruby
+<a href="http://webjazz.blogspot.com/2006/07/introduction-to-bindings-in-ruby.html">Introduction to Bindings in Ruby</a></p>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/ruby/2014/01/23/ruby-design-patterns/" data-toggle="tooltip" data-placement="top" title="ruby design patterns">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/ruby/2014/01/25/threading-with-monitor-in-ruby/" data-toggle="tooltip" data-placement="top" title="Threading with Monitor in Ruby">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's dream port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

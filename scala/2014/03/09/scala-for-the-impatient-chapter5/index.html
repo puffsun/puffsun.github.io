@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>solutions to scala for the impatient - chapter5 - George's dream port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/scala/2014/03/09/scala-for-the-impatient-chapter5/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's dream port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>solutions to scala for the impatient - chapter5</h1>
+                    
+                    <span class="meta">Posted by George's dream port on March 9, 2014</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>1. Improve the Counter class in Section 5.1, “Simple Classes and Parameterless Methods,” on page 49 so that it doesn’t turn negative at <code>Int.MaxValue</code>.</p>
+
+<p>```scala
+class Counter {
+  private var value = 0</p>
+
+<p>def increment() {
+    if ((value + 1) &lt; Int.MaxValue)
+      value += 1
+  }
+  def current = value
+}
+```
+<!--more-->
+2. Write a class <code>BankAccount</code> with methods <code>deposit</code> and <code>withdraw</code>, and a read-only property <code>balance</code>.</p>
+
+<p>```scala
+class BankAccount(private var _balance: Double = 0.0) {</p>
+
+<p>def deposit(amount: Double) = {
+    _balance += amount
+  }</p>
+
+<p>def withdraw(amount: Double) = {
+    if (balance &gt; amount) {
+      _balance -= amount
+      true
+    } else {
+      false
+    }
+  }</p>
+
+<p>def balance = _balance
+}
+```</p>
+
+<p>3. Write a class <code>Time</code> with read-only properties <code>hours</code> and <code>minutes</code> and a method <code>before(other: Time): Boolean</code> that checks whether this time comes before the other. A <code>Time</code> object should be constructed as <code>new Time(hrs, min)</code>, where hrs is in military time format (between 0 and 23).
+```scala
+class Time(val hours: Int, val minutes: Int) {
+  // Validations goes here.
+  if (hours &gt; 23 || hours &lt; 0) {
+    throw new IllegalArgumentException(“should larger than 0 or smaller than 23”)
+  }</p>
+
+<p>if (minutes &lt; 0 || minutes &gt; 59) {
+    throw new IllegalArgumentException(“should larger than 0 or small than 59”)
+  }</p>
+
+<p>def before(other: Time): Boolean = {
+    if (hours &lt; other.hours) {
+      if (minutes &lt;  other.minutes) {
+        return true
+      }
+    }
+    false
+  }
+}
+```</p>
+
+<p>4. Reimplement the Time class from the preceding exercise so that the internal representation is the number of minutes since midnight (between 0 and 24 × 60 – 1). Do not change the public interface. That is, client code should be unaffected by your change.</p>
+
+<p>```scala
+class Time(private val _hours: Int, private val _minutes: Int) {</p>
+
+<p>if (hours &gt; 23 || hours &lt; 0) {
+    throw new IllegalArgumentException(“should larger than 0 or smaller than 23”)
+  }</p>
+
+<p>if (minutes &lt; 0 || minutes &gt; 59) {
+    throw new IllegalArgumentException(“should larger than 0 or small than 59”)
+  }</p>
+
+<p>private val _total_minutes = _hours * 60 + _minutes</p>
+
+<p>def minutes = _minutes
+  def hours = _hours</p>
+
+<p>def before(other: Time): Boolean = {
+    if (_total_minutes &lt; other._total_minutes)
+      true
+    else
+      false
+  }
+}
+```</p>
+
+<p>5. Make a class <code>Student</code> with read-write JavaBeans properties name (of type <code>String</code>) and id (of type <code>Long</code>). What methods are generated? (Use javap to check.) Can you call the JavaBeans getters and setters in Scala Should you?<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>
+```scala
+import scala.reflect.BeanProperty</p>
+
+<p>class Student(@BeanProperty var name: String, @BeanProperty var id: Long) {<br />
+}</p>
+
+<p>object Main extends App {
+  val human = new Student(“Dave Grohl”, 1337)</p>
+
+<p>// You can call the JavaBeans getter and setter, just like this
+  human.setName(“Kurt Cobain”)
+  human.setId(5000)</p>
+
+<p>// But why would you, when the Scala-esque methods are generated?
+  human.name = “Krist Novoselic”
+  human.id = 5001
+}
+```</p>
+
+<p>The output of javap as below:
+<code>
+$ javap Student
+// Compiled from "ch5_exercises.scala"
+public class Student {
+  public java.lang.String name();
+  public void name_$eq(java.lang.String);
+  public void setName(java.lang.String);
+  public long id();
+  public void id_$eq(long);
+  public void setId(long);
+  public java.lang.String getName();
+  public long getId();
+  public Student(java.lang.String, long);
+}
+</code>
+You can see that Scala generate getters/setters for you, as well as <code>name</code>, <code>name\_=</code>, <code>id</code>, and <code>id_=</code>.</p>
+
+<p>6. In the <code>Person</code> class of Section 5.1, “Simple Classes and Parameterless Methods,” on page 49, provide a primary constructor that turns negative ages to 0.
+```scala
+class Person(val _name: String, var _age: Int) {
+  if (_age &lt; 0)
+    _age = 0</p>
+
+<p>def age = <em>age
+  def age</em>=(new_age: Int) {
+    if (new_age &gt; _age)
+      _age = new_age
+  }
+}
+```</p>
+
+<p>7. Write a class <code>Person</code> with a primary constructor that accepts a string containing a first name, a space, and a last name, such as <code>new Person("Fred Smith")</code>. Supply read-only properties <code>firstName</code> and <code>lastName</code>. Should the primary constructor parameter be a var, a val, or a plain parameter? Why?
+<code>scala
+class Person(val fullname: String) {
+  if (fullname == null || fullname.split(" ").size &lt; 2)
+    throw new IllegalArgumentException("Name is not be in format of first_name last_name")
+  private val tmp_name = fullname.split(" ")
+  val firstName = tmp_name(0)
+  val lastName = tmp_name(1)
+}
+</code>
+As the primary constructor parameter name suggests, it should be a val to prevent it from being changed, at the same time, it should have a public getter method so that others can get the person’s full name.</p>
+
+<p>8. Make a class <code>Car</code> with read-only properties for <code>manufacturer</code>, <code>model name</code>, and <code>model year</code>, and a read-write property for the <code>license plate</code>. Supply four constructors. All require the <code>manufacturer</code> and <code>model name</code>. Optionally, <code>model year</code> and <code>license plate</code> can also be specified in the constructor. If not, the <code>model year</code> is set to -1 and the <code>license plate</code> to the empty string. Which constructor are you choosing as the primary constructor? Why?</p>
+
+<p>We only need primary constructor here, it can take default parameters, which we can leverage to eliminate the auxiliary constructor, as below code shown:
+<code>scala
+class Car(val manufacturer: String, 
+    val modelName: String, 
+    val modelYear: Int = -1, 
+    var licensePlate: String = "") {
+}
+</code></p>
+
+<p>9. Reimplement the class of the preceding exercise in Java, C#, or C++ (your choice). How much shorter is the Scala class?</p>
+
+<p>Equivalent Java code as below: 
+```java
+public class Car {
+    private String manufacturer;
+    private String modelName;
+    private int modelYear;
+    private String licensePlate;</p>
+
+<pre><code>public Car(String manufacturer, String modelName, int modelYear, String licensePlate) {
+    this.manufacturer = manufacturer;
+    this.modelName = modelName;
+    this.modelYear = modelYear;
+    this.licensePlate = licensePlate;
+}
+
+public Car(String manufacturer, String modelName) {
+    this(manufacturer, modelName, -1, "");
+}
+
+public Car(String manufacturer, String modelName, int modelYear) {
+    this(manufacturer, modelName, modelYear, "");
+}
+
+public Car(String manufacturer, String modelName, String licensePlate) {
+    this(manufacturer, modelName, -1, licensePlate);
+}
+
+public String getManufacturer() {
+    return manufacturer;
+}
+
+public String getModelName() {
+    return modelName;
+}
+
+public int getModelYear() {
+    return modelYear;
+}
+
+public String getLicensePlate() {
+    return licensePlate;
+}
+
+public void setLicensePlate(String licensePlate) {
+    this.licensePlate = licensePlate;
+} }
+</code></pre>
+
+<p>```</p>
+
+<p>10. Consider the class
+<code>scala
+class Employee(val name: String, var salary: Double) {
+  def this() { this("John Q. Public", 0.0) }
+}
+</code>
+Rewrite it to use explicit fields and a default primary constructor. Which form do you prefer? Why?</p>
+
+<p><code>scala
+class Employee(val name: String = "John Q. Public", var salary: Double = 0.0) {}
+</code>
+I prefer to above code, using primary constructor with default parameters, also there’s no explicit getters/setters. After falling love with Ruby programming language, I prefer to any coding style that can lead to concise and short code, most of time, short code is easy to maintain, to test and to develop.</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://bitbucket.org/McDamon/scalaimpatient/src/4a11167459b2/ch05/answers.txt">Scala for the Impatient, by McDamon</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/scala/2014/03/08/scala-for-the-impatient-chapter4/" data-toggle="tooltip" data-placement="top" title="solutions to scala for the impatient - chapter4">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/java/2014/04/06/enum-enumset-enummap-sample/" data-toggle="tooltip" data-placement="top" title="Enum, EnumSet, and EnumMap sample">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's dream port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

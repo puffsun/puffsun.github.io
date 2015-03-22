@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>solutions to scala for the impatient - chapter4 - George's dream port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/scala/2014/03/08/scala-for-the-impatient-chapter4/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's dream port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>solutions to scala for the impatient - chapter4</h1>
+                    
+                    <span class="meta">Posted by George's dream port on March 8, 2014</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>1. Set up a map of prices for a number of gizmos that you covet. Then produce a second map with the same keys and the prices at a 10 percent discount.</p>
+
+<p><code>scala
+val books = Map("Scala for the Impatient" -&gt; 30, "Ruby under a Microscope" -&gt; 40, "Ruby Cookbook" -&gt; 35)
+val discounted = for((b, p) &lt;- books) yield (b, p * 0.9)
+</code>
+<!--more--></p>
+
+<p>2. Write a program that reads words from a file. Use a mutable map to count how often each word appears. To read the words, simply use a <code>java.util.Scanner</code>:
+<code>scala
+val in = new java.util.Scanner(new java.io.File("myfile.txt"))
+while (in.hasNext()) 
+	process in.next()
+</code>
+Or look at Chapter 9 for a Scalaesque way.
+At the end, print out all words and their counts.</p>
+
+<p><code>scala
+def count_words(file: String): Unit = {
+	val container = collection.mutable.Map[String, Int]()
+	val in = new java.util.Scanner(new java.io.File(file))
+	while (in.hasNext()) {
+		val word =  in.next()
+		if (container.contains(word))
+			container(word) += 1
+		else
+			container(word) = 1
+	}
+	for ((k, v) &lt;- container)
+		println(k + ": " + v)
+}
+</code></p>
+
+<p>3. Repeat the preceding exercise with an immutable map.
+<code>scala
+def count_words(file: String): Unit = {
+	var container = Map[String, Int]()
+	val in = new java.util.Scanner(new java.io.File(file))
+	while (in.hasNext()) {
+		val word = in.next()
+		container = container + (word -&gt; (container.getOrElse(word, 0) + 1))
+	}
+	println(container)
+}
+</code>
+Or we can achieve nearly the same more Scalaesque(the result is little different, but you get the idea)<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>:
+```scala
+import scala.io.Source</p>
+
+<p>def count_words(file: String): Unit = {
+	val source = Source.fromFile(file)
+	val words = for (word &lt;- source.getLines.toArray) yield word
+	val wordCounts = for (word &lt;- words.distinct) yield {
+  		(word, words.count(_ == word))
+	}
+	val wordCountsMap = wordCounts.toMap
+	println(wordCountsMap)
+}
+```</p>
+
+<p>4. Repeat the preceding exercise with a sorted map, so that the words are printed in sorted order.
+<code>scala
+def count_words(file: String): Unit = {
+	var container = collection.immutable.SortedMap[String, Int]()
+	val in = new java.util.Scanner(new java.io.File(file))
+	while (in.hasNext()) {
+		val word = in.next()
+		container = container + (word -&gt; (container.getOrElse(word, 0) + 1))
+	}
+	println(container)
+}
+</code></p>
+
+<p>5. Repeat the preceding exercise with a <code>java.util.TreeMap</code> that you adapt to the Scala API.
+<code>scala
+def count_words(file: String): Unit = {
+	val container = new java.util.TreeMap[String, Int]
+	val in = new java.util.Scanner(new java.io.File(file))
+	while (in.hasNext()) {
+		val word =  in.next()
+		if (container.containsKey(word))
+			container.put(word, container.get(word) + 1)
+		else
+			container.put(word, 1)
+	}
+	println(container)
+}
+</code></p>
+
+<p>6. Define a linked hash map that maps “Monday” to <code>java.util.Calendar.MONDAY</code>, and similarly for the other weekdays. Demonstrate that the elements are visited in insertion order.
+```scala
+val daysOfTheWeek = LinkedHashMap(“Monday” -&gt; java.util.Calendar.MONDAY,
+    “Tuesday” -&gt; java.util.Calendar.TUESDAY,
+    “Wednesday” -&gt; java.util.Calendar.WEDNESDAY,
+    “Thursday” -&gt; java.util.Calendar.THURSDAY,
+    “Friday” -&gt; java.util.Calendar.FRIDAY,
+    “Saturday” -&gt; java.util.Calendar.SATURDAY,
+    “Sunday” -&gt; java.util.Calendar.SUNDAY)</p>
+
+<p>println(daysOfTheWeek)
+```</p>
+
+<p>7. Print a table of all Java properties, like this:
+<code>
+java.runtime.name             | Java(TM) SE Runtime Environment
+sun.boot.library.path         | /home/apps/jdk1.6.0_21/jre/lib/i386
+java.vm.version               | 17.0-b16
+java.vm.vendor                | Sun Microsystems Inc.
+java.vendor.url               | http://java.sun.com/
+path.separator                | :
+java.vm.name                  | Java HotSpot(TM) Server VM
+</code>
+You need to find the length of the longest key before you can print the table.
+<code>scala
+import scala.collection.JavaConversions.propertiesAsScalaMap
+val props: scala.collection.Map[String, String] = System.getProperties
+val len = props.keys.maxBy(_.length).length // java.vm.specification.version
+for ((k, v) &lt;- props) printf("%-"+ len + "s|%s\n", k, v)
+</code></p>
+
+<p>8. Write a function <code>min_max(values: Array[Int])</code> that returns a pair containing the smallest and largest values in the array.
+<code>scala
+def min_max(values: Array[Int]): Tuple2[Int, Int] = {
+	(values.min, values.max)
+}
+</code></p>
+
+<p>9. Write a function lt_eq_gt(values: Array[Int], v: Int) that returns a triple containing the counts of values less than v, equal to v, and greater than v.
+<code>scala
+def lt_eg_gt(values: Array[Int], v: Int): Tuple3[Int, Int, Int] = {
+	(values.count(_ &lt; v), values.count(_ == v), values.count(_&gt; v))
+}
+</code></p>
+
+<p>10. What happens when you zip together two strings, such as <code>"Hello".zip("World")</code>? Come up with a plausible use case.
+<code>scala
+// produce: scala.collection.immutable.IndexedSeq[(Char, Char)] = Vector((H,W), (e,o), (l,r), (l,l), (o,d))
+"Hello".zip("World") 
+</code>
+From above code we can see that the zip of two String will produce a immutable Vector, which contains Tuples. The Tuples contains a pair of characters in the same position. A possible use case is to produce a immutable map with left characters as keys and right side characters as values, you can transfer the zipped characters to a immutable map via:
+<code>scala
+val map = "Hello".zip("World").toMap
+</code></p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://bitbucket.org/McDamon/scalaimpatient/src/4a11167459b2/ch04/answers.txt">Scala for the Impatient solutions, by McDamon</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/scala/2014/03/07/scala-for-the-impatient-chapter3/" data-toggle="tooltip" data-placement="top" title="Solutions to Scala for the Impatient - Chapter3">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/scala/2014/03/09/scala-for-the-impatient-chapter5/" data-toggle="tooltip" data-placement="top" title="solutions to scala for the impatient - chapter5">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's dream port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

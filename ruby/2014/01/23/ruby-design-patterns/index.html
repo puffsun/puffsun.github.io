@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>ruby design patterns - George's dream port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/ruby/2014/01/23/ruby-design-patterns/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's dream port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>ruby design patterns</h1>
+                    
+                    <span class="meta">Posted by George's dream port on January 23, 2014</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>I just finished reading the great book <a href="http://www.amazon.com/Design-Patterns-Ruby-Russ-Olsen/dp/0321490452">Design Patterns in Ruby</a>. Actually just like me, most of developers know Design Patterns well, what I want to learn from the book is Design Patterns in Ruby style, there is a saying: <em>Just because you have duck-typing doesn’t mean you can ignore common OO idioms!</em></p>
+
+<p>In this blog post, I’m going to show you how to implement common design patterns in Ruby, without further ado, let’s get started!</p>
+
+<h4 id="factory">Factory</h4>
+<p>The classic implementation in the book <a href="http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1390451541&amp;sr=1-1&amp;keywords=design+patterns">Design Patterns: Elements of Reusable Object-Oriented Software</a> is inheriance-based, this kind of style is hard to find in Ruby code, Ruby programmers are more prefer to more dynamic version, like this:</p>
+
+<p>```ruby
+class Product
+  #..
+end</p>
+
+<p>class Factory
+  attr_accessor :product
+  def produce
+    @product.new
+  end
+end</p>
+
+<p>fac = Factory.new
+fac.product = Product
+fac.produce
+```
+<!--more-->
+#### Builder
+Ruby’s build method is more dynamic, like the code shown:</p>
+
+<p>```ruby
+class Director
+  def build_with builder
+	acc = ‘’
+	[:header, :body, :footer].each do |m|
+	  acc += builder.<strong>send</strong> m if builder.respond_to? m
+	end
+	acc
+  end
+end</p>
+
+<p>class HTMLBuilder
+  def header; ‘&lt;html&gt;<title>html builder</title>‘;end
+  def body;	  ‘&lt;body&gt;html builder&lt;/body&gt;’        ;end
+  def footer; ‘&lt;/html&gt;’                          ;end
+end</p>
+
+<p>class XMLBuilder
+  def header; ‘&lt;?xml version=”1.0” charset=”utf-8”&gt;’;end
+  def body;   ‘<root>xml builder</root>’            ;end
+end</p>
+
+<p>d = Director.new
+puts(d.build_with HTMLBuilder.new)
+puts(d.build_with XMLBuilder.new)</p>
+
+<p>```
+The fun part is that above code will check the method signature, if the object we want to build don’t need specify part, we could leave the method unimplemented that’s ok to Ruby.</p>
+
+<h4 id="adapter">Adapter</h4>
+<p><code>ruby
+class Adaptee
+  def talk; puts 'Adaptee';end
+end
+class Adapter &lt; Adaptee
+  alias talkee talk
+  def talk
+	puts 'before Adaptee'
+	talkee
+	puts 'after Adaptee'
+  end
+end
+Adapter.new.talk
+</code></p>
+
+<h4 id="composite">Composite</h4>
+<p>I’m totally agree with the point that the Composite pattern is built into Ruby with the include keyword. As you know, with composite pattern, there’re two concepts: Whole and Parts. In Ruby, you can imagine the the whole is the Mixiner, while the part is the Mixinee.</p>
+
+<h4 id="decorator">Decorator</h4>
+<p>This is another demonstration of Ruby’s power, it built with a lot of proved best practice. In Ruby, you can implement Decorator pattern by extending modules, like:
+<code>ruby
+module Colorful
+  attr_acessor :color
+end
+class Widget
+end
+w = Widget.new 
+w.color = 'blue' #NoMethod error
+w.extend Colorful 
+w.color = 'blue'
+puts w.color
+</code></p>
+
+<h4 id="proxy">Proxy</h4>
+<p>Just like adapter, you can implement Proxy pattern by delegating its interface to another instance. But keep in mind the difference of Proxy and Adapter, with Proxy, you should not change interface, you can use Proxy pattern for caching purpose or for security reasons, just keep interface the same to its subject; but with Adapter pattern, you can transform the interface of the inner object.</p>
+
+<h4 id="command">Command</h4>
+<p>In Ruby, you can implement Command pattern leverage code blocks:
+```ruby
+class Command
+  def initialize
+	@executors = []
+  end</p>
+
+<p>def add_executor &amp;block
+	@executors « block
+  end</p>
+
+<p>def execute
+	@executors.each {|x| x.call }
+  end
+end</p>
+
+<p>c = Command.new
+c.add_executor{ puts ‘executor 1’ }
+c.add_executor{ puts ‘executor 2’ }
+c.execute
+```</p>
+
+<h4 id="template-method">Template method</h4>
+<p>Here is code snippet quoted from the book:
+<code>ruby
+require 'webrick'
+class HelloServer &lt; WEBrick::GenericServer
+  def run(socket)
+    socket.print('Hello TCP/IP world')
+  end
+end
+</code>
+It’a simple HTTP server implementation, WEBrick library complete most of heavy lift, like listening on a port, accepting new connections, cleaning up when a connection is finished etc.. What we do is to provide HTTP response content, that’s the beauty of Template method.</p>
+
+<h4 id="singleton">Singleton</h4>
+<p>In Ruby, Singleton is as simple as:
+<code>ruby
+module SingletonClass
+  class &lt;&lt; self
+	# methods
+  end
+end
+</code>
+or you can leverage the built-in standard library:
+```ruby
+require ‘singleton’</p>
+
+<p>class SingletonLogger &lt; SimpleLogger
+  include Singleton
+  # Logger implementation details.
+end
+```</p>
+
+<p>There’re still some patterns that I didn’t cover, but perhaps you have got the idea that Ruby has many design patterns built into it in the first place. As a saying that “design patterns are usually a flaw in the language/framework”, although I doubted that argue, apparently Ruby is not in that place.</p>
+
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/ruby/2014/01/23/ruby-21-new-features/" data-toggle="tooltip" data-placement="top" title="Ruby 2.1 new features">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/ruby/2014/01/24/bindings-in-ruby/" data-toggle="tooltip" data-placement="top" title="Bindings In Ruby">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's dream port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

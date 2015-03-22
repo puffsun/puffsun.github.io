@@ -1,21 +1,1037 @@
----
-layout: none
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>{{ site.name }}</title>
-		<description>{{ site.description }}</description>
-		<link>{{ site.url }}</link>
-		<atom:link href="{{ site.url }}/feed.xml" rel="self" type="application/rss+xml" />
-		{% for post in site.posts limit:10 %}
-			<item>
-				<title>{{ post.title }}</title>
-				<description>{{ post.content | xml_escape }}</description>
-				<pubDate>{{ post.date | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
-				<link>{{ site.url }}{{ post.url }}</link>
-				<guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
-			</item>
-		{% endfor %}
-	</channel>
+  <channel>
+    <title>George&#39;s dream port</title>
+    <description>Yet another tech blog!</description>
+    <link>http://codethoughts.info/</link>
+    <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sun, 22 Mar 2015 15:14:12 +0800</pubDate>
+    <lastBuildDate>Sun, 22 Mar 2015 15:14:12 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Man must explore, and this is exploration at its greatest</title>
+        <description>&lt;p&gt;Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman&#39;s earth, if free men make it, will be truly round: a globe in practice, not in theory.&lt;/p&gt;
+
+&lt;p&gt;Science cuts two ways, of course; its products can be used for both good and evil. But there&#39;s no turning back from science. The early warnings about technological dangers also come from science.&lt;/p&gt;
+
+&lt;p&gt;What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.&lt;/p&gt;
+
+&lt;p&gt;A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That&#39;s how I felt seeing the Earth for the first time. I could not help but love and cherish her.&lt;/p&gt;
+
+&lt;p&gt;For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;The Final Frontier&lt;/h2&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;blockquote&gt;The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.&lt;/blockquote&gt;
+
+&lt;p&gt;Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;Reaching for the Stars&lt;/h2&gt;
+
+&lt;p&gt;As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;#&quot;&gt;
+    &lt;img src=&quot;/img/post-sample-image.jpg&quot; alt=&quot;Post Sample Image&quot; /&gt;
+&lt;/a&gt;
+&lt;span class=&quot;caption text-muted&quot;&gt;To go places and do things that have never been done before – that’s what living is all about.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.&lt;/p&gt;
+
+&lt;p&gt;As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.&lt;/p&gt;
+
+&lt;p&gt;Placeholder text by &lt;a href=&quot;http://spaceipsum.com/&quot;&gt;Space Ipsum&lt;/a&gt;. Photographs by &lt;a href=&quot;https://www.flickr.com/photos/nasacommons/&quot;&gt;NASA on The Commons&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 24 Sep 2014 20:00:00 +0800</pubDate>
+        <link>http://codethoughts.info/2014/09/24/man-must-explore/</link>
+        <guid isPermaLink="true">http://codethoughts.info/2014/09/24/man-must-explore/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>I believe every human has a finite number of heartbeats. I don&#39;t intend to waste any of mine.</title>
+        <description>&lt;p&gt;Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman&#39;s earth, if free men make it, will be truly round: a globe in practice, not in theory.&lt;/p&gt;
+
+&lt;p&gt;Science cuts two ways, of course; its products can be used for both good and evil. But there&#39;s no turning back from science. The early warnings about technological dangers also come from science.&lt;/p&gt;
+
+&lt;p&gt;What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.&lt;/p&gt;
+
+&lt;p&gt;A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That&#39;s how I felt seeing the Earth for the first time. I could not help but love and cherish her.&lt;/p&gt;
+
+&lt;p&gt;For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;The Final Frontier&lt;/h2&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;blockquote&gt;The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.&lt;/blockquote&gt;
+
+&lt;p&gt;Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;Reaching for the Stars&lt;/h2&gt;
+
+&lt;p&gt;As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;#&quot;&gt;
+    &lt;img src=&quot;/img/post-sample-image.jpg&quot; alt=&quot;Post Sample Image&quot; /&gt;
+&lt;/a&gt;
+&lt;span class=&quot;caption text-muted&quot;&gt;To go places and do things that have never been done before – that’s what living is all about.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.&lt;/p&gt;
+
+&lt;p&gt;As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.&lt;/p&gt;
+
+&lt;p&gt;Placeholder text by &lt;a href=&quot;http://spaceipsum.com/&quot;&gt;Space Ipsum&lt;/a&gt;. Photographs by &lt;a href=&quot;https://www.flickr.com/photos/nasacommons/&quot;&gt;NASA on The Commons&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 18 Sep 2014 20:00:00 +0800</pubDate>
+        <link>http://codethoughts.info/2014/09/18/i-believe/</link>
+        <guid isPermaLink="true">http://codethoughts.info/2014/09/18/i-believe/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Science has not yet mastered prophecy</title>
+        <description>&lt;p&gt;Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman&#39;s earth, if free men make it, will be truly round: a globe in practice, not in theory.&lt;/p&gt;
+
+&lt;p&gt;Science cuts two ways, of course; its products can be used for both good and evil. But there&#39;s no turning back from science. The early warnings about technological dangers also come from science.&lt;/p&gt;
+
+&lt;p&gt;What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.&lt;/p&gt;
+
+&lt;p&gt;A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That&#39;s how I felt seeing the Earth for the first time. I could not help but love and cherish her.&lt;/p&gt;
+
+&lt;p&gt;For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;The Final Frontier&lt;/h2&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;blockquote&gt;The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.&lt;/blockquote&gt;
+
+&lt;p&gt;Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;Reaching for the Stars&lt;/h2&gt;
+
+&lt;p&gt;As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;#&quot;&gt;
+    &lt;img src=&quot;/img/post-sample-image.jpg&quot; alt=&quot;Post Sample Image&quot; /&gt;
+&lt;/a&gt;
+&lt;span class=&quot;caption text-muted&quot;&gt;To go places and do things that have never been done before – that’s what living is all about.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.&lt;/p&gt;
+
+&lt;p&gt;As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.&lt;/p&gt;
+
+&lt;p&gt;Placeholder text by &lt;a href=&quot;http://spaceipsum.com/&quot;&gt;Space Ipsum&lt;/a&gt;. Photographs by &lt;a href=&quot;https://www.flickr.com/photos/nasacommons/&quot;&gt;NASA on The Commons&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 24 Aug 2014 20:00:00 +0800</pubDate>
+        <link>http://codethoughts.info/2014/08/24/science-has-not-yet-mastered-prophecy/</link>
+        <guid isPermaLink="true">http://codethoughts.info/2014/08/24/science-has-not-yet-mastered-prophecy/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Failure is not an option</title>
+        <description>&lt;p&gt;Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman&#39;s earth, if free men make it, will be truly round: a globe in practice, not in theory.&lt;/p&gt;
+
+&lt;p&gt;Science cuts two ways, of course; its products can be used for both good and evil. But there&#39;s no turning back from science. The early warnings about technological dangers also come from science.&lt;/p&gt;
+
+&lt;p&gt;What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.&lt;/p&gt;
+
+&lt;p&gt;A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That&#39;s how I felt seeing the Earth for the first time. I could not help but love and cherish her.&lt;/p&gt;
+
+&lt;p&gt;For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;The Final Frontier&lt;/h2&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;blockquote&gt;The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.&lt;/blockquote&gt;
+
+&lt;p&gt;Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;Reaching for the Stars&lt;/h2&gt;
+
+&lt;p&gt;As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;#&quot;&gt;
+    &lt;img src=&quot;/img/post-sample-image.jpg&quot; alt=&quot;Post Sample Image&quot; /&gt;
+&lt;/a&gt;
+&lt;span class=&quot;caption text-muted&quot;&gt;To go places and do things that have never been done before – that’s what living is all about.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.&lt;/p&gt;
+
+&lt;p&gt;As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.&lt;/p&gt;
+
+&lt;p&gt;Placeholder text by &lt;a href=&quot;http://spaceipsum.com/&quot;&gt;Space Ipsum&lt;/a&gt;. Photographs by &lt;a href=&quot;https://www.flickr.com/photos/nasacommons/&quot;&gt;NASA on The Commons&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 08 Jul 2014 20:00:00 +0800</pubDate>
+        <link>http://codethoughts.info/2014/07/08/failure-is-not-an-option/</link>
+        <guid isPermaLink="true">http://codethoughts.info/2014/07/08/failure-is-not-an-option/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>The dreams of yesterday are the hopes of today and the reality of tomorrow.</title>
+        <description>&lt;p&gt;Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman&#39;s earth, if free men make it, will be truly round: a globe in practice, not in theory.&lt;/p&gt;
+
+&lt;p&gt;Science cuts two ways, of course; its products can be used for both good and evil. But there&#39;s no turning back from science. The early warnings about technological dangers also come from science.&lt;/p&gt;
+
+&lt;p&gt;What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.&lt;/p&gt;
+
+&lt;p&gt;A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That&#39;s how I felt seeing the Earth for the first time. I could not help but love and cherish her.&lt;/p&gt;
+
+&lt;p&gt;For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;The Final Frontier&lt;/h2&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;blockquote&gt;The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.&lt;/blockquote&gt;
+
+&lt;p&gt;Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;Reaching for the Stars&lt;/h2&gt;
+
+&lt;p&gt;As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;#&quot;&gt;
+    &lt;img src=&quot;/img/post-sample-image.jpg&quot; alt=&quot;Post Sample Image&quot; /&gt;
+&lt;/a&gt;
+&lt;span class=&quot;caption text-muted&quot;&gt;To go places and do things that have never been done before – that’s what living is all about.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.&lt;/p&gt;
+
+&lt;p&gt;As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.&lt;/p&gt;
+
+&lt;p&gt;Placeholder text by &lt;a href=&quot;http://spaceipsum.com/&quot;&gt;Space Ipsum&lt;/a&gt;. Photographs by &lt;a href=&quot;https://www.flickr.com/photos/nasacommons/&quot;&gt;NASA on The Commons&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 01 Jul 2014 20:00:00 +0800</pubDate>
+        <link>http://codethoughts.info/2014/07/01/dreams/</link>
+        <guid isPermaLink="true">http://codethoughts.info/2014/07/01/dreams/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Dinosaurs are extinct today</title>
+        <description>&lt;p&gt;Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman&#39;s earth, if free men make it, will be truly round: a globe in practice, not in theory.&lt;/p&gt;
+
+&lt;p&gt;Science cuts two ways, of course; its products can be used for both good and evil. But there&#39;s no turning back from science. The early warnings about technological dangers also come from science.&lt;/p&gt;
+
+&lt;p&gt;What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.&lt;/p&gt;
+
+&lt;p&gt;A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That&#39;s how I felt seeing the Earth for the first time. I could not help but love and cherish her.&lt;/p&gt;
+
+&lt;p&gt;For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;The Final Frontier&lt;/h2&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;p&gt;There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.&lt;/p&gt;
+
+&lt;blockquote&gt;The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.&lt;/blockquote&gt;
+
+&lt;p&gt;Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.&lt;/p&gt;
+
+&lt;h2 class=&quot;section-heading&quot;&gt;Reaching for the Stars&lt;/h2&gt;
+
+&lt;p&gt;As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;#&quot;&gt;
+    &lt;img src=&quot;/img/post-sample-image.jpg&quot; alt=&quot;Post Sample Image&quot; /&gt;
+&lt;/a&gt;
+&lt;span class=&quot;caption text-muted&quot;&gt;To go places and do things that have never been done before – that’s what living is all about.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.&lt;/p&gt;
+
+&lt;p&gt;As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.&lt;/p&gt;
+
+&lt;p&gt;Placeholder text by &lt;a href=&quot;http://spaceipsum.com/&quot;&gt;Space Ipsum&lt;/a&gt;. Photographs by &lt;a href=&quot;https://www.flickr.com/photos/nasacommons/&quot;&gt;NASA on The Commons&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 10 Jun 2014 20:00:00 +0800</pubDate>
+        <link>http://codethoughts.info/2014/06/10/dinosaurs/</link>
+        <guid isPermaLink="true">http://codethoughts.info/2014/06/10/dinosaurs/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>understanding java.lang.ref package</title>
+        <description>&lt;p&gt;There’re several useful classes under package &lt;code&gt;java.lang.ref.*&lt;/code&gt;, which seems to be a little-known feature. That’s what I’m going to talk about in this blog post.&lt;/p&gt;
+
+&lt;h3 id=&quot;a-program-with-memory-leak&quot;&gt;A Program with Memory Leak&lt;/h3&gt;
+&lt;p&gt;As Java developer, most of time, you should not pay attention to memory management, JVM GC do that job for you automatically. It can easily lead to the impression that you don’t have to think about memory management, but this isn’t quite true. Consider the following simple cache implementation:
+&lt;!--more--&gt;
+```java
+import java.util.HashMap;
+import java.util.Map;
+/&lt;em&gt;ATTENTION, BUGS AHEAD.&lt;/em&gt;/
+public class UserDataCache {
+    private Map&amp;lt;String, Object&amp;gt; cache = new HashMap&amp;lt;&amp;gt;();&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public Object getData(String key) {
+    if (key == null) {
+        throw new NullPointerException(&quot;Key should not be null.&quot;);
+    }
+    return cache.get(key);
+}
+
+public void putData(String key, Object data) {
+    if (key == null) {
+        throw new NullPointerException(&quot;Key should not be null.&quot;);
+    }
+    cache.put(key, data);
+} } ``` If you check above code carefully, you may find that there&#39;s a memory leak in side the &amp;lt;code&amp;gt;getData()&amp;lt;/code&amp;gt; method. If a cache grows and then shrinks, the objects that were cached will not be garbage collected, even if the program using the cache has no more references to them. This is because the cache maintains obsolete references to these objects. An obsolete reference is simply a reference that will never be dereferenced again. In this case, any references outside of the “active portion” of the element map are obsolete. The active portion consists of the elements whose index is less than size.[^1]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;solutions-to-the-memory-leak&quot;&gt;Solutions to the Memory Leak&lt;/h3&gt;
+&lt;p&gt;Now comes the solutions to this memory leak issue. Here I will present several solutions to memory leak in Java program briefly. Since the point of this blog post is about Reference type, I’ll talk more on that.&lt;/p&gt;
+
+&lt;p&gt;Solution 1: use &lt;code&gt;java.util.LinkedHashMap&lt;/code&gt; instead, code shown as below:
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;&lt;/p&gt;
+
+&lt;p&gt;public class LinkedHashMapCache {&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private final static int CACHE_MAX_SIZE = 100;
+private LinkedHashMap&amp;lt;String, Object&amp;gt; cache;
+
+public LinkedHashMapCache() {
+    this.cache = new LinkedHashMap&amp;lt;String, Object&amp;gt;(CACHE_MAX_SIZE, 0.75f, true) {
+        protected boolean removeEldestEntry(
+                Map.Entry&amp;lt;String, Object&amp;gt; eldest) {
+            // Remove the eldest entry if the size of the cache exceeds the maximum size
+            return size() &amp;gt; CACHE_MAX_SIZE;
+        }
+    };
+}
+
+public Object getData(String key) {
+    if (key == null)
+        throw new NullPointerException(&quot;Key should not be null.&quot;);
+    return cache.get(key);
+}
+
+public void putData(String key, Object data) {
+    if (key == null)
+        throw new NullPointerException(&quot;Key should not be null.&quot;);
+    cache.put(key, data);
+} } ``` In above code, whenever the total entries exceed the maximum size of the map, the eldest entry will be overwritten as the latest one, so the memory leak issue is eliminated. More commonly, the useful lifetime of a cache entry is less well defined, with entries becoming less valuable over time. Under these circumstances, the cache should occasionally be cleaned of entries that have fallen into disuse. This can be done by a background thread (perhaps a &amp;lt;code&amp;gt;Timer&amp;lt;/code&amp;gt; or &amp;lt;code&amp;gt;ScheduledThreadPoolExecutor&amp;lt;/code&amp;gt;) or as a side effect of adding new entries to the cache. The &amp;lt;code&amp;gt;LinkedHashMap&amp;lt;/code&amp;gt; class facilitates the latter approach with its &amp;lt;code&amp;gt;removeEldestEntry&amp;lt;/code&amp;gt; method.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Solution 2: this is the real meat of this blog post, use &lt;code&gt;java.lang.ref.WeakHashMap&lt;/code&gt; instead of &lt;code&gt;java.util.HashMap&lt;/code&gt;
+```java
+import java.util.Map;
+import java.util.WeakHashMap;&lt;/p&gt;
+
+&lt;p&gt;public class WeakHashMapCache {
+    private Map&amp;lt;String, Object&amp;gt; map = new WeakHashMap&amp;lt;&amp;gt;();&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/* This put() will return any data associated with key. */
+public void put(String key, Object data) {
+    if (key == null)
+        throw new NullPointerException(&quot;Key cannot be null.&quot;);
+    map.put(key, data);
+}
+
+/* This get() will return the data specified by key, or null if no
+ data was put there, or if the object was garbage collected. */
+public Object get(String key) {
+    if (key == null)
+        throw new NullPointerException(&quot;Key cannot be null.&quot;);
+    return map.get(key);
+} } ``` Why could the &amp;lt;code&amp;gt;java.lang.ref.WeakHashMap&amp;lt;/code&amp;gt; come to rescue? Let&#39;s dig deeper into what is weak references, how to use them, and when to use them.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;description-in-javadoc-package-summaryhttpdocsoraclecomjavase7docsapijavalangrefpackage-summaryhtml-of-javalangref&quot;&gt;Description in &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/lang/ref/package-summary.html&quot;&gt;Javadoc package summary&lt;/a&gt; of java.lang.ref&lt;/h3&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Provides reference-object classes, which support a limited degree of interaction with the garbage collector. A program may use a reference object to maintain a reference to some other object in such a way that the latter object may still be reclaimed by the collector. A program may also arrange to be notified some time after the collector has determined that the reachability of a given object has changed.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;So what is reachability, here is the explanation from that document too:
+&amp;gt;Going from strongest to weakest, the different levels of reachability reflect the life cycle of an object. They are operationally defined as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;An object is strongly reachable if it can be reached by some thread without traversing any reference objects. A newly-created * object is strongly reachable by the thread that created it.&lt;/li&gt;
+  &lt;li&gt;An object is softly reachable if it is not strongly reachable but can be reached by traversing a soft reference.&lt;/li&gt;
+  &lt;li&gt;An object is weakly reachable if it is neither strongly nor softly reachable but can be reached by traversing a weak reference. When the weak references to a weakly-reachable object are cleared, the object becomes eligible for finalization.&lt;/li&gt;
+  &lt;li&gt;An object is phantom reachable if it is neither strongly, softly, nor weakly reachable, it has been finalized, and some phantom reference refers to it.&lt;/li&gt;
+  &lt;li&gt;Finally, an object is unreachable, and therefore eligible for reclamation, when it is not reachable in any of the above ways.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;At this point, you must be wondering about the difference, and the need, to have three different levels of weaker referencing mechanisms. In the order of strength, the references can be arranged as:
+&lt;strong&gt;Strong References &amp;gt; Soft References &amp;gt; Weak References &amp;gt; Phantom References&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;strong-references-2&quot;&gt;Strong References &lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
+&lt;p&gt;The references that we create using the assignment operator are known as strong references, because the instance is strongly referred by the application, making it ineligible for garbage collection.
+&lt;code&gt;java
+Object o = new Object();
+&lt;/code&gt;
+Soft, Weak and Phantom references are the weaker counterparts of referencing, where the garbage collection algorithm is allowed to mark an instance to be garbage collected, even though such a reference exists. What this means is that, even though you hold a weak reference to a particular instance, the JVM can sweep it out of the memory if it needs to. This works out great for the problem we discussed before, since instances in our cache will be automatically released if the JVM thinks it needs more memory for other parts.&lt;/p&gt;
+
+&lt;h3 id=&quot;soft-references&quot;&gt;Soft References&lt;/h3&gt;
+&lt;p&gt;According to the document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/lang/ref/SoftReference.html&quot;&gt;SoftReference&lt;/a&gt;, the JVM implementations are encouraged not to clear out a soft reference if the JVM has enough memory. That is, if free heap space is available, chances are that a soft reference will not be freed during a garbage collection cycle (so it survives from GC).  However, before throwing an &lt;code&gt;OutOfMemoryError&lt;/code&gt;, JVM will attempt to reclaim memory by releasing instances that are softly reachable.  This makes Soft References ideal for implementing memory sensitive caches (as in our example problem).
+```java
+public class SoftReferenceSample {
+    public static void main(String[] args) {&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    // Initial Strong Ref
+    Object obj = new Object();
+    System.out.println(&quot;Instance : &quot; + obj);
+
+    // Make a Soft Reference on obj
+    SoftReference&amp;lt;Object&amp;gt; softReference = new SoftReference&amp;lt;&amp;gt;(obj);
+
+    // Make obj eligible for GC !
+    obj = null;
+    System.gc();    // Run GC
+    // should be null if GC collected
+    System.out.println(&quot;Instance : &quot; + softReference.get());
+} } ```
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;weak-references&quot;&gt;Weak References&lt;/h3&gt;
+&lt;p&gt;Unlike Soft References, Weak References can be reclaimed by the JVM during a GC cycle, even though there’s enough free memory available. As long as GC does not occur, we can retrieve a strong reference out of a weak reference by calling the &lt;code&gt;WeakReference#get()&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;Below is an example code of WeakReference, two of other References can be found under &lt;code&gt;java.lang.ref.*&lt;/code&gt; package:
+```java
+import java.lang.ref.WeakReference;&lt;/p&gt;
+
+&lt;p&gt;public class WeakReferenceSample {
+    public static void main(String[] args) {
+        // Initial Strong Ref
+        Object obj = new Object();
+        System.out.println(“Instance : “ + obj);&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    // Create a Weak Ref on obj
+    WeakReference&amp;lt;Object&amp;gt; weakRef = new WeakReference&amp;lt;&amp;gt;(obj);
+    // Make obj eligible for GC !
+    obj = null;
+    // Get a strong reference again. Now its not eligible for GC
+    Object strongRef = weakRef.get();
+    System.out.println(&quot;Instance : &quot; + strongRef);
+    // Make the instance eligible for GC again
+    strongRef = null;
+    // Keep your fingers crossed
+    System.gc();
+    // should be null if GC collected
+    System.out.println(&quot;Instance : &quot; + weakRef.get());
+} } ``` From the little toy program you can see how to create WeakReference instances and how to store/get data into/from it either.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;phantom-references&quot;&gt;Phantom References&lt;/h3&gt;
+&lt;p&gt;Phantom references are the weakest form of referencing. Instances that are referred via a phantom reference cannot be accessed directly using a get() method (it always returns null), as in case of Soft / Weak references. Instead, we need to rely on Reference Queues to make use of Phantom References. One use case of Phantom references is to keep track of active references within an application, and to know when those instances will be garbage collected. If we use strong references, then the instance will not be eligible for GC due to the strong reference we maintain. Instead, we could rely on a phantom reference with the support of a reference queue to handle the situation.&lt;/p&gt;
+
+&lt;h3 id=&quot;reference-queues&quot;&gt;Reference Queues&lt;/h3&gt;
+&lt;p&gt;ReferenceQueue is the mechanism provided by the JVM to be notified when a referenced instance is about to be garbage collected. Reference Queues can be used with all of the reference types by passing it to the constructor. When creating a PhantomReference, it is a must to provide a Reference Queue.&lt;/p&gt;
+
+&lt;p&gt;Let’s see an example of reference queue:
+```java
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;&lt;/p&gt;
+
+&lt;p&gt;public class PhantomRefQueueSample {&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public static void main(String[] args) throws InterruptedException {
+
+    Object obj = new Object();
+    ReferenceQueue&amp;lt;Object&amp;gt; queue = new ReferenceQueue&amp;lt;&amp;gt;();
+    PhantomReference&amp;lt;Object&amp;gt; pRef = new PhantomReference&amp;lt;&amp;gt;(obj, queue);
+    obj = null;
+
+    new Thread(new Runnable() {
+        public void run() {
+            try {
+                System.out.println(&quot;Awaiting for GC&quot;);
+                // This will block till it is reclaimed by JVM
+                PhantomReference pRef = (PhantomReference) queue.remove();
+                System.out.println(&quot;Referenced reclaimed&quot;);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+
+    // Wait for 2nd thread to start
+    Thread.sleep(2000);
+
+    System.out.println(&quot;Invoking GC&quot;);
+    System.gc();
+} } ```
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;weakhashmap&quot;&gt;WeakHashMap&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;java.util.WeakHashMap&lt;/code&gt; is a special version of the HashMap, which uses weak references as the key. Therefore, when a particular key is not in use anymore, and it is eligible for garbage collection, the corresponding entry in the WeakHashMap will magically disappear from the map. And the magic relies on ReferenceQueue mechanism explained before to identify when a particular weak reference is to be garbage collected. This is useful when you want to build a cache based on weak references. In more sophisticated requirements, it is better to write your own cache implementation.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://blog.yohanliyanage.com/2010/10/ktjs-3-soft-weak-phantom-references/&quot;&gt;Know the JVM Series -3- When Weaker is Better: Understanding Soft, Weak and Phantom References&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 07 Apr 2014 15:03:55 +0800</pubDate>
+        <link>http://codethoughts.info/java/2014/04/07/understanding-java-dot-lang-dot-ref-package/</link>
+        <guid isPermaLink="true">http://codethoughts.info/java/2014/04/07/understanding-java-dot-lang-dot-ref-package/</guid>
+        
+        
+        <category>java</category>
+        
+      </item>
+    
+      <item>
+        <title>Singleton pattern in Java</title>
+        <description>&lt;p&gt;The Singleton pattern is deceptively simple, even and especially for Java developers, but it presents a number of pitfalls for the unwary Java developer which make it hard to implement properly. In this article, I’ll talk about several ways to implement the Singleton pattern in Java, and leave it to you to decide which one is best suited for your circumstance depending on your requirement.
+&lt;!--more--&gt;
+With the Singleton design pattern you can:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Ensure that only one instance of a class is created&lt;/li&gt;
+  &lt;li&gt;Provide a global point of access to the object&lt;/li&gt;
+  &lt;li&gt;Allow multiple instances in the future without affecting a singleton class’s clients&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;the-classic-singleton-pattern1&quot;&gt;The classic Singleton pattern&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
+&lt;p&gt;In Design Patterns: &lt;a href=&quot;http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612&quot;&gt;Elements of Reusable Object-Oriented Software&lt;/a&gt;, the GoF describe the Singleton pattern like this:
+&amp;gt; Ensure a class has only one instance, and provide a global point of access to it.&lt;/p&gt;
+
+&lt;p&gt;```java
+public class ClassicSingleton {
+    private static ClassicSingleton instance = null;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private ClassicSingleton() {
+    // Exists only to defeat instantiation.
+}
+
+public static ClassicSingleton getInstance() {
+    if (instance == null) {
+        instance = new ClassicSingleton();
+    }
+    return instance;
+} } ```
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Above code is easy to understand, the ClassicSingleton hold a static reference to the single instance and returns that reference from the static &lt;code&gt;getInstance()&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;There are several interesting points concerning the ClassicSingleton class. 
+1. ClassicSingleton employs a technique known as lazy instantiation to create the singleton; as a result, the singleton instance is not created until the &lt;code&gt;getInstance()&lt;/code&gt; method is called for the first time. This technique ensures that singleton instances are created only when needed.
+2. It’s possible to have multiple singleton instances if classes loaded by different Classloaders access a singleton. That scenario is not so far-fetched; for example, some servlet containers use distinct Classloaders for each servlet, so if two servlets access a singleton, they will each have their own instance.
+3. If ClassicSingleton implements the &lt;code&gt;java.io.Serializable&lt;/code&gt; interface, the class’s instances can be serialized and deserialized. However, if you serialize a singleton object and subsequently deserialize that object more than once, you will have multiple singleton instances.
+4. ClassicSingleton class is not thread-safe. If two threads—we’ll call them Thread 1 and Thread 2—call &lt;code&gt;ClassicSingleton.getInstance()&lt;/code&gt; at the same time, two ClassicSingleton instances can be created if Thread 1 is preempted just after it enters the if block and control is subsequently given to Thread 2.
+5. A privileged client can invoke the private constructor reflectively with the aid of the &lt;code&gt;AccessibleObject.setAccessible&lt;/code&gt; method. If you need to defend against this attack, modify the constructor to make it throw an exception if it’s asked to create a second instance.&lt;/p&gt;
+
+&lt;p&gt;As you can see from the preceding discussion, although the Singleton pattern is one of the simplest design patterns, implementing it in Java is anything but simple. The rest of this article addresses Java-specific considerations for the Singleton pattern.&lt;/p&gt;
+
+&lt;h3 id=&quot;synchronization-for-multithreading-considerations&quot;&gt;Synchronization for multithreading considerations&lt;/h3&gt;
+&lt;p&gt;Making Singleton thread-safe is easy-just synchronize the &lt;code&gt;getInstance()&lt;/code&gt; method:
+```java
+public class Singleton {
+    private static Singleton instance = null;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private Singleton() {
+    // Exists only to defeat instantiation.
+}
+
+public synchronized static Singleton getInstance() {
+    if (instance == null) {
+        instance = new Singleton();
+    }
+    return instance;
+} } ``` However, the astute reader may realize that the getInstance() method only needs to be synchronized the first time it is called. Because synchronization is very expensive performance-wise, perhaps we can introduce a performance enhancement that only synchronizes the singleton assignment in &amp;lt;code&amp;gt;getInstance()&amp;lt;/code&amp;gt;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;a-performance-enhancement&quot;&gt;A performance enhancement&lt;/h3&gt;
+&lt;p&gt;In search of a performance enhancement, you might choose to rewrite the &lt;code&gt;getInstance()&lt;/code&gt; method like this:
+&lt;code&gt;java
+// CAUTION, BUGS AHEAD
+public static Singleton getInstance() {
+   if(singleton == null) {
+      synchronized(Singleton.class) { 
+         singleton = new Singleton();
+      }
+   }
+   return singleton;
+}
+&lt;/code&gt;
+Instead of synchronizing the entire method, the preceding code fragment only synchronizes the critical code. However, the preceding code fragment is not thread-safe. Consider the following scenario: Thread 1 enters the synchronized block, and, before it can assign the singleton member variable, the thread is preempted. Subsequently, another thread can enter the if block. The second thread will wait for the first thread to finish, but we will still wind up with two distinct singleton instances. Is there a way to fix this problem? Read on.&lt;/p&gt;
+
+&lt;h3 id=&quot;double-checked-locking&quot;&gt;Double-checked locking&lt;/h3&gt;
+&lt;p&gt;Double-checked locking is a technique that, at first glance, appears to make lazy instantiation thread-safe. That technique is illustrated in the following code fragment:
+&lt;code&gt;java
+// CAUTION, BUGS AHEAD
+public static Singleton getInstance() {
+  if(singleton == null) {
+     synchronized(Singleton.class) {
+       if(singleton == null) {
+         singleton = new Singleton();
+       }
+    }
+  }
+  return singleton;
+}
+&lt;/code&gt;
+What happens if two threads simultaneously access &lt;code&gt;getInstance()&lt;/code&gt;? Imagine Thread 1 enters the synchronized block and is preempted. Subsequently, a second thread enters the if block. When Thread 1 exits the synchronized block, Thread 2 makes a second check to see if the singleton instance is still null. Since Thread 1 set the singleton member variable, Thread 2’s second check will fail, and a second singleton will not be created. Or so it seems.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, double-checked locking is not guaranteed to work because the compiler is free to assign a value to the singleton member variable before the singleton’s constructor is called. If that happens, Thread 1 can be preempted after the singleton reference has been assigned, but before the singleton is initialized, so Thread 2 can return a reference to an uninitialized singleton instance.&lt;/p&gt;
+
+&lt;p&gt;Since double-checked locking is not guaranteed to work, you must synchronize the entire getInstance() method. However, another alternative is simple, fast, and thread-safe.&lt;/p&gt;
+
+&lt;h3 id=&quot;an-alternative-thread-safe-singleton-implementation&quot;&gt;An alternative thread-safe singleton implementation&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;java
+public class Singleton {
+   public final static Singleton INSTANCE = new Singleton();
+   private Singleton() {
+       // Exists only to defeat instantiation.
+   }
+}
+&lt;/code&gt;
+The preceding singleton implementation is thread-safe because static member variables created when declared are guaranteed to be created the first time they are accessed. You get a thread-safe implementation that automatically employs lazy instantiation, until the class file get loaded into memory, their is no instance instanciated at all.&lt;/p&gt;
+
+&lt;p&gt;Of course, like nearly everything else, the preceding singleton is a compromise; if you use that implementation, you can’t change your mind and allow multiple singleton instances later on. With a more conservative singleton implementation, instances are obtained through a &lt;code&gt;getInstance()&lt;/code&gt; method, and you can change those methods to return a unique instance or one of hundreds. You can’t do the same with a public static member variable.
+```java
+public class Singleton {
+   private final static Singleton INSTANCE = new Singleton();
+   private Singleton() {
+       // Exists only to defeat instantiation.
+   }&lt;/p&gt;
+
+&lt;p&gt;public static Singleton getInstance() {
+       return INSTANCE;
+   }
+}
+&lt;code&gt;
+###Leveraging volatile to change Java Memory Model
+We can recheck the instance again in synchronized block to ensure that only one instance of the Singleton object be instantiated, shown as below code:
+&lt;/code&gt;java
+public class LazySingleton {
+    private static volatile LazySingleton instance;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// private constructor
+private LazySingleton() {
+}
+
+public static LazySingleton getInstance() {
+    if (instance == null) {
+        synchronized (LazySingleton.class) {
+            // Double check
+            if (instance == null) {
+                instance = new LazySingleton();
+            }
+        }
+    }
+    return instance;
+} } ``` Please ensure to use &amp;lt;code&amp;gt;volatile&amp;lt;/code&amp;gt; keyword with instance variable otherwise you can run into out of order write error scenario, where reference of instance is returned before actually the object is constructed i.e. JVM has only allocated the memory and constructor code is still not executed. In this case, your other thread, which refer to uninitialized object may throw null pointer exception and can even crash the whole application.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Although above code is the correct way to implement Singleton pattern, this is not recommended since it introduce extra complexity of code, which may introduce subtle bugs.&lt;/p&gt;
+
+&lt;h3 id=&quot;classloaders&quot;&gt;Classloaders&lt;/h3&gt;
+&lt;p&gt;Because multiple classloaders are commonly used in many situations—including servlet containers—you can wind up with multiple singleton instances no matter how carefully you’ve implemented your singleton classes. If you want to make sure the same classloader loads your singletons, you must specify the classloader yourself; for example:
+&lt;code&gt;java
+private static Class getClass(String classname) throws ClassNotFoundException {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    if(classLoader == null)
+        classLoader = Singleton.class.getClassLoader();
+        return (classLoader.loadClass(classname));
+    }
+}
+&lt;/code&gt;
+The preceding method tries to associate the classloader with the current thread; if that classloader is null, the method uses the same classloader that loaded a singleton base class. The preceding method can be used instead of Class.forName().&lt;/p&gt;
+
+&lt;h3 id=&quot;serialization2&quot;&gt;Serialization&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
+&lt;p&gt;If you serialize a singleton and then deserialize it twice, you will have two instances of your singleton, unless you implement the &lt;code&gt;readResolve()&lt;/code&gt; method, like this:
+```java
+public class Singleton implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+    public static Singleton INSTANCE = new Singleton();&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private Singleton() {
+    // Exists only to thwart instantiation.
+}
+   
+private Object readResolve() {
+    return INSTANCE;
+} } ``` The previous singleton implementation returns the lone singleton instance from the readResolve() method; therefore, whenever the Singleton class is deserialized, it will return the same singleton instance. **Don&#39;t forget to add serial version id in this case, or you will get an exception during de-serialise process**.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;bill-pugh-solution3&quot;&gt;Bill Pugh solution&lt;sup id=&quot;fnref:3&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
+&lt;p&gt;Bill Pugh was main force behind java memory model changes. His principle “Initialization-on-demand holder idiom” also uses static block but in different way. It suggest to use static inner class:
+```java
+public class BillPughSingleton {
+    private BillPughSingleton() {
+    }&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private static class LazyHolder {
+    private static final BillPughSingleton INSTANCE = new BillPughSingleton();
+}
+
+public static BillPughSingleton getInstance() {
+    return LazyHolder.INSTANCE;
+} } ``` As you can see, until we need an instance, the LazyHolder class will not be initialized until required and you can still use other static members of BillPughSingleton class. This is the solution, i will recommend to use. I also use it in my all projects.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;using-enum&quot;&gt;Using Enum&lt;/h3&gt;
+&lt;p&gt;As of release 1.5, there is a another approach to implementing singletons. which provide implicit support for thread safety and only one instance is guaranteed. This is also a good way to have singleton with minimum effort. Simply make an enum type with one element:
+&lt;code&gt;java
+// Enum singleton - the preferred approach
+public enum LazyEnumSingleton {
+    INSTANCE;
+    public void otherMethods() { System.out.println(&quot;Other methods go&quot;); }
+}
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This approach is functionally equivalent to the public field approach, except that it is more concise, provides the serialization machinery for free, and provides an ironclad guarantee against multiple instantiation, even in the face of sophisticated serialization or reflection attacks. While this approach has yet to be widely adopted, &lt;strong&gt;a single-element enum type is the best way to implement a singleton&lt;/strong&gt;. JVM does the lazy-loading in a thread-safe manner. That’s why using this kind of lazy class loading is the preferred method—the JVM handles all the synchronization. We can see that with below little example code, try run it your self:
+```java
+public class LazyEnumSingletonExample {
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println(“Accessing enum for the first time.”);
+        LazyEnumSingleton lazy = LazyEnumSingleton.INSTANCE;
+        System.out.println(“Done.”);
+    }
+}&lt;/p&gt;
+
+&lt;p&gt;enum LazyEnumSingleton {
+    INSTANCE;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static {
+    System.out.println(&quot;Initialize in process...&quot;);
+} } ``` Output of the code: ``` Accessing enum for the first time. Initialize in process... Done. ``` In Java, enum can hold state, which makes the single-element enum type the perfect condidate for Singleton pattern, see below code: ```java enum LazyEnumSingletonWithState {
+INSTANCE(&quot;State&quot;) {
+
+    @Override
+    public String toOverwrittenOps(String str) {
+        return str + this.state;
+    }
+};
+
+private String state;
+
+private LazyEnumSingletonWithState(String state) {
+    this.state = state;
+}
+
+public String otherOps(String arg) {
+    return arg + state;
+}
+
+@Override
+public String toString() {
+    return this.state;
+}
+
+public abstract String toOverwrittenOps(String str); } ```
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;preventing-privileged-clients&quot;&gt;Preventing privileged clients&lt;/h3&gt;
+&lt;p&gt;As we mentioned before, single pattern can be broken with reflection, as below code shown:
+&lt;code&gt;java
+public static void main(String[] args) throws Exception {
+    Singleton s1 = Singleton.getInstance();
+    Class clazz = Singleton.class;
+    Constructor cons = clazz.getDeclaredConstructor();
+    cons.setAccessible(true);
+    // Another instance can be instantiated now.
+    Singleton s2 = (Singleton) cons.newInstance();
+}
+&lt;/code&gt;
+It’s easy to get over this issue:
+```java
+public class PrivilegedSingleton {
+    private static final PrivilegedSingleton INSTANCE = new PrivilegedSingleton();&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private PrivilegedSingleton() {
+
+    // Check if we already have an instance
+    if (INSTANCE != null) {
+        throw new IllegalStateException(&quot;Singleton instance already created.&quot;);
+    }
+}
+
+public static PrivilegedSingleton getInstance() {
+    return INSTANCE;
+} } ``` Sometimes, your IDE may remind you that the &amp;lt;code&amp;gt;INSTANCE&amp;lt;/code&amp;gt; variable will never be null, don&#39;t rely on that, IDE can make mistake too.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://www.javaworld.com/article/2073352/core-java/simply-singleton.html&quot;&gt;Simply Singleton: Navigate the deceptively simple Singleton pattern&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683&quot;&gt;Effective Java, 2nd edition&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://howtodoinjava.com/2012/10/22/singleton-design-pattern-in-java/&quot;&gt;Singleton design pattern in Java&lt;/a&gt; &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 07 Apr 2014 06:54:11 +0800</pubDate>
+        <link>http://codethoughts.info/java/2014/04/07/singleton-pattern-in-java/</link>
+        <guid isPermaLink="true">http://codethoughts.info/java/2014/04/07/singleton-pattern-in-java/</guid>
+        
+        
+        <category>java</category>
+        
+      </item>
+    
+      <item>
+        <title>service provider frameworks</title>
+        <description>&lt;h3 id=&quot;overview&quot;&gt;Overview&lt;/h3&gt;
+&lt;p&gt;In &lt;a href=&quot;http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683&quot;&gt;Effective Java, second edition&lt;/a&gt;, the author mentioned a pattern called Service Provider frameworks. The author wrote:
+&amp;gt; A service provider framework is a system in which multiple service providers implement a service, and the system makes the implementations available to its clients, decoupling them from the implementations.&lt;/p&gt;
+
+&lt;p&gt;In this blog post, I’ll talk about the details of Service Provider Frameworks thru it’s application in JDK, to be specific, in JDBC and Codec lookup.
+&lt;!--more--&gt;
+&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;As the author said, there are three essential components of a service provider framework: a &lt;strong&gt;service interface&lt;/strong&gt;, which providers implement; a &lt;strong&gt;provider registration API&lt;/strong&gt;, which the system uses to register implementations, giving clients access to them; and a &lt;strong&gt;service access API&lt;/strong&gt;, which clients use to obtain an instance of the service. The service access API typically allows but does not require the client to specify some criteria for choosing a provider. In the absence of such a specification, the API returns an instance of a default implementation. The service access API is the “flexible static factory” that forms the basis of the service provider framework.&lt;/p&gt;
+
+&lt;p&gt;An optional fourth component of a service provider framework is a &lt;strong&gt;service provider interface&lt;/strong&gt;, which providers implement to create instances of their service implementation. &lt;em&gt;In the absence of a service provider interface, implementations are registered by class name and instantiated reflectively&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;service-provider-frameworks-in-jdbc&quot;&gt;Service Provider Frameworks in JDBC&lt;/h3&gt;
+&lt;p&gt;In the case of &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/jdbc/index.html&quot;&gt;JDBC&lt;/a&gt;, &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/Connection.html&quot;&gt;Connection&lt;/a&gt; plays the part of the service interface, &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/DriverManager.html#registerDriver\(java.sql.Driver\)&quot;&gt;DriverManager.registerDriver&lt;/a&gt; is the provider registration API, &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/DriverManager.html#getConnection\(java.lang.String\)&quot;&gt;DriverManager.getConnection&lt;/a&gt; is the service access API, and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/Driver.html&quot;&gt;Driver&lt;/a&gt; is the service provider interface.&lt;/p&gt;
+
+&lt;p&gt;Usually in order to use JDBC, you should execute below code:
+```java
+      // Register JDBC driver, before JDBC 4.0 only
+      Class.forName(“com.mysql.jdbc.Driver”);&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  // Open a connection
+  System.out.println(&quot;Connecting to database...&quot;);
+  conn = DriverManager.getConnection(DB_URL,USER,PASS); ``` The &amp;lt;code&amp;gt;Class.forname(&quot;com.mysql.jdbc.Driver&quot;)&amp;lt;/code&amp;gt; can be eliminated after JDBC 4.0, as you can see in the document of [DriverManager](http://docs.oracle.com/javase/7/docs/api/java/sql/DriverManager.html) &amp;gt; The DriverManager methods getConnection and getDrivers have been enhanced to support the Java Standard Edition [Service Provider](http://docs.oracle.com/javase/7/docs/technotes/guides/jar/jar.html#Service%20Provider) mechanism. JDBC 4.0 Drivers must include the file META-INF/services/java.sql.Driver. This file contains the name of the JDBC drivers implementation of java.sql.Driver. For example, to load the my.sql.Driver class, the META-INF/services/java.sql.Driver file would contain the entry: &amp;gt; my.sql.Driver &amp;gt; Applications no longer need to explicitly load JDBC drivers using &amp;lt;code&amp;gt;Class.forName()&amp;lt;/code&amp;gt;. Existing programs which currently load JDBC drivers using Class.forName() will continue to work without modification.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;service-provider-mechanism2&quot;&gt;Service Provider mechanism&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
+&lt;p&gt;Now let’s dig deeper into the &lt;strong&gt;Service Provider mechanism&lt;/strong&gt; and &lt;strong&gt;Service Provider configuration file&lt;/strong&gt;, you can find it &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/jar/jar.html#Service%20Provider&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;p&gt;Files in the &lt;code&gt;META-INF/services&lt;/code&gt; directory are service provider configuration files. A service is a well-known set of interfaces and (usually abstract) classes. A service provider is a specific implementation of a service. The classes in a provider typically implement the interfaces and subclass the classes defined in the service itself. Service providers may be installed in an implementation of the Java platform in the form of extensions, that is, jar files placed into any of the usual extension directories. Providers may also be made available by adding them to the applet or application class path or by some other platform-specific means.&lt;/p&gt;
+
+&lt;p&gt;A service is represented by an abstract class. A provider of a given service contains one or more concrete classes that extend this service class with data and code specific to the provider. This provider class will typically not be the entire provider itself but rather a proxy that contains enough information to decide whether the provider is able to satisfy a particular request together with code that can create the actual provider on demand. The details of provider classes tend to be highly service-specific; no single class or interface could possibly unify them, so no such class has been defined. The only requirement enforced here is that provider classes must have a zero-argument constructor so that they may be instantiated during lookup.&lt;/p&gt;
+
+&lt;h3 id=&quot;provider-configuration-file&quot;&gt;Provider-Configuration File&lt;/h3&gt;
+&lt;p&gt;A service provider identifies itself by placing a provider-configuration file in the resource directory &lt;code&gt;META-INF/services&lt;/code&gt;. The file’s name should consist of the fully-qualified name of the abstract service class. The file should contain a newline-separated list of unique concrete provider-class names. Space and tab characters, as well as blank lines, are ignored. The comment character is ‘#’ (0x23); on each line all characters following the first comment character are ignored. The file must be encoded in UTF-8.&lt;/p&gt;
+
+&lt;h3 id=&quot;example-of-service-provider-mechanism&quot;&gt;Example of Service Provider mechanism&lt;/h3&gt;
+&lt;p&gt;Suppose we have a service class named &lt;code&gt;java.io.spi.CharCodec&lt;/code&gt;. It has two abstract methods:
+&lt;code&gt;java
+public abstract CharEncoder getEncoder(String encodingName);
+public abstract CharDecoder getDecoder(String encodingName);
+&lt;/code&gt;
+Each method returns an appropriate object or null if it cannot translate the given encoding. Typical CharCodec providers will support more than one encoding.&lt;/p&gt;
+
+&lt;p&gt;If &lt;code&gt;sun.io.StandardCodec&lt;/code&gt; is a provider of the &lt;code&gt;CharCodec&lt;/code&gt; service then its jar file would contain the file &lt;code&gt;META-INF/services/java.io.spi.CharCodec&lt;/code&gt;. This file would contain the single line:
+&lt;code&gt;sun.io.StandardCodec    # Standard codecs for the platform&lt;/code&gt;
+To locate an encoder for a given encoding name, the internal I/O code would do something like this:
+&lt;code&gt;java
+   CharEncoder getEncoder(String encodingName) {
+       Iterator ps = Service.providers(CharCodec.class);
+       while (ps.hasNext()) {
+           CharCodec cc = (CharCodec)ps.next();
+           CharEncoder ce = cc.getEncoder(encodingName);
+           if (ce != null)
+               return ce;
+       }
+       return null;
+   }
+&lt;/code&gt;
+The provider-lookup mechanism always executes in the security context of the caller. Trusted system code should typically invoke the methods in this class from within a privileged security context.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-service-provider-mechanism-works-in-jdbc&quot;&gt;How Service Provider mechanism works in JDBC&lt;/h3&gt;
+&lt;p&gt;Now we can draw the conclusion that with service provider configuration file, during jar loading, the loading thread will find the configuration first, then register the services by name from the configuration file. The service configuration file contains the name of the JDBC driver’s implementation of &lt;code&gt;java.sql.Driver&lt;/code&gt;. For example, to load the JDBC driver to connect to a Apache Derby database, the &lt;code&gt;META-INF/services/java.sql.Driver&lt;/code&gt; file would contain the following entry:
+&lt;code&gt;org.apache.derby.jdbc.EmbeddedDriver&lt;/code&gt;. Then it will call &lt;code&gt;DriverManager.registerDriver&lt;/code&gt; to register specific Database driver automatically, so you don’t need to call &lt;code&gt;Class.forName()&lt;/code&gt; yourself. After that, you can access the service thru &lt;strong&gt;Service Access Interface&lt;/strong&gt;, &lt;code&gt;java.sql.DriverManager.getConnection&lt;/code&gt; to get the service, which in this case, is a implementation of &lt;code&gt;java.sql.Connection&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;However, before JDBC 4.0, you don’t have the facility, you have to register database driver manually by calling &lt;code&gt;Class.forName&lt;/code&gt; to register the driver before accessing the service interface.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683&quot;&gt;Effective Java, second edition&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/jar/jar.html#Service%20Provider&quot;&gt;jar file specification#Service Provider&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sun, 06 Apr 2014 22:39:44 +0800</pubDate>
+        <link>http://codethoughts.info/java/2014/04/06/service-provider-frameworks-pattern/</link>
+        <guid isPermaLink="true">http://codethoughts.info/java/2014/04/06/service-provider-frameworks-pattern/</guid>
+        
+        
+        <category>java</category>
+        
+      </item>
+    
+      <item>
+        <title>Enum, EnumSet, and EnumMap sample</title>
+        <description>&lt;p&gt;&lt;a href=&quot;http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html&quot;&gt;Enum&lt;/a&gt; was introduced in Java 1.5, although the Java enum can be used with any Java collection, its full power is best leveraged when used with the &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Why should you use &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;, rather than their counterparts &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html&quot;&gt;HashMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html&quot;&gt;HashSet&lt;/a&gt;. The primary reason boil down to performance and memory usage advantage. Let’s see their JavaDoc firstly.
+&lt;!-- more --&gt;
+Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt;:
+&amp;gt; A specialized Map implementation for use with enum type keys. All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created. Enum maps are represented internally as arrays. This representation is extremely compact and efficient.
+&amp;gt; …
+&amp;gt; Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be faster than their HashMap counterparts.&lt;/p&gt;
+
+&lt;p&gt;Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;:
+&amp;gt; A specialized Set implementation for use with enum types. All of the elements in an enum set must come from a single enum type that is specified, explicitly or implicitly, when the set is created. Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient. The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional int-based “bit flags.” Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.
+&amp;gt; …
+&amp;gt; Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be much faster than their HashSet counterparts. Even bulk operations execute in constant time if their argument is also an enum set.&lt;/p&gt;
+
+&lt;p&gt;Both of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt; belong to &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html&quot;&gt;Java Collections Framework&lt;/a&gt;, so they’re easy to use because as Java developer, you should familiar with &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html&quot;&gt;Java Collections Framework&lt;/a&gt;; in the mean time, they’re compact and efficient,  they’re also enum-powered collections which are easy to use, you can see that in below sample code.&lt;/p&gt;
+
+&lt;p&gt;First, let’s see an enum deifiniation:
+```java
+import java.util.EnumSet;&lt;/p&gt;
+
+&lt;p&gt;public enum Weekday {
+    MONDAY {
+        @Override
+        public String getDetail() {
+            return “Monday”;
+        }
+    },&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;TUESDAY {
+    @Override
+    public String getDetail() {
+        return &quot;Tuesday&quot;;
+    }
+},
+
+WEDNESDAY {
+    @Override
+    public String getDetail() {
+        return &quot;Wednesday&quot;;
+    }
+},
+
+THURSDAY {
+    @Override
+    public String getDetail() {
+        return &quot;Thursday&quot;;
+    }
+},
+
+FRIDAY {
+    @Override
+    public String getDetail() {
+        return &quot;Friday&quot;;
+    }
+},
+
+SATURDAY {
+    @Override
+    public String getDetail() {
+        return &quot;Saturday&quot;;
+    }
+},
+
+SUNDAY {
+    @Override
+    public String getDetail() {
+        return &quot;Sunday&quot;;
+    }
+};
+
+public abstract String getDetail();
+
+public static final EnumSet&amp;lt;Weekday&amp;gt; WORKDAYS = EnumSet.range(MONDAY, FRIDAY);
+
+public final boolean isWorkday() {
+    return WORKDAYS.contains(this);
+}
+
+public static final EnumSet&amp;lt;Weekday&amp;gt; THE_WHOLE_WEEK = EnumSet.allOf(Weekday.class); } ``` You can see that one of interesting feature of Java enum is that you can declare **abstract methods**, in above example getDetail() is the abstract method and all the enum fields have implemented it. You can check some other details of Java enum [here](http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let’s move on to our sample code of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;```java
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;&lt;/p&gt;
+
+&lt;p&gt;public final class EnumSetExample {&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public static void main(String... args) {
+    System.out.println(&quot;Work Schedule:&quot;);
+
+    for (Weekday weekday : Weekday.THE_WHOLE_WEEK) {
+        String action = weekday.isWorkday()
+                ? &quot;have to work&quot;
+                : &quot;can relax&quot;;
+        // Enum.ordinal starts with 0
+        System.out.println(String.format(&quot;%d. On %s you &quot; + action + &quot;.&quot;, weekday.ordinal() + 1, weekday));
+    }
+
+    System.out.println(&quot;Do I have to work the whole week?&quot;);
+
+    String result = Weekday.WORKDAYS.containsAll(Weekday.THE_WHOLE_WEEK)
+            ? &quot;Yes, unfortunately.&quot;
+            : &quot;Certainly not.&quot;;
+    System.out.println(result);
+
+    final EnumSet&amp;lt;Weekday&amp;gt; weekend = Weekday.THE_WHOLE_WEEK.clone();
+    weekend.removeAll(Weekday.WORKDAYS);
+
+    System.out.println(String.format(&quot;The weekend is %d days long.&quot;, weekend.size()));
+
+    // EnumMap example
+    EnumMap&amp;lt;Weekday, String&amp;gt; eMap = new EnumMap&amp;lt;&amp;gt;(Weekday.class);
+    for (Weekday day : Weekday.THE_WHOLE_WEEK) {
+        eMap.put(day, day.getDetail());
+    }
+
+    System.out.println(&quot;Print weekdays:&quot;);
+    for (Map.Entry&amp;lt;Weekday, String&amp;gt; entry : eMap.entrySet()) {
+        System.out.println(entry.getKey() + &quot;\t&quot; + entry.getValue());
+    }
+} } ``` You can run above source code by yourself, check the result then find related API of [EnumMap](http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html) and [EnumSet](http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html). The above source code makes use of the following features in Java.[^1]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;enum keyword&lt;/li&gt;
+  &lt;li&gt;enum custom methods&lt;/li&gt;
+  &lt;li&gt;enum toString() method&lt;/li&gt;
+  &lt;li&gt;EnumSet#range()&lt;/li&gt;
+  &lt;li&gt;EnumSet#allOf()&lt;/li&gt;
+  &lt;li&gt;EnumSet#clone()&lt;/li&gt;
+  &lt;li&gt;EnumSet#removeAll()&lt;/li&gt;
+  &lt;li&gt;EnumSet#size()&lt;/li&gt;
+  &lt;li&gt;EnumSet iteration&lt;/li&gt;
+  &lt;li&gt;String#format()&lt;/li&gt;
+  &lt;li&gt;EnumMap construction and iteration&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Sun, 06 Apr 2014 20:50:38 +0800</pubDate>
+        <link>http://codethoughts.info/java/2014/04/06/enum-enumset-enummap-sample/</link>
+        <guid isPermaLink="true">http://codethoughts.info/java/2014/04/06/enum-enumset-enummap-sample/</guid>
+        
+        
+        <category>java</category>
+        
+      </item>
+    
+  </channel>
 </rss>
