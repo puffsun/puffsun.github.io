@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Yet another tech blog!">
 
-    <title>Singleton pattern in Java - George's dream port</title>
+    <title>Singleton Design Pattern in Java - George's dream port</title>
 
     <link rel="canonical" href="http://codethoughts.info/java/2014/04/07/singleton-pattern-in-java/">
 
@@ -81,7 +81,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>Singleton pattern in Java</h1>
+                    <h1>Singleton Design Pattern in Java</h1>
                     
                     <span class="meta">Posted by George's dream port on April 7, 2014</span>
                 </div>
@@ -96,9 +96,11 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 
-				<p>The Singleton pattern is deceptively simple, even and especially for Java developers, but it presents a number of pitfalls for the unwary Java developer which make it hard to implement properly. In this article, I’ll talk about several ways to implement the Singleton pattern in Java, and leave it to you to decide which one is best suited for your circumstance depending on your requirement.
+				<p>The Singleton pattern is deceptively simple, even and especially for Java developers, but it presents a number of pitfalls for the unwary Java developer which make it hard to implement properly. In this article, I’ll talk about several ways to implement the Singleton pattern in Java, and leave it to you to decide which one is best suited for your circumstance depending on your requirement.</p>
+
 <!--more-->
-With the Singleton design pattern you can:</p>
+
+<p>With the Singleton design pattern you can:</p>
 
 <ul>
   <li>Ensure that only one instance of a class is created</li>
@@ -107,28 +109,30 @@ With the Singleton design pattern you can:</p>
 </ul>
 
 <h3 id="the-classic-singleton-pattern1">The classic Singleton pattern<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></h3>
-<p>In Design Patterns: <a href="http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612">Elements of Reusable Object-Oriented Software</a>, the GoF describe the Singleton pattern like this:
-&gt; Ensure a class has only one instance, and provide a global point of access to it.</p>
+<p>In Design Patterns: <a href="http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612">Elements of Reusable Object-Oriented Software</a>, the GoF describe the Singleton pattern like this:</p>
 
-<p>```java
-public class ClassicSingleton {
-    private static ClassicSingleton instance = null;</p>
+<blockquote>
+  <p>Ensure a class has only one instance, and provide a global point of access to it.</p>
+</blockquote>
 
-<pre><code>private ClassicSingleton() {
-    // Exists only to defeat instantiation.
-}
-
-public static ClassicSingleton getInstance() {
-    if (instance == null) {
-        instance = new ClassicSingleton();
-    }
-    return instance;
-} } ```
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassicSingleton</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="kd">static</span> <span class="n">ClassicSingleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span>     <span class="kd">private</span> <span class="nf">ClassicSingleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 5</span>         <span class="c1">// Exists only to defeat instantiation.</span>
+<span class="lineno"> 6</span>     <span class="o">}</span>
+<span class="lineno"> 7</span> 
+<span class="lineno"> 8</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="n">ClassicSingleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 9</span>         <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">10</span>             <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ClassicSingleton</span><span class="o">();</span>
+<span class="lineno">11</span>         <span class="o">}</span>
+<span class="lineno">12</span>         <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+<span class="lineno">13</span>     <span class="o">}</span>
+<span class="lineno">14</span> <span class="o">}</span></code></pre></div>
 
 <p>Above code is easy to understand, the ClassicSingleton hold a static reference to the single instance and returns that reference from the static <code>getInstance()</code> method.</p>
 
-<p>There are several interesting points concerning the ClassicSingleton class. 
+<p>There are several interesting points concerning the ClassicSingleton class.
 1. ClassicSingleton employs a technique known as lazy instantiation to create the singleton; as a result, the singleton instance is not created until the <code>getInstance()</code> method is called for the first time. This technique ensures that singleton instances are created only when needed.
 2. It’s possible to have multiple singleton instances if classes loaded by different Classloaders access a singleton. That scenario is not so far-fetched; for example, some servlet containers use distinct Classloaders for each servlet, so if two servlets access a singleton, they will each have their own instance.
 3. If ClassicSingleton implements the <code>java.io.Serializable</code> interface, the class’s instances can be serialized and deserialized. However, if you serialize a singleton object and subsequently deserialize that object more than once, you will have multiple singleton instances.
@@ -138,234 +142,254 @@ public static ClassicSingleton getInstance() {
 <p>As you can see from the preceding discussion, although the Singleton pattern is one of the simplest design patterns, implementing it in Java is anything but simple. The rest of this article addresses Java-specific considerations for the Singleton pattern.</p>
 
 <h3 id="synchronization-for-multithreading-considerations">Synchronization for multithreading considerations</h3>
-<p>Making Singleton thread-safe is easy-just synchronize the <code>getInstance()</code> method:
-```java
-public class Singleton {
-    private static Singleton instance = null;</p>
+<p>Making Singleton thread-safe is easy-just synchronize the <code>getInstance()</code> method:</p>
 
-<pre><code>private Singleton() {
-    // Exists only to defeat instantiation.
-}
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span>     <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 5</span>         <span class="c1">// Exists only to defeat instantiation.</span>
+<span class="lineno"> 6</span>     <span class="o">}</span>
+<span class="lineno"> 7</span> 
+<span class="lineno"> 8</span>     <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 9</span>         <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">10</span>             <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+<span class="lineno">11</span>         <span class="o">}</span>
+<span class="lineno">12</span>         <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+<span class="lineno">13</span>     <span class="o">}</span>
+<span class="lineno">14</span> <span class="o">}</span></code></pre></div>
 
-public synchronized static Singleton getInstance() {
-    if (instance == null) {
-        instance = new Singleton();
-    }
-    return instance;
-} } ``` However, the astute reader may realize that the getInstance() method only needs to be synchronized the first time it is called. Because synchronization is very expensive performance-wise, perhaps we can introduce a performance enhancement that only synchronizes the singleton assignment in &lt;code&gt;getInstance()&lt;/code&gt;.
-</code></pre>
+<p>However, the astute reader may realize that the getInstance() method only needs to be synchronized the first time it is called. Because synchronization is very expensive performance-wise, perhaps we can introduce a performance enhancement that only synchronizes the singleton assignment in <code>getInstance()</code>.</p>
 
 <h3 id="a-performance-enhancement">A performance enhancement</h3>
-<p>In search of a performance enhancement, you might choose to rewrite the <code>getInstance()</code> method like this:
-<code>java
-// CAUTION, BUGS AHEAD
-public static Singleton getInstance() {
-   if(singleton == null) {
-      synchronized(Singleton.class) { 
-         singleton = new Singleton();
-      }
-   }
-   return singleton;
-}
-</code>
-Instead of synchronizing the entire method, the preceding code fragment only synchronizes the critical code. However, the preceding code fragment is not thread-safe. Consider the following scenario: Thread 1 enters the synchronized block, and, before it can assign the singleton member variable, the thread is preempted. Subsequently, another thread can enter the if block. The second thread will wait for the first thread to finish, but we will still wind up with two distinct singleton instances. Is there a way to fix this problem? Read on.</p>
+<p>In search of a performance enhancement, you might choose to rewrite the <code>getInstance()</code> method like this:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno">1</span> <span class="c1">// CAUTION, BUGS AHEAD</span>
+<span class="lineno">2</span> <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">3</span>    <span class="k">if</span><span class="o">(</span><span class="n">singleton</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">4</span>       <span class="kd">synchronized</span><span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span> 
+<span class="lineno">5</span>          <span class="n">singleton</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+<span class="lineno">6</span>       <span class="o">}</span>
+<span class="lineno">7</span>    <span class="o">}</span>
+<span class="lineno">8</span>    <span class="k">return</span> <span class="n">singleton</span><span class="o">;</span>
+<span class="lineno">9</span> <span class="o">}</span></code></pre></div>
+
+<p>Instead of synchronizing the entire method, the preceding code fragment only synchronizes the critical code. However, the preceding code fragment is not thread-safe. Consider the following scenario: Thread 1 enters the synchronized block, and, before it can assign the singleton member variable, the thread is preempted. Subsequently, another thread can enter the if block. The second thread will wait for the first thread to finish, but we will still wind up with two distinct singleton instances. Is there a way to fix this problem? Read on.</p>
 
 <h3 id="double-checked-locking">Double-checked locking</h3>
-<p>Double-checked locking is a technique that, at first glance, appears to make lazy instantiation thread-safe. That technique is illustrated in the following code fragment:
-<code>java
-// CAUTION, BUGS AHEAD
-public static Singleton getInstance() {
-  if(singleton == null) {
-     synchronized(Singleton.class) {
-       if(singleton == null) {
-         singleton = new Singleton();
-       }
-    }
-  }
-  return singleton;
-}
-</code>
-What happens if two threads simultaneously access <code>getInstance()</code>? Imagine Thread 1 enters the synchronized block and is preempted. Subsequently, a second thread enters the if block. When Thread 1 exits the synchronized block, Thread 2 makes a second check to see if the singleton instance is still null. Since Thread 1 set the singleton member variable, Thread 2’s second check will fail, and a second singleton will not be created. Or so it seems.</p>
+<p>Double-checked locking is a technique that, at first glance, appears to make lazy instantiation thread-safe. That technique is illustrated in the following code fragment:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="c1">// CAUTION, BUGS AHEAD</span>
+<span class="lineno"> 2</span> <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 3</span>   <span class="k">if</span><span class="o">(</span><span class="n">singleton</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 4</span>      <span class="kd">synchronized</span><span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 5</span>        <span class="k">if</span><span class="o">(</span><span class="n">singleton</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 6</span>          <span class="n">singleton</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+<span class="lineno"> 7</span>        <span class="o">}</span>
+<span class="lineno"> 8</span>     <span class="o">}</span>
+<span class="lineno"> 9</span>   <span class="o">}</span>
+<span class="lineno">10</span>   <span class="k">return</span> <span class="n">singleton</span><span class="o">;</span>
+<span class="lineno">11</span> <span class="o">}</span></code></pre></div>
+
+<p>What happens if two threads simultaneously access <code>getInstance()</code>? Imagine Thread 1 enters the synchronized block and is preempted. Subsequently, a second thread enters the if block. When Thread 1 exits the synchronized block, Thread 2 makes a second check to see if the singleton instance is still null. Since Thread 1 set the singleton member variable, Thread 2’s second check will fail, and a second singleton will not be created. Or so it seems.</p>
 
 <p>Unfortunately, double-checked locking is not guaranteed to work because the compiler is free to assign a value to the singleton member variable before the singleton’s constructor is called. If that happens, Thread 1 can be preempted after the singleton reference has been assigned, but before the singleton is initialized, so Thread 2 can return a reference to an uninitialized singleton instance.</p>
 
 <p>Since double-checked locking is not guaranteed to work, you must synchronize the entire getInstance() method. However, another alternative is simple, fast, and thread-safe.</p>
 
 <h3 id="an-alternative-thread-safe-singleton-implementation">An alternative thread-safe singleton implementation</h3>
-<p><code>java
-public class Singleton {
-   public final static Singleton INSTANCE = new Singleton();
-   private Singleton() {
-       // Exists only to defeat instantiation.
-   }
-}
-</code>
-The preceding singleton implementation is thread-safe because static member variables created when declared are guaranteed to be created the first time they are accessed. You get a thread-safe implementation that automatically employs lazy instantiation, until the class file get loaded into memory, their is no instance instanciated at all.</p>
 
-<p>Of course, like nearly everything else, the preceding singleton is a compromise; if you use that implementation, you can’t change your mind and allow multiple singleton instances later on. With a more conservative singleton implementation, instances are obtained through a <code>getInstance()</code> method, and you can change those methods to return a unique instance or one of hundreds. You can’t do the same with a public static member variable.
-```java
-public class Singleton {
-   private final static Singleton INSTANCE = new Singleton();
-   private Singleton() {
-       // Exists only to defeat instantiation.
-   }</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno">1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+<span class="lineno">2</span>    <span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+<span class="lineno">3</span>    <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">4</span>        <span class="c1">// Exists only to defeat instantiation.</span>
+<span class="lineno">5</span>    <span class="o">}</span>
+<span class="lineno">6</span> <span class="o">}</span></code></pre></div>
 
-<p>public static Singleton getInstance() {
-       return INSTANCE;
-   }
-}
-<code>
-###Leveraging volatile to change Java Memory Model
-We can recheck the instance again in synchronized block to ensure that only one instance of the Singleton object be instantiated, shown as below code:
-</code>java
-public class LazySingleton {
-    private static volatile LazySingleton instance;</p>
+<p>The preceding singleton implementation is thread-safe because static member variables created when declared are guaranteed to be created the first time they are accessed. You get a thread-safe implementation that automatically employs lazy instantiation, until the class file get loaded into memory, their is no instance instanciated at all.</p>
 
-<pre><code>// private constructor
-private LazySingleton() {
-}
+<p>Of course, like nearly everything else, the preceding singleton is a compromise; if you use that implementation, you can’t change your mind and allow multiple singleton instances later on. With a more conservative singleton implementation, instances are obtained through a <code>getInstance()</code> method, and you can change those methods to return a unique instance or one of hundreds. You can’t do the same with a public static member variable.</p>
 
-public static LazySingleton getInstance() {
-    if (instance == null) {
-        synchronized (LazySingleton.class) {
-            // Double check
-            if (instance == null) {
-                instance = new LazySingleton();
-            }
-        }
-    }
-    return instance;
-} } ``` Please ensure to use &lt;code&gt;volatile&lt;/code&gt; keyword with instance variable otherwise you can run into out of order write error scenario, where reference of instance is returned before actually the object is constructed i.e. JVM has only allocated the memory and constructor code is still not executed. In this case, your other thread, which refer to uninitialized object may throw null pointer exception and can even crash the whole application.
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+<span class="lineno"> 2</span>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+<span class="lineno"> 3</span>    <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 4</span>        <span class="c1">// Exists only to defeat instantiation.</span>
+<span class="lineno"> 5</span>    <span class="o">}</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 8</span>        <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span>
+<span class="lineno"> 9</span>    <span class="o">}</span>
+<span class="lineno">10</span> <span class="o">}</span></code></pre></div>
+
+<h3 id="leveraging-volatile-to-change-java-memory-model">Leveraging volatile to change Java Memory Model</h3>
+<p>We can recheck the instance again in synchronized block to ensure that only one instance of the Singleton object be instantiated, shown as below code:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">LazySingleton</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">LazySingleton</span> <span class="n">instance</span><span class="o">;</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span>     <span class="c1">// private constructor</span>
+<span class="lineno"> 5</span>     <span class="kd">private</span> <span class="nf">LazySingleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 6</span>     <span class="o">}</span>
+<span class="lineno"> 7</span> 
+<span class="lineno"> 8</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="n">LazySingleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 9</span>         <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">10</span>             <span class="kd">synchronized</span> <span class="o">(</span><span class="n">LazySingleton</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">11</span>                 <span class="c1">// Double check</span>
+<span class="lineno">12</span>                 <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">13</span>                     <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">LazySingleton</span><span class="o">();</span>
+<span class="lineno">14</span>                 <span class="o">}</span>
+<span class="lineno">15</span>             <span class="o">}</span>
+<span class="lineno">16</span>         <span class="o">}</span>
+<span class="lineno">17</span>         <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+<span class="lineno">18</span>     <span class="o">}</span>
+<span class="lineno">19</span> <span class="o">}</span></code></pre></div>
+
+<p>Please ensure to use <code>volatile</code> keyword with instance variable otherwise you can run into out of order write error scenario, where reference of instance is returned before actually the object is constructed i.e. JVM has only allocated the memory and constructor code is still not executed. In this case, your other thread, which refer to uninitialized object may throw null pointer exception and can even crash the whole application.</p>
 
 <p>Although above code is the correct way to implement Singleton pattern, this is not recommended since it introduce extra complexity of code, which may introduce subtle bugs.</p>
 
 <h3 id="classloaders">Classloaders</h3>
-<p>Because multiple classloaders are commonly used in many situations—including servlet containers—you can wind up with multiple singleton instances no matter how carefully you’ve implemented your singleton classes. If you want to make sure the same classloader loads your singletons, you must specify the classloader yourself; for example:
-<code>java
-private static Class getClass(String classname) throws ClassNotFoundException {
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    if(classLoader == null)
-        classLoader = Singleton.class.getClassLoader();
-        return (classLoader.loadClass(classname));
-    }
-}
-</code>
-The preceding method tries to associate the classloader with the current thread; if that classloader is null, the method uses the same classloader that loaded a singleton base class. The preceding method can be used instead of Class.forName().</p>
+<p>Because multiple classloaders are commonly used in many situations—including servlet containers—you can wind up with multiple singleton instances no matter how carefully you’ve implemented your singleton classes. If you want to make sure the same classloader loads your singletons, you must specify the classloader yourself; for example:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno">1</span> <span class="kd">private</span> <span class="kd">static</span> <span class="n">Class</span> <span class="nf">getClass</span><span class="o">(</span><span class="n">String</span> <span class="n">classname</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+<span class="lineno">2</span>     <span class="n">ClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+<span class="lineno">3</span>     <span class="k">if</span><span class="o">(</span><span class="n">classLoader</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+<span class="lineno">4</span>         <span class="n">classLoader</span> <span class="o">=</span> <span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">();</span>
+<span class="lineno">5</span>         <span class="k">return</span> <span class="o">(</span><span class="n">classLoader</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="n">classname</span><span class="o">));</span>
+<span class="lineno">6</span>     <span class="o">}</span>
+<span class="lineno">7</span> <span class="o">}</span></code></pre></div>
+
+<p>The preceding method tries to associate the classloader with the current thread; if that classloader is null, the method uses the same classloader that loaded a singleton base class. The preceding method can be used instead of Class.forName().</p>
 
 <h3 id="serialization2">Serialization<sup id="fnref:2"><a href="#fn:2" class="footnote">2</a></sup></h3>
-<p>If you serialize a singleton and then deserialize it twice, you will have two instances of your singleton, unless you implement the <code>readResolve()</code> method, like this:
-```java
-public class Singleton implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
-    public static Singleton INSTANCE = new Singleton();</p>
+<p>If you serialize a singleton and then deserialize it twice, you will have two instances of your singleton, unless you implement the <code>readResolve()</code> method, like this:</p>
 
-<pre><code>private Singleton() {
-    // Exists only to thwart instantiation.
-}
-   
-private Object readResolve() {
-    return INSTANCE;
-} } ``` The previous singleton implementation returns the lone singleton instance from the readResolve() method; therefore, whenever the Singleton class is deserialized, it will return the same singleton instance. **Don't forget to add serial version id in this case, or you will get an exception during de-serialise process**.
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="kd">implements</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">Serializable</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">;</span>
+<span class="lineno"> 3</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+<span class="lineno"> 4</span> 
+<span class="lineno"> 5</span>     <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 6</span>         <span class="c1">// Exists only to thwart instantiation.</span>
+<span class="lineno"> 7</span>     <span class="o">}</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span>     <span class="kd">private</span> <span class="n">Object</span> <span class="nf">readResolve</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">10</span>         <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span>
+<span class="lineno">11</span>     <span class="o">}</span>
+<span class="lineno">12</span> <span class="o">}</span></code></pre></div>
+
+<p>The previous singleton implementation returns the lone singleton instance from the readResolve() method; therefore, whenever the Singleton class is deserialized, it will return the same singleton instance. <strong>Don’t forget to add serial version id in this case, or you will get an exception during de-serialise process</strong>.</p>
 
 <h3 id="bill-pugh-solution3">Bill Pugh solution<sup id="fnref:3"><a href="#fn:3" class="footnote">3</a></sup></h3>
-<p>Bill Pugh was main force behind java memory model changes. His principle “Initialization-on-demand holder idiom” also uses static block but in different way. It suggest to use static inner class:
-```java
-public class BillPughSingleton {
-    private BillPughSingleton() {
-    }</p>
+<p>Bill Pugh was main force behind java memory model changes. His principle “Initialization-on-demand holder idiom” also uses static block but in different way. It suggest to use static inner class:</p>
 
-<pre><code>private static class LazyHolder {
-    private static final BillPughSingleton INSTANCE = new BillPughSingleton();
-}
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">BillPughSingleton</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="nf">BillPughSingleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 3</span>     <span class="o">}</span>
+<span class="lineno"> 4</span> 
+<span class="lineno"> 5</span>     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">LazyHolder</span> <span class="o">{</span>
+<span class="lineno"> 6</span>         <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">BillPughSingleton</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BillPughSingleton</span><span class="o">();</span>
+<span class="lineno"> 7</span>     <span class="o">}</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="n">BillPughSingleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">10</span>         <span class="k">return</span> <span class="n">LazyHolder</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">;</span>
+<span class="lineno">11</span>     <span class="o">}</span>
+<span class="lineno">12</span> <span class="o">}</span></code></pre></div>
 
-public static BillPughSingleton getInstance() {
-    return LazyHolder.INSTANCE;
-} } ``` As you can see, until we need an instance, the LazyHolder class will not be initialized until required and you can still use other static members of BillPughSingleton class. This is the solution, i will recommend to use. I also use it in my all projects.
-</code></pre>
+<p>As you can see, until we need an instance, the LazyHolder class will not be initialized until required and you can still use other static members of BillPughSingleton class. This is the solution, i will recommend to use. I also use it in my all projects.</p>
 
 <h3 id="using-enum">Using Enum</h3>
-<p>As of release 1.5, there is a another approach to implementing singletons. which provide implicit support for thread safety and only one instance is guaranteed. This is also a good way to have singleton with minimum effort. Simply make an enum type with one element:
-<code>java
-// Enum singleton - the preferred approach
-public enum LazyEnumSingleton {
-    INSTANCE;
-    public void otherMethods() { System.out.println("Other methods go"); }
-}
-</code></p>
+<p>As of release 1.5, there is a another approach to implementing singletons. which provide implicit support for thread safety and only one instance is guaranteed. This is also a good way to have singleton with minimum effort. Simply make an enum type with one element:</p>
 
-<p>This approach is functionally equivalent to the public field approach, except that it is more concise, provides the serialization machinery for free, and provides an ironclad guarantee against multiple instantiation, even in the face of sophisticated serialization or reflection attacks. While this approach has yet to be widely adopted, <strong>a single-element enum type is the best way to implement a singleton</strong>. JVM does the lazy-loading in a thread-safe manner. That’s why using this kind of lazy class loading is the preferred method—the JVM handles all the synchronization. We can see that with below little example code, try run it your self:
-```java
-public class LazyEnumSingletonExample {
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println(“Accessing enum for the first time.”);
-        LazyEnumSingleton lazy = LazyEnumSingleton.INSTANCE;
-        System.out.println(“Done.”);
-    }
-}</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno">1</span> <span class="c1">// Enum singleton - the preferred approach</span>
+<span class="lineno">2</span> <span class="kd">public</span> <span class="kd">enum</span> <span class="n">LazyEnumSingleton</span> <span class="o">{</span>
+<span class="lineno">3</span>     <span class="n">INSTANCE</span><span class="o">;</span>
+<span class="lineno">4</span>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">otherMethods</span><span class="o">()</span> <span class="o">{</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Other methods go&quot;</span><span class="o">);</span> <span class="o">}</span>
+<span class="lineno">5</span> <span class="o">}</span></code></pre></div>
 
-<p>enum LazyEnumSingleton {
-    INSTANCE;</p>
+<p>This approach is functionally equivalent to the public field approach, except that it is more concise, provides the serialization machinery for free, and provides an ironclad guarantee against multiple instantiation, even in the face of sophisticated serialization or reflection attacks. While this approach has yet to be widely adopted, <strong>a single-element enum type is the best way to implement a singleton</strong>. JVM does the lazy-loading in a thread-safe manner. That’s why using this kind of lazy class loading is the preferred method—the JVM handles all the synchronization. We can see that with below little example code, try run it your self:</p>
 
-<pre><code>static {
-    System.out.println("Initialize in process...");
-} } ``` Output of the code: ``` Accessing enum for the first time. Initialize in process... Done. ``` In Java, enum can hold state, which makes the single-element enum type the perfect condidate for Singleton pattern, see below code: ```java enum LazyEnumSingletonWithState {
-INSTANCE("State") {
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">LazyEnumSingletonExample</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="lineno"> 3</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Accessing enum for the first time.&quot;</span><span class="o">);</span>
+<span class="lineno"> 4</span>         <span class="n">LazyEnumSingleton</span> <span class="n">lazy</span> <span class="o">=</span> <span class="n">LazyEnumSingleton</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">;</span>
+<span class="lineno"> 5</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Done.&quot;</span><span class="o">);</span>
+<span class="lineno"> 6</span>     <span class="o">}</span>
+<span class="lineno"> 7</span> <span class="o">}</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span> <span class="kd">enum</span> <span class="n">LazyEnumSingleton</span> <span class="o">{</span>
+<span class="lineno">10</span>     <span class="n">INSTANCE</span><span class="o">;</span>
+<span class="lineno">11</span> 
+<span class="lineno">12</span>     <span class="kd">static</span> <span class="o">{</span>
+<span class="lineno">13</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Initialize in process...&quot;</span><span class="o">);</span>
+<span class="lineno">14</span>     <span class="o">}</span>
+<span class="lineno">15</span> <span class="o">}</span></code></pre></div>
 
-    @Override
-    public String toOverwrittenOps(String str) {
-        return str + this.state;
-    }
-};
+<p>Output of the code:</p>
 
-private String state;
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">Accessing enum <span class="k">for</span> the first time.
+Initialize in process...
+Done.</code></pre></div>
 
-private LazyEnumSingletonWithState(String state) {
-    this.state = state;
-}
+<p>In Java, enum can hold state, which makes the single-element enum type the perfect condidate for Singleton pattern, see below code:</p>
 
-public String otherOps(String arg) {
-    return arg + state;
-}
-
-@Override
-public String toString() {
-    return this.state;
-}
-
-public abstract String toOverwrittenOps(String str); } ```
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">enum</span> <span class="n">LazyEnumSingletonWithState</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="n">INSTANCE</span><span class="o">(</span><span class="s">&quot;State&quot;</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span>         <span class="nd">@Override</span>
+<span class="lineno"> 5</span>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">toOverwrittenOps</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 6</span>             <span class="k">return</span> <span class="n">str</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">state</span><span class="o">;</span>
+<span class="lineno"> 7</span>         <span class="o">}</span>
+<span class="lineno"> 8</span>     <span class="o">};</span>
+<span class="lineno"> 9</span> 
+<span class="lineno">10</span>     <span class="kd">private</span> <span class="n">String</span> <span class="n">state</span><span class="o">;</span>
+<span class="lineno">11</span> 
+<span class="lineno">12</span>     <span class="kd">private</span> <span class="nf">LazyEnumSingletonWithState</span><span class="o">(</span><span class="n">String</span> <span class="n">state</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">13</span>         <span class="k">this</span><span class="o">.</span><span class="na">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">;</span>
+<span class="lineno">14</span>     <span class="o">}</span>
+<span class="lineno">15</span> 
+<span class="lineno">16</span>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">otherOps</span><span class="o">(</span><span class="n">String</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">17</span>         <span class="k">return</span> <span class="n">arg</span> <span class="o">+</span> <span class="n">state</span><span class="o">;</span>
+<span class="lineno">18</span>     <span class="o">}</span>
+<span class="lineno">19</span> 
+<span class="lineno">20</span>     <span class="nd">@Override</span>
+<span class="lineno">21</span>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">22</span>         <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">state</span><span class="o">;</span>
+<span class="lineno">23</span>     <span class="o">}</span>
+<span class="lineno">24</span> 
+<span class="lineno">25</span>     <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">toOverwrittenOps</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">);</span>
+<span class="lineno">26</span> <span class="o">}</span></code></pre></div>
 
 <h3 id="preventing-privileged-clients">Preventing privileged clients</h3>
-<p>As we mentioned before, single pattern can be broken with reflection, as below code shown:
-<code>java
-public static void main(String[] args) throws Exception {
-    Singleton s1 = Singleton.getInstance();
-    Class clazz = Singleton.class;
-    Constructor cons = clazz.getDeclaredConstructor();
-    cons.setAccessible(true);
-    // Another instance can be instantiated now.
-    Singleton s2 = (Singleton) cons.newInstance();
-}
-</code>
-It’s easy to get over this issue:
-```java
-public class PrivilegedSingleton {
-    private static final PrivilegedSingleton INSTANCE = new PrivilegedSingleton();</p>
+<p>As we mentioned before, single pattern can be broken with reflection, as below code shown:</p>
 
-<pre><code>private PrivilegedSingleton() {
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno">1</span> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<span class="lineno">2</span>     <span class="n">Singleton</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">Singleton</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+<span class="lineno">3</span>     <span class="n">Class</span> <span class="n">clazz</span> <span class="o">=</span> <span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+<span class="lineno">4</span>     <span class="n">Constructor</span> <span class="n">cons</span> <span class="o">=</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">();</span>
+<span class="lineno">5</span>     <span class="n">cons</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="lineno">6</span>     <span class="c1">// Another instance can be instantiated now.</span>
+<span class="lineno">7</span>     <span class="n">Singleton</span> <span class="n">s2</span> <span class="o">=</span> <span class="o">(</span><span class="n">Singleton</span><span class="o">)</span> <span class="n">cons</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+<span class="lineno">8</span> <span class="o">}</span></code></pre></div>
 
-    // Check if we already have an instance
-    if (INSTANCE != null) {
-        throw new IllegalStateException("Singleton instance already created.");
-    }
-}
+<p>It’s easy to get over this issue:</p>
 
-public static PrivilegedSingleton getInstance() {
-    return INSTANCE;
-} } ``` Sometimes, your IDE may remind you that the &lt;code&gt;INSTANCE&lt;/code&gt; variable will never be null, don't rely on that, IDE can make mistake too.
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PrivilegedSingleton</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">PrivilegedSingleton</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">PrivilegedSingleton</span><span class="o">();</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span>     <span class="kd">private</span> <span class="nf">PrivilegedSingleton</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno"> 5</span> 
+<span class="lineno"> 6</span>         <span class="c1">// Check if we already have an instance</span>
+<span class="lineno"> 7</span>         <span class="k">if</span> <span class="o">(</span><span class="n">INSTANCE</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 8</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">&quot;Singleton instance already created.&quot;</span><span class="o">);</span>
+<span class="lineno"> 9</span>         <span class="o">}</span>
+<span class="lineno">10</span>     <span class="o">}</span>
+<span class="lineno">11</span> 
+<span class="lineno">12</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="n">PrivilegedSingleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">13</span>         <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span>
+<span class="lineno">14</span>     <span class="o">}</span>
+<span class="lineno">15</span> <span class="o">}</span></code></pre></div>
+
+<p>Sometimes, your IDE may remind you that the <code>INSTANCE</code> variable will never be null, don’t rely on that, IDE can make mistake too.</p>
 
 <div class="footnotes">
   <ol>
@@ -387,12 +411,12 @@ public static PrivilegedSingleton getInstance() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/java/2014/04/06/service-provider-frameworks-pattern/" data-toggle="tooltip" data-placement="top" title="service provider frameworks">&larr; Previous Post</a>
+                        <a href="/java/2014/04/06/service-provider-frameworks-pattern/" data-toggle="tooltip" data-placement="top" title="Service Provider Frameworks Pattern">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/java/2014/04/07/understanding-java-dot-lang-dot-ref-package/" data-toggle="tooltip" data-placement="top" title="understanding java.lang.ref package">Next Post &rarr;</a>
+                        <a href="/java/2014/04/07/understanding-java-dot-lang-dot-ref-package/" data-toggle="tooltip" data-placement="top" title="Understanding of java.lang.ref Package">Next Post &rarr;</a>
                     </li>
                     
                 </ul>

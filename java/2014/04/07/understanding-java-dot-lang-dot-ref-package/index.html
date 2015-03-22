@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Yet another tech blog!">
 
-    <title>understanding java.lang.ref package - George's dream port</title>
+    <title>Understanding of java.lang.ref Package - George's dream port</title>
 
     <link rel="canonical" href="http://codethoughts.info/java/2014/04/07/understanding-java-dot-lang-dot-ref-package/">
 
@@ -81,7 +81,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>understanding java.lang.ref package</h1>
+                    <h1>Understanding of java.lang.ref Package</h1>
                     
                     <span class="meta">Posted by George's dream port on April 7, 2014</span>
                 </div>
@@ -99,97 +99,108 @@
 				<p>There’re several useful classes under package <code>java.lang.ref.*</code>, which seems to be a little-known feature. That’s what I’m going to talk about in this blog post.</p>
 
 <h3 id="a-program-with-memory-leak">A Program with Memory Leak</h3>
-<p>As Java developer, most of time, you should not pay attention to memory management, JVM GC do that job for you automatically. It can easily lead to the impression that you don’t have to think about memory management, but this isn’t quite true. Consider the following simple cache implementation:
+<p>As Java developer, most of time, you should not pay attention to memory management, JVM GC do that job for you automatically. It can easily lead to the impression that you don’t have to think about memory management, but this isn’t quite true. Consider the following simple cache implementation:</p>
+
 <!--more-->
-```java
-import java.util.HashMap;
-import java.util.Map;
-/<em>ATTENTION, BUGS AHEAD.</em>/
-public class UserDataCache {
-    private Map&lt;String, Object&gt; cache = new HashMap&lt;&gt;();</p>
 
-<pre><code>public Object getData(String key) {
-    if (key == null) {
-        throw new NullPointerException("Key should not be null.");
-    }
-    return cache.get(key);
-}
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+<span class="lineno"> 2</span> <span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="lineno"> 3</span> <span class="cm">/*ATTENTION, BUGS AHEAD.*/</span>
+<span class="lineno"> 4</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDataCache</span> <span class="o">{</span>
+<span class="lineno"> 5</span>     <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>     <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getData</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 8</span>         <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 9</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">&quot;Key should not be null.&quot;</span><span class="o">);</span>
+<span class="lineno">10</span>         <span class="o">}</span>
+<span class="lineno">11</span>         <span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="lineno">12</span>     <span class="o">}</span>
+<span class="lineno">13</span> 
+<span class="lineno">14</span>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">putData</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Object</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">15</span>         <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">16</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">&quot;Key should not be null.&quot;</span><span class="o">);</span>
+<span class="lineno">17</span>         <span class="o">}</span>
+<span class="lineno">18</span>         <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+<span class="lineno">19</span>     <span class="o">}</span>
+<span class="lineno">20</span> <span class="o">}</span></code></pre></div>
 
-public void putData(String key, Object data) {
-    if (key == null) {
-        throw new NullPointerException("Key should not be null.");
-    }
-    cache.put(key, data);
-} } ``` If you check above code carefully, you may find that there's a memory leak in side the &lt;code&gt;getData()&lt;/code&gt; method. If a cache grows and then shrinks, the objects that were cached will not be garbage collected, even if the program using the cache has no more references to them. This is because the cache maintains obsolete references to these objects. An obsolete reference is simply a reference that will never be dereferenced again. In this case, any references outside of the “active portion” of the element map are obsolete. The active portion consists of the elements whose index is less than size.[^1]
-</code></pre>
+<p>If you check above code carefully, you may find that there’s a memory leak in side the <code>getData()</code> method. If a cache grows and then shrinks, the objects that were cached will not be garbage collected, even if the program using the cache has no more references to them. This is because the cache maintains obsolete references to these objects. An obsolete reference is simply a reference that will never be dereferenced again. In this case, any references outside of the “active portion” of the element map are obsolete. The active portion consists of the elements whose index is less than size.<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></p>
 
 <h3 id="solutions-to-the-memory-leak">Solutions to the Memory Leak</h3>
 <p>Now comes the solutions to this memory leak issue. Here I will present several solutions to memory leak in Java program briefly. Since the point of this blog post is about Reference type, I’ll talk more on that.</p>
 
-<p>Solution 1: use <code>java.util.LinkedHashMap</code> instead, code shown as below:
-```java
-import java.util.LinkedHashMap;
-import java.util.Map;</p>
+<p>Solution 1: use <code>java.util.LinkedHashMap</code> instead, code shown as below:</p>
 
-<p>public class LinkedHashMapCache {</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.util.LinkedHashMap</span><span class="o">;</span>
+<span class="lineno"> 2</span> <span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">LinkedHashMapCache</span> <span class="o">{</span>
+<span class="lineno"> 5</span> 
+<span class="lineno"> 6</span>     <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">CACHE_MAX_SIZE</span> <span class="o">=</span> <span class="mi">100</span><span class="o">;</span>
+<span class="lineno"> 7</span>     <span class="kd">private</span> <span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">cache</span><span class="o">;</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span>     <span class="kd">public</span> <span class="nf">LinkedHashMapCache</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">10</span>         <span class="k">this</span><span class="o">.</span><span class="na">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;(</span><span class="n">CACHE_MAX_SIZE</span><span class="o">,</span> <span class="mf">0.75f</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">11</span>             <span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">removeEldestEntry</span><span class="o">(</span>
+<span class="lineno">12</span>                     <span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">eldest</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">13</span>                 <span class="c1">// Remove the eldest entry if the size of the cache exceeds the maximum size</span>
+<span class="lineno">14</span>                 <span class="k">return</span> <span class="nf">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">CACHE_MAX_SIZE</span><span class="o">;</span>
+<span class="lineno">15</span>             <span class="o">}</span>
+<span class="lineno">16</span>         <span class="o">};</span>
+<span class="lineno">17</span>     <span class="o">}</span>
+<span class="lineno">18</span> 
+<span class="lineno">19</span>     <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getData</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">20</span>         <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+<span class="lineno">21</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">&quot;Key should not be null.&quot;</span><span class="o">);</span>
+<span class="lineno">22</span>         <span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="lineno">23</span>     <span class="o">}</span>
+<span class="lineno">24</span> 
+<span class="lineno">25</span>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">putData</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Object</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">26</span>         <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+<span class="lineno">27</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">&quot;Key should not be null.&quot;</span><span class="o">);</span>
+<span class="lineno">28</span>         <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+<span class="lineno">29</span>     <span class="o">}</span>
+<span class="lineno">30</span> <span class="o">}</span></code></pre></div>
 
-<pre><code>private final static int CACHE_MAX_SIZE = 100;
-private LinkedHashMap&lt;String, Object&gt; cache;
+<p>In above code, whenever the total entries exceed the maximum size of the map, the eldest entry will be overwritten as the latest one, so the memory leak issue is eliminated. More commonly, the useful lifetime of a cache entry is less well defined, with entries becoming less valuable over time. Under these circumstances, the cache should occasionally be cleaned of entries that have fallen into disuse. This can be done by a background thread (perhaps a <code>Timer</code> or <code>ScheduledThreadPoolExecutor</code>) or as a side effect of adding new entries to the cache. The <code>LinkedHashMap</code> class facilitates the latter approach with its <code>removeEldestEntry</code> method.</p>
 
-public LinkedHashMapCache() {
-    this.cache = new LinkedHashMap&lt;String, Object&gt;(CACHE_MAX_SIZE, 0.75f, true) {
-        protected boolean removeEldestEntry(
-                Map.Entry&lt;String, Object&gt; eldest) {
-            // Remove the eldest entry if the size of the cache exceeds the maximum size
-            return size() &gt; CACHE_MAX_SIZE;
-        }
-    };
-}
+<p>Solution 2: this is the real meat of this blog post, use <code>java.lang.ref.WeakHashMap</code> instead of <code>java.util.HashMap</code></p>
 
-public Object getData(String key) {
-    if (key == null)
-        throw new NullPointerException("Key should not be null.");
-    return cache.get(key);
-}
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="lineno"> 2</span> <span class="kn">import</span> <span class="nn">java.util.WeakHashMap</span><span class="o">;</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">WeakHashMapCache</span> <span class="o">{</span>
+<span class="lineno"> 5</span>     <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WeakHashMap</span><span class="o">&lt;&gt;();</span>
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span>     <span class="cm">/* This put() will return any data associated with key. */</span>
+<span class="lineno"> 8</span>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Object</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 9</span>         <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+<span class="lineno">10</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">&quot;Key cannot be null.&quot;</span><span class="o">);</span>
+<span class="lineno">11</span>         <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+<span class="lineno">12</span>     <span class="o">}</span>
+<span class="lineno">13</span> 
+<span class="lineno">14</span>     <span class="cm">/* This get() will return the data specified by key, or null if no</span>
+<span class="lineno">15</span> <span class="cm">     data was put there, or if the object was garbage collected. */</span>
+<span class="lineno">16</span>     <span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">17</span>         <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+<span class="lineno">18</span>             <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">&quot;Key cannot be null.&quot;</span><span class="o">);</span>
+<span class="lineno">19</span>         <span class="k">return</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="lineno">20</span>     <span class="o">}</span>
+<span class="lineno">21</span> <span class="o">}</span></code></pre></div>
 
-public void putData(String key, Object data) {
-    if (key == null)
-        throw new NullPointerException("Key should not be null.");
-    cache.put(key, data);
-} } ``` In above code, whenever the total entries exceed the maximum size of the map, the eldest entry will be overwritten as the latest one, so the memory leak issue is eliminated. More commonly, the useful lifetime of a cache entry is less well defined, with entries becoming less valuable over time. Under these circumstances, the cache should occasionally be cleaned of entries that have fallen into disuse. This can be done by a background thread (perhaps a &lt;code&gt;Timer&lt;/code&gt; or &lt;code&gt;ScheduledThreadPoolExecutor&lt;/code&gt;) or as a side effect of adding new entries to the cache. The &lt;code&gt;LinkedHashMap&lt;/code&gt; class facilitates the latter approach with its &lt;code&gt;removeEldestEntry&lt;/code&gt; method.
-</code></pre>
-
-<p>Solution 2: this is the real meat of this blog post, use <code>java.lang.ref.WeakHashMap</code> instead of <code>java.util.HashMap</code>
-```java
-import java.util.Map;
-import java.util.WeakHashMap;</p>
-
-<p>public class WeakHashMapCache {
-    private Map&lt;String, Object&gt; map = new WeakHashMap&lt;&gt;();</p>
-
-<pre><code>/* This put() will return any data associated with key. */
-public void put(String key, Object data) {
-    if (key == null)
-        throw new NullPointerException("Key cannot be null.");
-    map.put(key, data);
-}
-
-/* This get() will return the data specified by key, or null if no
- data was put there, or if the object was garbage collected. */
-public Object get(String key) {
-    if (key == null)
-        throw new NullPointerException("Key cannot be null.");
-    return map.get(key);
-} } ``` Why could the &lt;code&gt;java.lang.ref.WeakHashMap&lt;/code&gt; come to rescue? Let's dig deeper into what is weak references, how to use them, and when to use them.
-</code></pre>
+<p>Why could the <code>java.lang.ref.WeakHashMap</code> come to rescue? Let’s dig deeper into what is weak references, how to use them, and when to use them.</p>
 
 <h3 id="description-in-javadoc-package-summaryhttpdocsoraclecomjavase7docsapijavalangrefpackage-summaryhtml-of-javalangref">Description in <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/ref/package-summary.html">Javadoc package summary</a> of java.lang.ref</h3>
+
 <blockquote>
   <p>Provides reference-object classes, which support a limited degree of interaction with the garbage collector. A program may use a reference object to maintain a reference to some other object in such a way that the latter object may still be reclaimed by the collector. A program may also arrange to be notified some time after the collector has determined that the reachability of a given object has changed.</p>
 </blockquote>
 
-<p>So what is reachability, here is the explanation from that document too:
-&gt;Going from strongest to weakest, the different levels of reachability reflect the life cycle of an object. They are operationally defined as follows:</p>
+<p>So what is reachability, here is the explanation from that document too:</p>
+
+<blockquote>
+  <p>Going from strongest to weakest, the different levels of reachability reflect the life cycle of an object. They are operationally defined as follows:</p>
+</blockquote>
 
 <ul>
   <li>An object is strongly reachable if it can be reached by some thread without traversing any reference objects. A newly-created * object is strongly reachable by the thread that created it.</li>
@@ -202,62 +213,64 @@ public Object get(String key) {
 <p>At this point, you must be wondering about the difference, and the need, to have three different levels of weaker referencing mechanisms. In the order of strength, the references can be arranged as:
 <strong>Strong References &gt; Soft References &gt; Weak References &gt; Phantom References</strong></p>
 
-<h3 id="strong-references-2">Strong References <sup id="fnref:2"><a href="#fn:2" class="footnote">1</a></sup></h3>
-<p>The references that we create using the assignment operator are known as strong references, because the instance is strongly referred by the application, making it ineligible for garbage collection.
-<code>java
-Object o = new Object();
-</code>
-Soft, Weak and Phantom references are the weaker counterparts of referencing, where the garbage collection algorithm is allowed to mark an instance to be garbage collected, even though such a reference exists. What this means is that, even though you hold a weak reference to a particular instance, the JVM can sweep it out of the memory if it needs to. This works out great for the problem we discussed before, since instances in our cache will be automatically released if the JVM thinks it needs more memory for other parts.</p>
+<h3 id="strong-references-2">Strong References <sup id="fnref:2"><a href="#fn:2" class="footnote">2</a></sup></h3>
+<p>The references that we create using the assignment operator are known as strong references, because the instance is strongly referred by the application, making it ineligible for garbage collection.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Object</span><span class="o">();</span></code></pre></div>
+
+<p>Soft, Weak and Phantom references are the weaker counterparts of referencing, where the garbage collection algorithm is allowed to mark an instance to be garbage collected, even though such a reference exists. What this means is that, even though you hold a weak reference to a particular instance, the JVM can sweep it out of the memory if it needs to. This works out great for the problem we discussed before, since instances in our cache will be automatically released if the JVM thinks it needs more memory for other parts.</p>
 
 <h3 id="soft-references">Soft References</h3>
-<p>According to the document of <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/ref/SoftReference.html">SoftReference</a>, the JVM implementations are encouraged not to clear out a soft reference if the JVM has enough memory. That is, if free heap space is available, chances are that a soft reference will not be freed during a garbage collection cycle (so it survives from GC).  However, before throwing an <code>OutOfMemoryError</code>, JVM will attempt to reclaim memory by releasing instances that are softly reachable.  This makes Soft References ideal for implementing memory sensitive caches (as in our example problem).
-```java
-public class SoftReferenceSample {
-    public static void main(String[] args) {</p>
+<p>According to the document of <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/ref/SoftReference.html">SoftReference</a>, the JVM implementations are encouraged not to clear out a soft reference if the JVM has enough memory. That is, if free heap space is available, chances are that a soft reference will not be freed during a garbage collection cycle (so it survives from GC).  However, before throwing an <code>OutOfMemoryError</code>, JVM will attempt to reclaim memory by releasing instances that are softly reachable.  This makes Soft References ideal for implementing memory sensitive caches (as in our example problem).</p>
 
-<pre><code>    // Initial Strong Ref
-    Object obj = new Object();
-    System.out.println("Instance : " + obj);
-
-    // Make a Soft Reference on obj
-    SoftReference&lt;Object&gt; softReference = new SoftReference&lt;&gt;(obj);
-
-    // Make obj eligible for GC !
-    obj = null;
-    System.gc();    // Run GC
-    // should be null if GC collected
-    System.out.println("Instance : " + softReference.get());
-} } ```
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SoftReferenceSample</span> <span class="o">{</span>
+<span class="lineno"> 2</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span>         <span class="c1">// Initial Strong Ref</span>
+<span class="lineno"> 5</span>         <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Object</span><span class="o">();</span>
+<span class="lineno"> 6</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Instance : &quot;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">);</span>
+<span class="lineno"> 7</span> 
+<span class="lineno"> 8</span>         <span class="c1">// Make a Soft Reference on obj</span>
+<span class="lineno"> 9</span>         <span class="n">SoftReference</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">softReference</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SoftReference</span><span class="o">&lt;&gt;(</span><span class="n">obj</span><span class="o">);</span>
+<span class="lineno">10</span> 
+<span class="lineno">11</span>         <span class="c1">// Make obj eligible for GC !</span>
+<span class="lineno">12</span>         <span class="n">obj</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="lineno">13</span>         <span class="n">System</span><span class="o">.</span><span class="na">gc</span><span class="o">();</span>    <span class="c1">// Run GC</span>
+<span class="lineno">14</span>         <span class="c1">// should be null if GC collected</span>
+<span class="lineno">15</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Instance : &quot;</span> <span class="o">+</span> <span class="n">softReference</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+<span class="lineno">16</span>     <span class="o">}</span>
+<span class="lineno">17</span> <span class="o">}</span></code></pre></div>
 
 <h3 id="weak-references">Weak References</h3>
 <p>Unlike Soft References, Weak References can be reclaimed by the JVM during a GC cycle, even though there’s enough free memory available. As long as GC does not occur, we can retrieve a strong reference out of a weak reference by calling the <code>WeakReference#get()</code> method.</p>
 
-<p>Below is an example code of WeakReference, two of other References can be found under <code>java.lang.ref.*</code> package:
-```java
-import java.lang.ref.WeakReference;</p>
+<p>Below is an example code of WeakReference, two of other References can be found under <code>java.lang.ref.*</code> package:</p>
 
-<p>public class WeakReferenceSample {
-    public static void main(String[] args) {
-        // Initial Strong Ref
-        Object obj = new Object();
-        System.out.println(“Instance : “ + obj);</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.lang.ref.WeakReference</span><span class="o">;</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">WeakReferenceSample</span> <span class="o">{</span>
+<span class="lineno"> 4</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno"> 5</span>         <span class="c1">// Initial Strong Ref</span>
+<span class="lineno"> 6</span>         <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Object</span><span class="o">();</span>
+<span class="lineno"> 7</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Instance : &quot;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">);</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span>         <span class="c1">// Create a Weak Ref on obj</span>
+<span class="lineno">10</span>         <span class="n">WeakReference</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">weakRef</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WeakReference</span><span class="o">&lt;&gt;(</span><span class="n">obj</span><span class="o">);</span>
+<span class="lineno">11</span>         <span class="c1">// Make obj eligible for GC !</span>
+<span class="lineno">12</span>         <span class="n">obj</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="lineno">13</span>         <span class="c1">// Get a strong reference again. Now its not eligible for GC</span>
+<span class="lineno">14</span>         <span class="n">Object</span> <span class="n">strongRef</span> <span class="o">=</span> <span class="n">weakRef</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+<span class="lineno">15</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Instance : &quot;</span> <span class="o">+</span> <span class="n">strongRef</span><span class="o">);</span>
+<span class="lineno">16</span>         <span class="c1">// Make the instance eligible for GC again</span>
+<span class="lineno">17</span>         <span class="n">strongRef</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="lineno">18</span>         <span class="c1">// Keep your fingers crossed</span>
+<span class="lineno">19</span>         <span class="n">System</span><span class="o">.</span><span class="na">gc</span><span class="o">();</span>
+<span class="lineno">20</span>         <span class="c1">// should be null if GC collected</span>
+<span class="lineno">21</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Instance : &quot;</span> <span class="o">+</span> <span class="n">weakRef</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+<span class="lineno">22</span>     <span class="o">}</span>
+<span class="lineno">23</span> <span class="o">}</span></code></pre></div>
 
-<pre><code>    // Create a Weak Ref on obj
-    WeakReference&lt;Object&gt; weakRef = new WeakReference&lt;&gt;(obj);
-    // Make obj eligible for GC !
-    obj = null;
-    // Get a strong reference again. Now its not eligible for GC
-    Object strongRef = weakRef.get();
-    System.out.println("Instance : " + strongRef);
-    // Make the instance eligible for GC again
-    strongRef = null;
-    // Keep your fingers crossed
-    System.gc();
-    // should be null if GC collected
-    System.out.println("Instance : " + weakRef.get());
-} } ``` From the little toy program you can see how to create WeakReference instances and how to store/get data into/from it either.
-</code></pre>
+<p>From the little toy program you can see how to create WeakReference instances and how to store/get data into/from it either.</p>
 
 <h3 id="phantom-references">Phantom References</h3>
 <p>Phantom references are the weakest form of referencing. Instances that are referred via a phantom reference cannot be accessed directly using a get() method (it always returns null), as in case of Soft / Weak references. Instead, we need to rely on Reference Queues to make use of Phantom References. One use case of Phantom references is to keep track of active references within an application, and to know when those instances will be garbage collected. If we use strong references, then the instance will not be eligible for GC due to the strong reference we maintain. Instead, we could rely on a phantom reference with the support of a reference queue to handle the situation.</p>
@@ -265,46 +278,49 @@ import java.lang.ref.WeakReference;</p>
 <h3 id="reference-queues">Reference Queues</h3>
 <p>ReferenceQueue is the mechanism provided by the JVM to be notified when a referenced instance is about to be garbage collected. Reference Queues can be used with all of the reference types by passing it to the constructor. When creating a PhantomReference, it is a must to provide a Reference Queue.</p>
 
-<p>Let’s see an example of reference queue:
-```java
-import java.lang.ref.PhantomReference;
-import java.lang.ref.ReferenceQueue;</p>
+<p>Let’s see an example of reference queue:</p>
 
-<p>public class PhantomRefQueueSample {</p>
-
-<pre><code>public static void main(String[] args) throws InterruptedException {
-
-    Object obj = new Object();
-    ReferenceQueue&lt;Object&gt; queue = new ReferenceQueue&lt;&gt;();
-    PhantomReference&lt;Object&gt; pRef = new PhantomReference&lt;&gt;(obj, queue);
-    obj = null;
-
-    new Thread(new Runnable() {
-        public void run() {
-            try {
-                System.out.println("Awaiting for GC");
-                // This will block till it is reclaimed by JVM
-                PhantomReference pRef = (PhantomReference) queue.remove();
-                System.out.println("Referenced reclaimed");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }).start();
-
-    // Wait for 2nd thread to start
-    Thread.sleep(2000);
-
-    System.out.println("Invoking GC");
-    System.gc();
-} } ```
-</code></pre>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="lineno"> 1</span> <span class="kn">import</span> <span class="nn">java.lang.ref.PhantomReference</span><span class="o">;</span>
+<span class="lineno"> 2</span> <span class="kn">import</span> <span class="nn">java.lang.ref.ReferenceQueue</span><span class="o">;</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhantomRefQueueSample</span> <span class="o">{</span>
+<span class="lineno"> 5</span> 
+<span class="lineno"> 6</span>     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<span class="lineno"> 7</span> 
+<span class="lineno"> 8</span>         <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Object</span><span class="o">();</span>
+<span class="lineno"> 9</span>         <span class="n">ReferenceQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReferenceQueue</span><span class="o">&lt;&gt;();</span>
+<span class="lineno">10</span>         <span class="n">PhantomReference</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">pRef</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PhantomReference</span><span class="o">&lt;&gt;(</span><span class="n">obj</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
+<span class="lineno">11</span>         <span class="n">obj</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="lineno">12</span> 
+<span class="lineno">13</span>         <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nf">Runnable</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">14</span>             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+<span class="lineno">15</span>                 <span class="k">try</span> <span class="o">{</span>
+<span class="lineno">16</span>                     <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Awaiting for GC&quot;</span><span class="o">);</span>
+<span class="lineno">17</span>                     <span class="c1">// This will block till it is reclaimed by JVM</span>
+<span class="lineno">18</span>                     <span class="n">PhantomReference</span> <span class="n">pRef</span> <span class="o">=</span> <span class="o">(</span><span class="n">PhantomReference</span><span class="o">)</span> <span class="n">queue</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+<span class="lineno">19</span>                     <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Referenced reclaimed&quot;</span><span class="o">);</span>
+<span class="lineno">20</span>                 <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+<span class="lineno">21</span>                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="lineno">22</span>                 <span class="o">}</span>
+<span class="lineno">23</span>             <span class="o">}</span>
+<span class="lineno">24</span>         <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+<span class="lineno">25</span> 
+<span class="lineno">26</span>         <span class="c1">// Wait for 2nd thread to start</span>
+<span class="lineno">27</span>         <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2000</span><span class="o">);</span>
+<span class="lineno">28</span> 
+<span class="lineno">29</span>         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Invoking GC&quot;</span><span class="o">);</span>
+<span class="lineno">30</span>         <span class="n">System</span><span class="o">.</span><span class="na">gc</span><span class="o">();</span>
+<span class="lineno">31</span>     <span class="o">}</span>
+<span class="lineno">32</span> <span class="o">}</span></code></pre></div>
 
 <h3 id="weakhashmap">WeakHashMap</h3>
 <p><code>java.util.WeakHashMap</code> is a special version of the HashMap, which uses weak references as the key. Therefore, when a particular key is not in use anymore, and it is eligible for garbage collection, the corresponding entry in the WeakHashMap will magically disappear from the map. And the magic relies on ReferenceQueue mechanism explained before to identify when a particular weak reference is to be garbage collected. This is useful when you want to build a cache based on weak references. In more sophisticated requirements, it is better to write your own cache implementation.</p>
 
 <div class="footnotes">
   <ol>
+    <li id="fn:1">
+      <p><a href="http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683">Effective Java, 2nd edition</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
     <li id="fn:2">
       <p><a href="http://blog.yohanliyanage.com/2010/10/ktjs-3-soft-weak-phantom-references/">Know the JVM Series -3- When Weaker is Better: Understanding Soft, Weak and Phantom References</a> <a href="#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
@@ -317,7 +333,7 @@ import java.lang.ref.ReferenceQueue;</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/java/2014/04/07/singleton-pattern-in-java/" data-toggle="tooltip" data-placement="top" title="Singleton pattern in Java">&larr; Previous Post</a>
+                        <a href="/java/2014/04/07/singleton-pattern-in-java/" data-toggle="tooltip" data-placement="top" title="Singleton Design Pattern in Java">&larr; Previous Post</a>
                     </li>
                     
                     
