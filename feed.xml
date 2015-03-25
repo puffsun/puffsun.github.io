@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 25 Mar 2015 21:54:15 +0800</pubDate>
-    <lastBuildDate>Wed, 25 Mar 2015 21:54:15 +0800</lastBuildDate>
+    <pubDate>Wed, 25 Mar 2015 21:55:23 +0800</pubDate>
+    <lastBuildDate>Wed, 25 Mar 2015 21:55:23 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -76,20 +76,20 @@
 
     &lt;p&gt;在学习新的知识之前，在我们的大脑里面应该有清晰的关于学习成功的场景，这样我们才能根据成功的目标，确定到达目的的步骤。以 学习Go 语言为例，在这个阶段，我们可能定义的目标可能是熟练运用集合类库、并发类库、Channel、Go Filesystem API、Go Web 编程、综合运用以上知识编写完整的应用等等，这一步的关键在于定义了&lt;em&gt;简明&lt;/em&gt;，&lt;em&gt;清晰&lt;/em&gt;，&lt;em&gt;可衡量&lt;/em&gt;的学习成功的目标，从而可以衡量学习进度。&lt;/p&gt;
   &lt;/li&gt;
-  &lt;li&gt;查找学习资源
- 同学可用的搜索引擎、论坛、社区、 YouTube、StackOverflow、问答社区、出版社网站、Amazon 等电子商务网站，豆瓣等等所有可用的资源，来查找所有可用的博客、文档、书籍、视频、Podcasts，当然如果你像我一样，在自己的电脑上有上百GB的电子书存货会大有帮助。在这个阶段，我们要做的是尽可能多的搜索资源，并记录下来，Evernote 会很有帮助，在后续的步骤我们会根据资源的质量过滤，保留质量最高的那一部分。
+  &lt;li&gt;
+    &lt;p&gt;查找学习资源&lt;/p&gt;
+
+    &lt;p&gt;同学可用的搜索引擎、论坛、社区、 YouTube、StackOverflow、问答社区、出版社网站、Amazon 等电子商务网站，豆瓣等等所有可用的资源，来查找所有可用的博客、文档、书籍、视频、Podcasts，当然如果你像我一样，在自己的电脑上有上百GB的电子书存货会大有帮助。在这个阶段，我们要做的是尽可能多的搜索资源，并记录下来，Evernote 会很有帮助，在后续的步骤我们会根据资源的质量过滤，保留质量最高的那一部分。
 可以参考如下的资源的类型：
-    &lt;ul&gt;
-      &lt;li&gt;书籍&lt;/li&gt;
-      &lt;li&gt;博客&lt;/li&gt;
-      &lt;li&gt;视频&lt;/li&gt;
-      &lt;li&gt;身边或者可以接触到的朋友或专业人士&lt;/li&gt;
-      &lt;li&gt;Podcasts&lt;/li&gt;
-      &lt;li&gt;源代码&lt;/li&gt;
-      &lt;li&gt;示例项目&lt;/li&gt;
-      &lt;li&gt;在线文档&lt;/li&gt;
-      &lt;li&gt;…&lt;/li&gt;
-    &lt;/ul&gt;
+ * 书籍
+ * 博客
+ * 视频
+ * 身边或者可以接触到的朋友或专业人士
+ * Podcasts
+ * 源代码
+ * 示例项目
+ * 在线文档
+ * …&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;制定学习计划&lt;/p&gt;
