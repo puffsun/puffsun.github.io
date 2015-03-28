@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 29 Mar 2015 00:21:13 +0800</pubDate>
-    <lastBuildDate>Sun, 29 Mar 2015 00:21:13 +0800</lastBuildDate>
+    <pubDate>Sun, 29 Mar 2015 00:34:05 +0800</pubDate>
+    <lastBuildDate>Sun, 29 Mar 2015 00:34:05 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -261,7 +261,7 @@ This is a sample page.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;在上面的代码中，&lt;code&gt;template.ParseFiles&lt;/code&gt; 读取 &lt;code&gt;edit.html&lt;/code&gt; 的内容，并返回&lt;code&gt;*template.Template&lt;/code&gt; 实例。&lt;code&gt;t.Execute&lt;/code&gt; 运行模板，并将创建的 HTML 内容写入 &lt;code&gt;http.ResponseWriter&lt;/code&gt;. 这里 &lt;code&gt;.Title&lt;/code&gt; 和 &lt;code&gt;.Body&lt;/code&gt; 分别指向 Page 对象里面的 Title 和 Body。&lt;/p&gt;
 
-&lt;p&gt;模板被 `` 括起来。&lt;code&gt;http/template&lt;/code&gt; 的另外一个好处是它可以自动转义生成的 HTML 代码，避免了 &lt;a href=&quot;http://en.wikipedia.org/wiki/Cross-site_scripting&quot;&gt;XSS&lt;/a&gt; 攻击。&lt;/p&gt;
+&lt;p&gt;模板被&lt;code&gt;{{}}&lt;/code&gt;括起来。&lt;code&gt;http/template&lt;/code&gt; 的另外一个好处是它可以自动转义生成的 HTML 代码，避免了 &lt;a href=&quot;http://en.wikipedia.org/wiki/Cross-site_scripting&quot;&gt;XSS&lt;/a&gt; 攻击。&lt;/p&gt;
 
 &lt;p&gt;接下来，我们也顺手把 &lt;code&gt;viewHandler&lt;/code&gt; 利用 template 清理一下：&lt;/p&gt;
 

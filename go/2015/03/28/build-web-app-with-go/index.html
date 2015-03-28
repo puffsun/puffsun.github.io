@@ -348,7 +348,7 @@ This is a sample page.</code></pre></div>
 
 <p>在上面的代码中，<code>template.ParseFiles</code> 读取 <code>edit.html</code> 的内容，并返回<code>*template.Template</code> 实例。<code>t.Execute</code> 运行模板，并将创建的 HTML 内容写入 <code>http.ResponseWriter</code>. 这里 <code>.Title</code> 和 <code>.Body</code> 分别指向 Page 对象里面的 Title 和 Body。</p>
 
-<p>模板被 `` 括起来。<code>http/template</code> 的另外一个好处是它可以自动转义生成的 HTML 代码，避免了 <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS</a> 攻击。</p>
+<p>模板被<code>{{}}</code>括起来。<code>http/template</code> 的另外一个好处是它可以自动转义生成的 HTML 代码，避免了 <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS</a> 攻击。</p>
 
 <p>接下来，我们也顺手把 <code>viewHandler</code> 利用 template 清理一下：</p>
 
