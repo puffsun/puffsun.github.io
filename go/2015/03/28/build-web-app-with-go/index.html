@@ -128,7 +128,7 @@
 
 <p>在import 的两个 package 里面，<a href="https://golang.org/pkg/io/ioutil/">io/ioutil</a>我们用于从磁盘读写文件，而 <a href="https://golang.org/pkg/fmt/">fmt</a> 将会用于打印内容到标准输出，一般来说就是你键入命令的 Terminal.</p>
 
-<p>接下来定义我们将使用的核心数据结构，以及用于将文件保存至磁盘和从磁盘加载的方法(method)，注意，这里不是函数(function)：</p>
+<p>接下来定义我们将使用的核心数据结构，以及用于将文件保存至磁盘的方法(method)和从磁盘加载的函数(function)。function 和 method 的主要区别在于 method 是一个面向对象的概念，它可以操作一个对象自身的数据，而且这个数据是隐式传递的；而对 function 而言，所操作的数据是显式作为函数参数传递进来的，详细的解释请见<a href="http://stackoverflow.com/questions/155609/difference-between-a-method-and-a-function">Difference between a method and a function</a>。另外要注意的是，Go 语言没有内置的面向对象概念，但是我们可以用 <code>struct</code> 来模拟面向对象。</p>
 
 <div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Page</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">Title</span> <span class="kt">string</span>
@@ -442,7 +442,7 @@ This is a sample page.</code></pre></div>
 <p>注意这里 HTTP 错误码的运用。当然我们这里会把错误信息直接抛向用户，这也是很不友好的做法，实际项目中可以根据实际情况自定义友好的4xx和5xx 页面。</p>
 
 <h3 id="section-6">缓存模板</h3>
-<p>到目前为止，我们的代码有个重大的性能，每一次页面请求都会导致模板重新加载、解析，比较好的做法是在启动时把解析好的模板文件缓存起来。随后请求利用<a href="https://golang.org/pkg/html/template/#Template.ExecuteTemplate">ExecuteTemplate</a>来渲染模板：</p>
+<p>到目前为止，我们的代码有个重大的性能问题，每一次页面请求都会导致模板重新加载、解析，比较好的做法是在启动时把解析好的模板文件缓存起来。随后请求利用<a href="https://golang.org/pkg/html/template/#Template.ExecuteTemplate">ExecuteTemplate</a>来渲染模板：</p>
 
 <div class="highlight"><pre><code class="language-go" data-lang="go"><span class="c1">// 全局变量</span>
 <span class="kd">var</span> <span class="nx">templates</span> <span class="p">=</span> <span class="nx">template</span><span class="p">.</span><span class="nx">Must</span><span class="p">(</span><span class="nx">template</span><span class="p">.</span><span class="nx">ParseFiles</span><span class="p">(</span><span class="s">&quot;edit.html&quot;</span><span class="p">,</span> <span class="s">&quot;view.html&quot;</span><span class="p">))</span>
@@ -548,7 +548,6 @@ This is a sample page.</code></pre></div>
 <div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
-	<span class="s">&quot;errors&quot;</span>
 	<span class="s">&quot;flag&quot;</span>
 	<span class="s">&quot;html/template&quot;</span>
 	<span class="s">&quot;io/ioutil&quot;</span>
@@ -617,15 +616,6 @@ This is a sample page.</code></pre></div>
 		<span class="nx">http</span><span class="p">.</span><span class="nx">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">Error</span><span class="p">(),</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusInternalServerError</span><span class="p">)</span>
 		<span class="k">return</span>
 	<span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nx">getTitle</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">m</span> <span class="o">:=</span> <span class="nx">validPath</span><span class="p">.</span><span class="nx">FindStringSubmatch</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">Path</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">m</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">http</span><span class="p">.</span><span class="nx">NotFound</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;Invalid Page Title&quot;</span><span class="p">)</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="nx">m</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kc">nil</span>
 <span class="p">}</span>
 
 <span class="kd">func</span> <span class="nx">makeHandler</span><span class="p">(</span><span class="nx">fn</span> <span class="kd">func</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="kt">string</span><span class="p">))</span> <span class="nx">http</span><span class="p">.</span><span class="nx">HandlerFunc</span> <span class="p">{</span>
