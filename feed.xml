@@ -5,14 +5,14 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 04 Apr 2015 10:34:19 +0800</pubDate>
-    <lastBuildDate>Sat, 04 Apr 2015 10:34:19 +0800</lastBuildDate>
+    <pubDate>Sat, 04 Apr 2015 10:41:58 +0800</pubDate>
+    <lastBuildDate>Sat, 04 Apr 2015 10:41:58 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>用 Docker 部署 Go Web 应用</title>
         <description>&lt;h3 id=&quot;section&quot;&gt;几句废话&lt;/h3&gt;
-&lt;p&gt;按照惯例，先废话几句，再切入正题。学习 Go 语言快一个月了，用 Go 语言实现了&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;常见的数据结构和算法(持续更新中)&lt;/a&gt;，也用 Go 和 AngularJS 创建了一个&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;迷你 Todo List 项目&lt;/a&gt;，回头我会大致介绍一下这个 Todo List 项目的大致结构，现在先聊聊我到目前为止对 Go 语言的观感。因为水平问题，我不可能聊得深入，只是我的个人感受。Go 语言在我看来有如下的优势：&lt;/p&gt;
+&lt;p&gt;按照惯例，先废话几句，再切入正题。学习 Go 语言快一个月了，期间用 Go 语言实现了&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;常见的数据结构和算法(持续更新中)&lt;/a&gt;，也用 Go 和 AngularJS 创建了一个&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;迷你 Todo List 项目&lt;/a&gt;，回头我会大致介绍一下这个 Todo List 项目的大致结构，现在先聊聊我到目前为止对 Go 语言的观感。因为水平问题，我不可能聊得深入，只是我的个人感受。Go 语言在我看来有如下的优势：&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Go 编译器把代码和依赖直接编译成机器码，所以部署极其简单，一个二进制文件就可以任意部署。&lt;/li&gt;
