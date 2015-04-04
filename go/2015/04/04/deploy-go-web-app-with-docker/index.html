@@ -107,7 +107,7 @@
     <p>语言层面的并发支持，可以充分支持多核。多核已经成为我们这个时代的常态，Go 代码不需要额外的努力就可以做到充分利用多核。Go 语言的并发范式是<a href="http://en.wikipedia.org/wiki/Communicating_sequential_processes">CSP(Communicating Sequential Processes)</a>，它的好处之一在于并发程序之间的解耦，从而也有利于并发代码的维护和扩展，在软件领域，解耦永远是一个褒义词。拿 Java 和 Ruby 来比较：</p>
 
     <ul>
-      <li>Java 的内置并发支持来自于 <code>Thread</code> 和 <code>Lock</code>，我们这不没有足够篇幅讨论内置库 <code>java.util.concurrent</code> 或者 第三方库 <a href="http://akka.io/">AKKA</a>。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。</li>
+      <li>Java 的内置并发支持来自于 <code>Thread</code> 和 <code>Lock</code>，我们这里没有足够篇幅讨论 Java 内置库 <code>java.util.concurrent</code> 或者 第三方库 <a href="http://akka.io/">AKKA</a>。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。</li>
       <li>Ruby 的并发由于<a href="http://en.wikipedia.org/wiki/Ruby_MRI">MRI</a> 虚拟机中<a href="http://en.wikipedia.org/wiki/Global_Interpreter_Lock">GIL</a>的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 <a href="http://jruby.org/">JRuby</a> 或者 <a href="http://rubini.us/">Rubinius</a> 这些支持真正并发的虚拟机上，多半会有严重的并发问题。</li>
     </ul>
   </li>

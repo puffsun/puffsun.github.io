@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 04 Apr 2015 10:32:21 +0800</pubDate>
-    <lastBuildDate>Sat, 04 Apr 2015 10:32:21 +0800</lastBuildDate>
+    <pubDate>Sat, 04 Apr 2015 10:34:19 +0800</pubDate>
+    <lastBuildDate>Sat, 04 Apr 2015 10:34:19 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -20,7 +20,7 @@
     &lt;p&gt;语言层面的并发支持，可以充分支持多核。多核已经成为我们这个时代的常态，Go 代码不需要额外的努力就可以做到充分利用多核。Go 语言的并发范式是&lt;a href=&quot;http://en.wikipedia.org/wiki/Communicating_sequential_processes&quot;&gt;CSP(Communicating Sequential Processes)&lt;/a&gt;，它的好处之一在于并发程序之间的解耦，从而也有利于并发代码的维护和扩展，在软件领域，解耦永远是一个褒义词。拿 Java 和 Ruby 来比较：&lt;/p&gt;
 
     &lt;ul&gt;
-      &lt;li&gt;Java 的内置并发支持来自于 &lt;code&gt;Thread&lt;/code&gt; 和 &lt;code&gt;Lock&lt;/code&gt;，我们这不没有足够篇幅讨论内置库 &lt;code&gt;java.util.concurrent&lt;/code&gt; 或者 第三方库 &lt;a href=&quot;http://akka.io/&quot;&gt;AKKA&lt;/a&gt;。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。&lt;/li&gt;
+      &lt;li&gt;Java 的内置并发支持来自于 &lt;code&gt;Thread&lt;/code&gt; 和 &lt;code&gt;Lock&lt;/code&gt;，我们这里没有足够篇幅讨论 Java 内置库 &lt;code&gt;java.util.concurrent&lt;/code&gt; 或者 第三方库 &lt;a href=&quot;http://akka.io/&quot;&gt;AKKA&lt;/a&gt;。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。&lt;/li&gt;
       &lt;li&gt;Ruby 的并发由于&lt;a href=&quot;http://en.wikipedia.org/wiki/Ruby_MRI&quot;&gt;MRI&lt;/a&gt; 虚拟机中&lt;a href=&quot;http://en.wikipedia.org/wiki/Global_Interpreter_Lock&quot;&gt;GIL&lt;/a&gt;的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 &lt;a href=&quot;http://jruby.org/&quot;&gt;JRuby&lt;/a&gt; 或者 &lt;a href=&quot;http://rubini.us/&quot;&gt;Rubinius&lt;/a&gt; 这些支持真正并发的虚拟机上，多半会有严重的并发问题。&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
