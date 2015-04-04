@@ -5,9 +5,230 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 04 Apr 2015 00:51:16 +0800</pubDate>
-    <lastBuildDate>Sat, 04 Apr 2015 00:51:16 +0800</lastBuildDate>
+    <pubDate>Sat, 04 Apr 2015 10:32:21 +0800</pubDate>
+    <lastBuildDate>Sat, 04 Apr 2015 10:32:21 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>用 Docker 部署 Go Web 应用</title>
+        <description>&lt;h3 id=&quot;section&quot;&gt;几句废话&lt;/h3&gt;
+&lt;p&gt;按照惯例，先废话几句，再切入正题。学习 Go 语言快一个月了，用 Go 语言实现了&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;常见的数据结构和算法(持续更新中)&lt;/a&gt;，也用 Go 和 AngularJS 创建了一个&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;迷你 Todo List 项目&lt;/a&gt;，回头我会大致介绍一下这个 Todo List 项目的大致结构，现在先聊聊我到目前为止对 Go 语言的观感。因为水平问题，我不可能聊得深入，只是我的个人感受。Go 语言在我看来有如下的优势：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Go 编译器把代码和依赖直接编译成机器码，所以部署极其简单，一个二进制文件就可以任意部署。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;语言层面的并发支持，可以充分支持多核。多核已经成为我们这个时代的常态，Go 代码不需要额外的努力就可以做到充分利用多核。Go 语言的并发范式是&lt;a href=&quot;http://en.wikipedia.org/wiki/Communicating_sequential_processes&quot;&gt;CSP(Communicating Sequential Processes)&lt;/a&gt;，它的好处之一在于并发程序之间的解耦，从而也有利于并发代码的维护和扩展，在软件领域，解耦永远是一个褒义词。拿 Java 和 Ruby 来比较：&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Java 的内置并发支持来自于 &lt;code&gt;Thread&lt;/code&gt; 和 &lt;code&gt;Lock&lt;/code&gt;，我们这不没有足够篇幅讨论内置库 &lt;code&gt;java.util.concurrent&lt;/code&gt; 或者 第三方库 &lt;a href=&quot;http://akka.io/&quot;&gt;AKKA&lt;/a&gt;。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。&lt;/li&gt;
+      &lt;li&gt;Ruby 的并发由于&lt;a href=&quot;http://en.wikipedia.org/wiki/Ruby_MRI&quot;&gt;MRI&lt;/a&gt; 虚拟机中&lt;a href=&quot;http://en.wikipedia.org/wiki/Global_Interpreter_Lock&quot;&gt;GIL&lt;/a&gt;的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 &lt;a href=&quot;http://jruby.org/&quot;&gt;JRuby&lt;/a&gt; 或者 &lt;a href=&quot;http://rubini.us/&quot;&gt;Rubinius&lt;/a&gt; 这些支持真正并发的虚拟机上，多半会有严重的并发问题。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Go 的工具链非常强大，比如 &lt;code&gt;gofmt&lt;/code&gt;, &lt;code&gt;godef&lt;/code&gt;, &lt;code&gt;goimports&lt;/code&gt;, &lt;code&gt;golint&lt;/code&gt;, &lt;code&gt;godoc&lt;/code&gt;, 等等，Go 核心开发者还特意为 Vim, Emacs 和常见 IDE 用户配备了 &lt;a href=&quot;https://github.com/nsf/gocode&quot;&gt;Gocode&lt;/a&gt;，在 Gocode 里面，日常编程所需的工具，应有尽有。&lt;/li&gt;
+  &lt;li&gt;语法简单，代码简洁。这一条因人而异，对我来说，相对于我以前初学 &lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala&lt;/a&gt; 的时候，被 Scala 的类型推导搞得七荤八素。而在 Go 语言的学习过程中从没遇到难以理解的概念，一切都顺其自然。&lt;/li&gt;
+  &lt;li&gt;函数是 Go 语言的一等公民，这意味着函数可以接收函数作为参数，可以返回函数，带来了无穷的想象力。这一点 Java 和 Ruby 都做不到。Java 刚刚在 Java8 里面支持了闭包；而 Ruby 只能够用代码块来模拟这一功能，而且 Ruby 代码块的限制是最多只能有一个代码块作为参数，即使有这样的限制，Ruby 代码块已经成为 Ruby 的标志性构件之一，那么你想想 Go 里面作为一等公民的函数带来的威力吧。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;基于以上的理由，Go 语言已经在我的最喜爱编程语言排行榜上位居第三，前两个分别是 &lt;code&gt;Java&lt;/code&gt; 和 &lt;code&gt;JavaScript&lt;/code&gt;, 不服莫辩，个人喜好。&lt;/p&gt;
+
+&lt;h3 id=&quot;dockerhttpswwwdockercom--go-&quot;&gt;为什么用 &lt;a href=&quot;https://www.docker.com/&quot;&gt;Docker&lt;/a&gt; 来部署 Go 项目&lt;/h3&gt;
+&lt;p&gt;Go 目前多应用于 Web 项目中，而 Web 项目一直以来的其中一个让人头疼的地方就是部署，也就是在开发和到产品上线这个跨度里，有很多的不确定因素，比如宿主语言版本、依赖库版本、操作系统版本及补丁、配置文件差异、以及服务器数量等等。而 Docker 从诞生的第一天起就在尝试解决这些问题，而且给出了很好的解决方案。如果你对 Docker 完全不懂，可以参考这篇扫盲文章：&lt;a href=&quot;http://readwrite.com/2014/12/23/docker-to-dominate-in-2015&quot;&gt;Why Docker Is Going To Dominate Your 2015&lt;/a&gt;. 另外顺便提一下，如果你身处 Web 开发领域而你在2014年没有听说或者摆弄一下 Docker，那么你一定要反思一下到底发生了什么！&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;阅读本文的前置条件&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Docker - 你得知道什么是 Docker client/daemon, Docker Image, Docker Container, Docker file, 会运行基本的 Docker 命令。&lt;/li&gt;
+  &lt;li&gt;Go 语言 - 能读懂 Go 代码，知道如何获取 Go 语言依赖的第三方库，有 Web 开发的基本知识。&lt;/li&gt;
+  &lt;li&gt;最好懂点 &lt;a href=&quot;https://angularjs.org/&quot;&gt;AngularJS&lt;/a&gt;，因为我们要部署的项目前端用 AngularJS 实现。&lt;/li&gt;
+  &lt;li&gt;知道如何用 Go 语言开发 Web 项目。不过不知道也没关系，你只需要把现有的项目用&lt;code&gt;git clone&lt;/code&gt; 拷贝到本地，运行 Docker 命令就可以了。至于这个 Todo List 项目，以后有时间我会写一到两篇博客分别介绍如何用 Go 语言第三方库开发 Web 项目，如何用 AngularJS 开发单页面 Web 应用（Single Page Web Application）。&lt;/li&gt;
+  &lt;li&gt;熟悉命令行，另外有一台 Linux 或者 Mac 的机器，这里的所有操作都在命令行完成。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;我们开始吧&lt;/h3&gt;
+&lt;p&gt;首先从 Github 获取我们要部署的代码，这里我们要部署的代码是我用 Go 语言和 JavaScript MVC 框架 AngularJS 开发的一个 &lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;Todo List&lt;/a&gt; 项目。有人会问，我们为什么不部署一个 Hello World呢？我的理由是 Hello World 和实际项目相差太远，它既不需要第三方依赖库管理，也不需要前端和后端分离。我们这里部署的就是一个比较接近于实际产品的 Go Web 应用，如果你跟着做可以遇到更多挑战。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;mkdir ~/workspace &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;
+git clone https://github.com/puffsun/todos.git
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;todos&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;看一下项目目录结构：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls
+Dockerfile     README.md      main.go        run.sh
+Godeps/        app/           public/        tmp/
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;tree app
+app
+├── add_new_todo_test.go
+├── app_suite_test.go
+├── handlers.go
+├── logger.go
+├── repo.go
+├── router.go
+├── routes.go
+├── todo.go
+└── todos.sqlite3
+
+&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; directories, &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt; files
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls public
+css/          favicon.ico   index.html    js/           node_modules/ package.json  readme.md     &lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt;/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里有几个需要留意的：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Dockerfile，这就是我们接下来的主角，关于 Dockerfile 的详细知识，参见&lt;a href=&quot;https://docs.docker.com/reference/builder/&quot;&gt;Dockerfile Official Reference&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;app 目录，这里就是我们的后台 Go 代码&lt;/li&gt;
+  &lt;li&gt;public 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 &lt;code&gt;npm&lt;/code&gt; 来获取 AngularJS 和这里要用到的 AngularJS 插件 &lt;code&gt;angular-mock&lt;/code&gt;, &lt;code&gt;angular-route&lt;/code&gt;，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。&lt;/li&gt;
+  &lt;li&gt;Godeps 目录，这是 Go 的第三方依赖管理工具 &lt;code&gt;godeps&lt;/code&gt; 创建的，这个工具类似 Ruby bundler，详见&lt;a href=&quot;https://github.com/tools/godep&quot;&gt;这里&lt;/a&gt;。另外它也省去了我们要在 Dockerfile 里详细指定每个 Go 第三方依赖的麻烦，我们只需要在 Dockerfile 中运行 &lt;code&gt;godep restore&lt;/code&gt; 就可以自动安装所有依赖，当然，前提是你要安装了 godep: &lt;code&gt;go get github.com/tools/godep&lt;/code&gt;。&lt;/li&gt;
+  &lt;li&gt;run.sh，启动脚本，内容如下：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -z &lt;span class=&quot;s2&quot;&gt;&amp;quot;$GOPATH&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Need to set GOPATH&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -x &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;GOPATH&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin/fresh &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;GOPATH&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin/fresh
+&lt;span class=&quot;lineno&quot;&gt;7&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;8&lt;/span&gt;     go run ./main.go
+&lt;span class=&quot;lineno&quot;&gt;9&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;fresh 是 Go 第三方命令行工具，用于监视指定目录下文件，并根据文件变化自动重启正在开发的 Go 应用，省去每次改文件都要手工重启的麻烦，它可以通过 &lt;code&gt;go get github.com/pilu/fresh&lt;/code&gt; 来安装。&lt;/p&gt;
+
+&lt;h3 id=&quot;dockerfile&quot;&gt;Dockerfile&lt;/h3&gt;
+&lt;p&gt;在这个项目中我已经创建好 Dockerfile：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Start from a Debian image with the latest version of Go installed&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# and a workspace (GOPATH) configured at /go.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; FROM golang:latest
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; MAINTAINER George Sun &amp;lt;http://codethoughts.info&amp;gt;
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# For convenience, set an env variable with the path of the code&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt; ENV APP_DIR  &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Copy the local package files to the container&amp;#39;s workspace.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; ADD . &lt;span class=&quot;nv&quot;&gt;$APP_DIR&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt; WORKDIR &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
+&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Install dependencies&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt; RUN go get github.com/tools/godep
+&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; RUN go get github.com/pilu/fresh
+&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt; RUN &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/godep restore
+&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Build the project inside the container.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# (You may fetch or manage dependencies here,&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# either manually or with a tool like &amp;quot;godep&amp;quot;.)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt; RUN go install github.com/puffsun/todos
+&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Run the web application by default when the container starts.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt; ENTRYPOINT &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/todos
+&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Document that the service listens on port 8000.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt; EXPOSE 8000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;关于如何创建并且优化 Dockerfile，可以参考 &lt;a href=&quot;http://blog.tutum.co/2014/10/22/how-to-optimize-your-dockerfile/&quot;&gt;How to Optimise Your Dockerfile&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;docker-image&quot;&gt;创建 Docker Image&lt;/h3&gt;
+&lt;p&gt;运行 &lt;code&gt;docker build&lt;/code&gt;命令：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;docker build -t todos .&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;接下来你可以看到这么一堆不知所云的输出：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker build -t todos .
+Sending build context to Docker daemon 18.62 MB
+Sending build context to Docker daemon
+Step &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; : FROM golang:latest
+ ---&amp;gt; 121a93c90463
+Step &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; : MAINTAINER George Sun &amp;lt;http://codethoughts.info&amp;gt;
+ ---&amp;gt; Running in 4e30237b7525
+ ---&amp;gt; 0a7f367d6b6e
+Removing intermediate container 4e30237b7525
+Step &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; : ENV APP_DIR &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
+ ---&amp;gt; Running in 42520a221616
+ ---&amp;gt; eef290758d42
+Removing intermediate container 42520a221616
+Step &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt; : ADD . &lt;span class=&quot;nv&quot;&gt;$APP_DIR&lt;/span&gt;
+ ---&amp;gt; bfed922de2bd
+Removing intermediate container 03e6230e53d1
+Step &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; : WORKDIR &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
+ ---&amp;gt; Running in 089533c75557
+ ---&amp;gt; f546cb0fab81
+Removing intermediate container 089533c75557
+Step &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt; : RUN go get github.com/tools/godep
+ ---&amp;gt; Running in 1b40d8c6dbe1
+ ---&amp;gt; a1862a87f057
+Removing intermediate container 1b40d8c6dbe1
+Step &lt;span class=&quot;m&quot;&gt;6&lt;/span&gt; : RUN go get github.com/pilu/fresh
+ ---&amp;gt; Running in a9a5737c303e
+ ---&amp;gt; 20d05bd603f4
+Removing intermediate container a9a5737c303e
+Step &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt; : RUN &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/godep restore
+ ---&amp;gt; Running in 561760e02e0b
+ ---&amp;gt; d501ad34d6fe
+Removing intermediate container 561760e02e0b
+Step &lt;span class=&quot;m&quot;&gt;8&lt;/span&gt; : RUN go install github.com/puffsun/todos
+ ---&amp;gt; Running in 0a6b748c582c
+ ---&amp;gt; 2319a916598e
+Removing intermediate container 0a6b748c582c
+Step &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt; : ENTRYPOINT &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/todos
+ ---&amp;gt; Running in 06164fcdd94a
+ ---&amp;gt; fb7b8e0bce57
+Removing intermediate container 06164fcdd94a
+Step &lt;span class=&quot;m&quot;&gt;10&lt;/span&gt; : EXPOSE 8000
+ ---&amp;gt; Running in b18d74e3a627
+ ---&amp;gt; ff944097e3f6
+Removing intermediate container b18d74e3a627
+Successfully built ff944097e3f6&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;大概的意思就是 docker 运行了 Dockerfile 里的命令，并且它会不断创建临时的 Image，并基于临时 Image 创建下一步需要的 Image，完成之后 docker 会删除上一步创建的 Image。最终，我们得到了一个名为 todos 的 Image：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+todos               latest              ff944097e3f6        &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt; minutes ago       &lt;span class=&quot;m&quot;&gt;587&lt;/span&gt; MB
+golang              latest              121a93c90463        &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; days ago          514.9 MB&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果期间有什么错误，请自行 Google，或者联系我。&lt;/p&gt;
+
+&lt;h3 id=&quot;docker-container&quot;&gt;运行 Docker container&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker run -p 8000:8000 -ti todos /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;-p 8000：8000&lt;/code&gt; 表示把 Docker container 的8000端口映射到宿主机的8000端口。
+&lt;code&gt;-ti&lt;/code&gt; 表示交互式运行，并且直接把 Docker container 标准输出重定向到宿主机的标准输出。&lt;/p&gt;
+
+&lt;p&gt;如果一切顺利，你应该看到如下输出：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker run -p 8000:8000 -ti todos /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这时候启动浏览器，并访问 &lt;code&gt;http://localhost:8000&lt;/code&gt;，你就应该看到一个美轮美奂的 Todo List 应用，并且它是可以工作的。如果想停止这个 Docker container，只需要Ctrl + C 即可，因为我们是用交互方式运行Docker container 的，否则要用 &lt;code&gt;docker stop&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;docker-hub&quot;&gt;Docker Hub&lt;/h3&gt;
+&lt;p&gt;为了方便更多人尝试 Docker 和 Go 语言，我把刚才构建的 Docker Image 放到了 Docker 官方提供的平台 - &lt;a href=&quot;https://registry.hub.docker.com/&quot;&gt;Docker Hub&lt;/a&gt;。如果你不想经过上面的步骤，可以通过 &lt;code&gt;docker pull puffsun/todos&lt;/code&gt; 来直接获取已经构建好的 Docker Image, happy hacking。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;资源&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;todos 项目源代码&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://todomvc.com/&quot;&gt;TodoMVC&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/reference/builder/&quot;&gt;Dockerfile Reference&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://blog.tutum.co/2015/01/27/getting-started-with-golang-on-docker/&quot;&gt;Getting Started with Golang on Docker&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.zhihu.com/question/21409296&quot;&gt;为什么要使用 Go 语言，Go 语言的优势在哪里？&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 04 Apr 2015 07:20:57 +0800</pubDate>
+        <link>http://codethoughts.info/go/2015/04/04/deploy-go-web-app-with-docker/</link>
+        <guid isPermaLink="true">http://codethoughts.info/go/2015/04/04/deploy-go-web-app-with-docker/</guid>
+        
+        
+        <category>go</category>
+        
+      </item>
     
       <item>
         <title>用 Go 开发 Web 应用</title>
@@ -2092,101 +2313,6 @@ java.vm.name                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Jav
         
         
         <category>scala</category>
-        
-      </item>
-    
-      <item>
-        <title>Differences among Blocks, Procs, and Lambdas in Ruby</title>
-        <description>&lt;p&gt;Almost every Rubyist love Ruby’s Blocks, as well as Procs and Lambdas. These features allow you to pass code to a method then execute the piece of code at a later time. In this blog post, I’ll talk about the differences among them.&lt;/p&gt;
-
-&lt;h3 id=&quot;blocks&quot;&gt;Blocks&lt;/h3&gt;
-&lt;p&gt;A block is a piece of code passed to a method via curly braces &lt;code&gt;{...}&lt;/code&gt; or &lt;code&gt;do...end&lt;/code&gt;. By convention, &lt;code&gt;{...}&lt;/code&gt; is used within one line of code while &lt;code&gt;do...end&lt;/code&gt; for multi-line code. After passing into method, the block could be triggered later by &lt;code&gt;yield&lt;/code&gt; keyword to get a return value. The &lt;code&gt;yield&lt;/code&gt; keyword can accept parameters, which will be passed into the block it’s calling at that time. Let’s see a example:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;try&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;block_given?&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;no block&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;!--more--&gt;
-&lt;p&gt;Here we define a method call &lt;code&gt;try&lt;/code&gt;, you can detect if a block exist with the method &lt;code&gt;block_given?&lt;/code&gt;, which is defined in Kernel module. We can invoke the method &lt;code&gt;try&lt;/code&gt; like this:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;try&lt;/span&gt;                                 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;no block&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey, we see a block&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey, we see a block&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;It’s only a small demo, there’re block usage in Ruby code everywhere, most programmer from other programming languages are shocked by the power of Ruby blocks, which leads to concise code.&lt;/p&gt;
-
-&lt;h3 id=&quot;procs&quot;&gt;Procs&lt;/h3&gt;
-&lt;p&gt;A proc (Note that the proc is lowercase here) is also a piece of code, which are stored in a Proc instance. We can reuse this object any times we want. We can store a piece of code into a Proc instance, assign it to a variable, then pass it around. Let me show you another example:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;proc_demo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;proc_obj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;proc_obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Rather than the &lt;code&gt;yield&lt;/code&gt;, we use the &lt;code&gt;call&lt;/code&gt; method here to invoke the proc object passed in. Like the &lt;code&gt;yield&lt;/code&gt; keyword, the &lt;code&gt;call&lt;/code&gt; method can accept arguments either. We can invoke the above demo like this:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Proc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey, we see a proc&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;proc_demo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;p0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;proc&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey, we see a proc&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;proc_demo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;the code &lt;code&gt;proc {...}&lt;/code&gt; is equivalent to &lt;code&gt;Proc.new {...}&lt;/code&gt;, which produce a instance of Proc. You can check rdoc for further details about &lt;a href=&quot;http://www.ruby-doc.org/core-2.1.0/Proc.html&quot;&gt;Proc&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;lambdas&quot;&gt;Lambdas&lt;/h3&gt;
-&lt;p&gt;The difference between a lambda and Proc instance is small. Basically there’re two differences between them.
-* A lambda checks for the number of arguments it received, and will return &lt;code&gt;ArgumentError&lt;/code&gt; if the argument number don’t match. Let’s poke them around inside &lt;a href=&quot;http://pryrepl.org/&quot;&gt;pry&lt;/a&gt;, which is alternative of irb but can do much much more:&lt;/p&gt;
-
-&lt;p&gt;First, let see the behaviour of lambda:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;#&amp;lt;Proc:0x007fc6a50f4560@(pry):9 (lambda)&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;17&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;George&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;Hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;George&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;
-&lt;span class=&quot;ss&quot;&gt;ArgumentError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrong&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;number&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:in&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`block in __pry__&amp;#39;&lt;/span&gt;
-&lt;span class=&quot;sb&quot;&gt;[19] pry(main)&amp;gt; l.call(&amp;quot;George&amp;quot;, &amp;quot;Puff&amp;quot;)&lt;/span&gt;
-&lt;span class=&quot;sb&quot;&gt;ArgumentError: wrong number of arguments (2 for 1)&lt;/span&gt;
-&lt;span class=&quot;sb&quot;&gt;from (pry):9:in `&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__pry__&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Then with proc:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;proc&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;#&amp;lt;Proc:0x007fc6a4a6c5f8@(pry):14&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;22&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;Hello&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;George&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;Hello&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;George&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;George&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Puff&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;Hello&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;George&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The difference of processing the incoming arguments is pretty clear with above example.&lt;/p&gt;
-
-&lt;p&gt;&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;Another difference is that lambda provide diminutive returns, which means when a Proc encounters a return statement during it’s execution, it halts the enclosing method then return the provided value. Lambdas, on the other hand, return the value to the method, then return to the enclosing method, continue the program execution. This means procs behave more like a piece of code, while lambdas more like a method, you can take advantage of them of your own.&lt;/p&gt;
-
-&lt;p&gt;If you still not clear about the differences among them, I recommand you to read the excellent book &lt;a href=&quot;http://www.amazon.com/Metaprogramming-Ruby-Program-Like-Pros/dp/1934356476&quot;&gt;Metaprogramming Ruby&lt;/a&gt;, check the book comments on Amazon.&lt;/p&gt;
-
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;http://code.tutsplus.com/tutorials/ruby-on-rails-study-guide-blocks-procs-and-lambdas--net-29811&quot;&gt;Ruby on Rails Study Guide: Blocks, Procs, and Lambdas&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Mon, 24 Feb 2014 22:17:52 +0800</pubDate>
-        <link>http://codethoughts.info/ruby/2014/02/24/blocks-procs-lambdas/</link>
-        <guid isPermaLink="true">http://codethoughts.info/ruby/2014/02/24/blocks-procs-lambdas/</guid>
-        
-        
-        <category>ruby</category>
         
       </item>
     

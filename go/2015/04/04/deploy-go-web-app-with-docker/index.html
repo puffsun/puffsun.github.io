@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>用 Docker 部署 Go Web 应用 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/go/2015/04/04/deploy-go-web-app-with-docker/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>用 Docker 部署 Go Web 应用</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on April 4, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="section">几句废话</h3>
+<p>按照惯例，先废话几句，再切入正题。学习 Go 语言快一个月了，用 Go 语言实现了<a href="https://github.com/puffsun/go_algorithms_data_structures">常见的数据结构和算法(持续更新中)</a>，也用 Go 和 AngularJS 创建了一个<a href="https://github.com/puffsun/todos">迷你 Todo List 项目</a>，回头我会大致介绍一下这个 Todo List 项目的大致结构，现在先聊聊我到目前为止对 Go 语言的观感。因为水平问题，我不可能聊得深入，只是我的个人感受。Go 语言在我看来有如下的优势：</p>
+
+<ul>
+  <li>Go 编译器把代码和依赖直接编译成机器码，所以部署极其简单，一个二进制文件就可以任意部署。</li>
+  <li>
+    <p>语言层面的并发支持，可以充分支持多核。多核已经成为我们这个时代的常态，Go 代码不需要额外的努力就可以做到充分利用多核。Go 语言的并发范式是<a href="http://en.wikipedia.org/wiki/Communicating_sequential_processes">CSP(Communicating Sequential Processes)</a>，它的好处之一在于并发程序之间的解耦，从而也有利于并发代码的维护和扩展，在软件领域，解耦永远是一个褒义词。拿 Java 和 Ruby 来比较：</p>
+
+    <ul>
+      <li>Java 的内置并发支持来自于 <code>Thread</code> 和 <code>Lock</code>，我们这不没有足够篇幅讨论内置库 <code>java.util.concurrent</code> 或者 第三方库 <a href="http://akka.io/">AKKA</a>。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。</li>
+      <li>Ruby 的并发由于<a href="http://en.wikipedia.org/wiki/Ruby_MRI">MRI</a> 虚拟机中<a href="http://en.wikipedia.org/wiki/Global_Interpreter_Lock">GIL</a>的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 <a href="http://jruby.org/">JRuby</a> 或者 <a href="http://rubini.us/">Rubinius</a> 这些支持真正并发的虚拟机上，多半会有严重的并发问题。</li>
+    </ul>
+  </li>
+  <li>Go 的工具链非常强大，比如 <code>gofmt</code>, <code>godef</code>, <code>goimports</code>, <code>golint</code>, <code>godoc</code>, 等等，Go 核心开发者还特意为 Vim, Emacs 和常见 IDE 用户配备了 <a href="https://github.com/nsf/gocode">Gocode</a>，在 Gocode 里面，日常编程所需的工具，应有尽有。</li>
+  <li>语法简单，代码简洁。这一条因人而异，对我来说，相对于我以前初学 <a href="http://www.scala-lang.org/">Scala</a> 的时候，被 Scala 的类型推导搞得七荤八素。而在 Go 语言的学习过程中从没遇到难以理解的概念，一切都顺其自然。</li>
+  <li>函数是 Go 语言的一等公民，这意味着函数可以接收函数作为参数，可以返回函数，带来了无穷的想象力。这一点 Java 和 Ruby 都做不到。Java 刚刚在 Java8 里面支持了闭包；而 Ruby 只能够用代码块来模拟这一功能，而且 Ruby 代码块的限制是最多只能有一个代码块作为参数，即使有这样的限制，Ruby 代码块已经成为 Ruby 的标志性构件之一，那么你想想 Go 里面作为一等公民的函数带来的威力吧。</li>
+</ul>
+
+<p>基于以上的理由，Go 语言已经在我的最喜爱编程语言排行榜上位居第三，前两个分别是 <code>Java</code> 和 <code>JavaScript</code>, 不服莫辩，个人喜好。</p>
+
+<h3 id="dockerhttpswwwdockercom--go-">为什么用 <a href="https://www.docker.com/">Docker</a> 来部署 Go 项目</h3>
+<p>Go 目前多应用于 Web 项目中，而 Web 项目一直以来的其中一个让人头疼的地方就是部署，也就是在开发和到产品上线这个跨度里，有很多的不确定因素，比如宿主语言版本、依赖库版本、操作系统版本及补丁、配置文件差异、以及服务器数量等等。而 Docker 从诞生的第一天起就在尝试解决这些问题，而且给出了很好的解决方案。如果你对 Docker 完全不懂，可以参考这篇扫盲文章：<a href="http://readwrite.com/2014/12/23/docker-to-dominate-in-2015">Why Docker Is Going To Dominate Your 2015</a>. 另外顺便提一下，如果你身处 Web 开发领域而你在2014年没有听说或者摆弄一下 Docker，那么你一定要反思一下到底发生了什么！</p>
+
+<h3 id="section-1">阅读本文的前置条件</h3>
+
+<ul>
+  <li>Docker - 你得知道什么是 Docker client/daemon, Docker Image, Docker Container, Docker file, 会运行基本的 Docker 命令。</li>
+  <li>Go 语言 - 能读懂 Go 代码，知道如何获取 Go 语言依赖的第三方库，有 Web 开发的基本知识。</li>
+  <li>最好懂点 <a href="https://angularjs.org/">AngularJS</a>，因为我们要部署的项目前端用 AngularJS 实现。</li>
+  <li>知道如何用 Go 语言开发 Web 项目。不过不知道也没关系，你只需要把现有的项目用<code>git clone</code> 拷贝到本地，运行 Docker 命令就可以了。至于这个 Todo List 项目，以后有时间我会写一到两篇博客分别介绍如何用 Go 语言第三方库开发 Web 项目，如何用 AngularJS 开发单页面 Web 应用（Single Page Web Application）。</li>
+  <li>熟悉命令行，另外有一台 Linux 或者 Mac 的机器，这里的所有操作都在命令行完成。</li>
+</ul>
+
+<h3 id="section-2">我们开始吧</h3>
+<p>首先从 Github 获取我们要部署的代码，这里我们要部署的代码是我用 Go 语言和 JavaScript MVC 框架 AngularJS 开发的一个 <a href="https://github.com/puffsun/todos">Todo List</a> 项目。有人会问，我们为什么不部署一个 Hello World呢？我的理由是 Hello World 和实际项目相差太远，它既不需要第三方依赖库管理，也不需要前端和后端分离。我们这里部署的就是一个比较接近于实际产品的 Go Web 应用，如果你跟着做可以遇到更多挑战。</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">mkdir ~/workspace <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="nv">$_</span>
+git clone https://github.com/puffsun/todos.git
+<span class="nb">cd </span>todos</code></pre></div>
+
+<p>看一下项目目录结构：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>ls
+Dockerfile     README.md      main.go        run.sh
+Godeps/        app/           public/        tmp/
+
+<span class="nv">$ </span>tree app
+app
+├── add_new_todo_test.go
+├── app_suite_test.go
+├── handlers.go
+├── logger.go
+├── repo.go
+├── router.go
+├── routes.go
+├── todo.go
+└── todos.sqlite3
+
+<span class="m">0</span> directories, <span class="m">9</span> files
+
+<span class="nv">$ </span>ls public
+css/          favicon.ico   index.html    js/           node_modules/ package.json  readme.md     <span class="nb">test</span>/</code></pre></div>
+
+<p>这里有几个需要留意的：</p>
+
+<ol>
+  <li>Dockerfile，这就是我们接下来的主角，关于 Dockerfile 的详细知识，参见<a href="https://docs.docker.com/reference/builder/">Dockerfile Official Reference</a></li>
+  <li>app 目录，这里就是我们的后台 Go 代码</li>
+  <li>public 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 <code>npm</code> 来获取 AngularJS 和这里要用到的 AngularJS 插件 <code>angular-mock</code>, <code>angular-route</code>，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。</li>
+  <li>Godeps 目录，这是 Go 的第三方依赖管理工具 <code>godeps</code> 创建的，这个工具类似 Ruby bundler，详见<a href="https://github.com/tools/godep">这里</a>。另外它也省去了我们要在 Dockerfile 里详细指定每个 Go 第三方依赖的麻烦，我们只需要在 Dockerfile 中运行 <code>godep restore</code> 就可以自动安装所有依赖，当然，前提是你要安装了 godep: <code>go get github.com/tools/godep</code>。</li>
+  <li>run.sh，启动脚本，内容如下：</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="lineno">1</span> <span class="c">#!/usr/bin/env bash</span>
+<span class="lineno">2</span> 
+<span class="lineno">3</span> <span class="o">[</span> -z <span class="s2">&quot;$GOPATH&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">{</span> <span class="nb">echo</span> <span class="s2">&quot;Need to set GOPATH&quot;</span><span class="p">;</span> <span class="nb">exit </span>1<span class="p">;</span> <span class="o">}</span>
+<span class="lineno">4</span> 
+<span class="lineno">5</span> <span class="k">if</span> <span class="o">[</span> -x <span class="k">${</span><span class="nv">GOPATH</span><span class="k">}</span>/bin/fresh <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="lineno">6</span>     <span class="k">${</span><span class="nv">GOPATH</span><span class="k">}</span>/bin/fresh
+<span class="lineno">7</span> <span class="k">else</span>
+<span class="lineno">8</span>     go run ./main.go
+<span class="lineno">9</span> <span class="k">fi</span></code></pre></div>
+
+<p>fresh 是 Go 第三方命令行工具，用于监视指定目录下文件，并根据文件变化自动重启正在开发的 Go 应用，省去每次改文件都要手工重启的麻烦，它可以通过 <code>go get github.com/pilu/fresh</code> 来安装。</p>
+
+<h3 id="dockerfile">Dockerfile</h3>
+<p>在这个项目中我已经创建好 Dockerfile：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="lineno"> 1</span> <span class="c"># Start from a Debian image with the latest version of Go installed</span>
+<span class="lineno"> 2</span> <span class="c"># and a workspace (GOPATH) configured at /go.</span>
+<span class="lineno"> 3</span> FROM golang:latest
+<span class="lineno"> 4</span> 
+<span class="lineno"> 5</span> MAINTAINER George Sun &lt;http://codethoughts.info&gt;
+<span class="lineno"> 6</span> 
+<span class="lineno"> 7</span> <span class="c"># For convenience, set an env variable with the path of the code</span>
+<span class="lineno"> 8</span> ENV APP_DIR  <span class="nv">$GOPATH</span>/src/github.com/puffsun/todos
+<span class="lineno"> 9</span> 
+<span class="lineno">10</span> <span class="c"># Copy the local package files to the container&#39;s workspace.</span>
+<span class="lineno">11</span> ADD . <span class="nv">$APP_DIR</span>
+<span class="lineno">12</span> 
+<span class="lineno">13</span> WORKDIR <span class="nv">$GOPATH</span>/src/github.com/puffsun/todos
+<span class="lineno">14</span> 
+<span class="lineno">15</span> <span class="c"># Install dependencies</span>
+<span class="lineno">16</span> RUN go get github.com/tools/godep
+<span class="lineno">17</span> RUN go get github.com/pilu/fresh
+<span class="lineno">18</span> RUN <span class="nv">$GOPATH</span>/bin/godep restore
+<span class="lineno">19</span> 
+<span class="lineno">20</span> <span class="c"># Build the project inside the container.</span>
+<span class="lineno">21</span> <span class="c"># (You may fetch or manage dependencies here,</span>
+<span class="lineno">22</span> <span class="c"># either manually or with a tool like &quot;godep&quot;.)</span>
+<span class="lineno">23</span> RUN go install github.com/puffsun/todos
+<span class="lineno">24</span> 
+<span class="lineno">25</span> <span class="c"># Run the web application by default when the container starts.</span>
+<span class="lineno">26</span> ENTRYPOINT <span class="nv">$GOPATH</span>/bin/todos
+<span class="lineno">27</span> 
+<span class="lineno">28</span> <span class="c"># Document that the service listens on port 8000.</span>
+<span class="lineno">29</span> EXPOSE 8000</code></pre></div>
+
+<p>关于如何创建并且优化 Dockerfile，可以参考 <a href="http://blog.tutum.co/2014/10/22/how-to-optimize-your-dockerfile/">How to Optimise Your Dockerfile</a>.</p>
+
+<h3 id="docker-image">创建 Docker Image</h3>
+<p>运行 <code>docker build</code>命令：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">docker build -t todos .</code></pre></div>
+
+<p>接下来你可以看到这么一堆不知所云的输出：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>docker build -t todos .
+Sending build context to Docker daemon 18.62 MB
+Sending build context to Docker daemon
+Step <span class="m">0</span> : FROM golang:latest
+ ---&gt; 121a93c90463
+Step <span class="m">1</span> : MAINTAINER George Sun &lt;http://codethoughts.info&gt;
+ ---&gt; Running in 4e30237b7525
+ ---&gt; 0a7f367d6b6e
+Removing intermediate container 4e30237b7525
+Step <span class="m">2</span> : ENV APP_DIR <span class="nv">$GOPATH</span>/src/github.com/puffsun/todos
+ ---&gt; Running in 42520a221616
+ ---&gt; eef290758d42
+Removing intermediate container 42520a221616
+Step <span class="m">3</span> : ADD . <span class="nv">$APP_DIR</span>
+ ---&gt; bfed922de2bd
+Removing intermediate container 03e6230e53d1
+Step <span class="m">4</span> : WORKDIR <span class="nv">$GOPATH</span>/src/github.com/puffsun/todos
+ ---&gt; Running in 089533c75557
+ ---&gt; f546cb0fab81
+Removing intermediate container 089533c75557
+Step <span class="m">5</span> : RUN go get github.com/tools/godep
+ ---&gt; Running in 1b40d8c6dbe1
+ ---&gt; a1862a87f057
+Removing intermediate container 1b40d8c6dbe1
+Step <span class="m">6</span> : RUN go get github.com/pilu/fresh
+ ---&gt; Running in a9a5737c303e
+ ---&gt; 20d05bd603f4
+Removing intermediate container a9a5737c303e
+Step <span class="m">7</span> : RUN <span class="nv">$GOPATH</span>/bin/godep restore
+ ---&gt; Running in 561760e02e0b
+ ---&gt; d501ad34d6fe
+Removing intermediate container 561760e02e0b
+Step <span class="m">8</span> : RUN go install github.com/puffsun/todos
+ ---&gt; Running in 0a6b748c582c
+ ---&gt; 2319a916598e
+Removing intermediate container 0a6b748c582c
+Step <span class="m">9</span> : ENTRYPOINT <span class="nv">$GOPATH</span>/bin/todos
+ ---&gt; Running in 06164fcdd94a
+ ---&gt; fb7b8e0bce57
+Removing intermediate container 06164fcdd94a
+Step <span class="m">10</span> : EXPOSE 8000
+ ---&gt; Running in b18d74e3a627
+ ---&gt; ff944097e3f6
+Removing intermediate container b18d74e3a627
+Successfully built ff944097e3f6</code></pre></div>
+
+<p>大概的意思就是 docker 运行了 Dockerfile 里的命令，并且它会不断创建临时的 Image，并基于临时 Image 创建下一步需要的 Image，完成之后 docker 会删除上一步创建的 Image。最终，我们得到了一个名为 todos 的 Image：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+todos               latest              ff944097e3f6        <span class="m">3</span> minutes ago       <span class="m">587</span> MB
+golang              latest              121a93c90463        <span class="m">4</span> days ago          514.9 MB</code></pre></div>
+
+<p>如果期间有什么错误，请自行 Google，或者联系我。</p>
+
+<h3 id="docker-container">运行 Docker container</h3>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>docker run -p 8000:8000 -ti todos /bin/bash</code></pre></div>
+
+<p><code>-p 8000：8000</code> 表示把 Docker container 的8000端口映射到宿主机的8000端口。
+<code>-ti</code> 表示交互式运行，并且直接把 Docker container 标准输出重定向到宿主机的标准输出。</p>
+
+<p>如果一切顺利，你应该看到如下输出：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>docker run -p 8000:8000 -ti todos /bin/bash</code></pre></div>
+
+<p>这时候启动浏览器，并访问 <code>http://localhost:8000</code>，你就应该看到一个美轮美奂的 Todo List 应用，并且它是可以工作的。如果想停止这个 Docker container，只需要Ctrl + C 即可，因为我们是用交互方式运行Docker container 的，否则要用 <code>docker stop</code>。</p>
+
+<h3 id="docker-hub">Docker Hub</h3>
+<p>为了方便更多人尝试 Docker 和 Go 语言，我把刚才构建的 Docker Image 放到了 Docker 官方提供的平台 - <a href="https://registry.hub.docker.com/">Docker Hub</a>。如果你不想经过上面的步骤，可以通过 <code>docker pull puffsun/todos</code> 来直接获取已经构建好的 Docker Image, happy hacking。</p>
+
+<h3 id="section-3">资源</h3>
+
+<p><a href="https://github.com/puffsun/todos">todos 项目源代码</a></p>
+
+<p><a href="http://todomvc.com/">TodoMVC</a></p>
+
+<p><a href="https://docs.docker.com/reference/builder/">Dockerfile Reference</a></p>
+
+<p><a href="http://blog.tutum.co/2015/01/27/getting-started-with-golang-on-docker/">Getting Started with Golang on Docker</a></p>
+
+<p><a href="http://www.zhihu.com/question/21409296">为什么要使用 Go 语言，Go 语言的优势在哪里？</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/go/2015/03/28/build-web-app-with-go/" data-toggle="tooltip" data-placement="top" title="用 Go 开发 Web 应用">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

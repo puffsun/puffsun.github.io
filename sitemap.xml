@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://codethoughts.info/go/2015/04/04/deploy-go-web-app-with-docker/</loc>
+    <lastmod>2015-04-04T07:20:57+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://codethoughts.info/go/2015/03/28/build-web-app-with-go/</loc>
     <lastmod>2015-03-28T22:01:52+08:00</lastmod>
   </url>
