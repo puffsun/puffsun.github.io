@@ -173,12 +173,12 @@ app
 <span class="nv">$ </span>ls public
 css/          favicon.ico   index.html    js/           node_modules/ package.json  readme.md     <span class="nb">test</span>/</code></pre></div>
 
-<p>这里有几个需要留意的：</p>
+<p>这里有几处需要留意的：</p>
 
 <ol>
   <li>Dockerfile，这就是我们接下来的主角，关于 Dockerfile 的详细知识，参见<a href="https://docs.docker.com/reference/builder/">Dockerfile Official Reference</a></li>
   <li>app 目录，这里就是我们的后台 Go 代码</li>
-  <li>public 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 <code>npm</code> 来获取 AngularJS 和这里要用到的 AngularJS 插件 <code>angular-mock</code>, <code>angular-route</code>，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。</li>
+  <li>public目录， 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 <code>npm</code> 来获取 AngularJS 和这里要用到的 AngularJS 插件 <code>angular-mock</code>, <code>angular-route</code>，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。</li>
   <li>Godeps 目录，这是 Go 的第三方依赖管理工具 <code>godeps</code> 创建的，这个工具类似 Ruby bundler，详见<a href="https://github.com/tools/godep">这里</a>。另外它也省去了我们要在 Dockerfile 里详细指定每个 Go 第三方依赖的麻烦，我们只需要在 Dockerfile 中运行 <code>godep restore</code> 就可以自动安装所有依赖，当然，前提是你要安装了 godep: <code>go get github.com/tools/godep</code>。</li>
   <li>run.sh，启动脚本，内容如下：</li>
 </ol>

@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 04 Apr 2015 10:44:16 +0800</pubDate>
-    <lastBuildDate>Sat, 04 Apr 2015 10:44:16 +0800</lastBuildDate>
+    <pubDate>Sat, 04 Apr 2015 10:46:44 +0800</pubDate>
+    <lastBuildDate>Sat, 04 Apr 2015 10:46:44 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -86,12 +86,12 @@ app
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls public
 css/          favicon.ico   index.html    js/           node_modules/ package.json  readme.md     &lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt;/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;这里有几个需要留意的：&lt;/p&gt;
+&lt;p&gt;这里有几处需要留意的：&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;Dockerfile，这就是我们接下来的主角，关于 Dockerfile 的详细知识，参见&lt;a href=&quot;https://docs.docker.com/reference/builder/&quot;&gt;Dockerfile Official Reference&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;app 目录，这里就是我们的后台 Go 代码&lt;/li&gt;
-  &lt;li&gt;public 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 &lt;code&gt;npm&lt;/code&gt; 来获取 AngularJS 和这里要用到的 AngularJS 插件 &lt;code&gt;angular-mock&lt;/code&gt;, &lt;code&gt;angular-route&lt;/code&gt;，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。&lt;/li&gt;
+  &lt;li&gt;public目录， 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 &lt;code&gt;npm&lt;/code&gt; 来获取 AngularJS 和这里要用到的 AngularJS 插件 &lt;code&gt;angular-mock&lt;/code&gt;, &lt;code&gt;angular-route&lt;/code&gt;，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。&lt;/li&gt;
   &lt;li&gt;Godeps 目录，这是 Go 的第三方依赖管理工具 &lt;code&gt;godeps&lt;/code&gt; 创建的，这个工具类似 Ruby bundler，详见&lt;a href=&quot;https://github.com/tools/godep&quot;&gt;这里&lt;/a&gt;。另外它也省去了我们要在 Dockerfile 里详细指定每个 Go 第三方依赖的麻烦，我们只需要在 Dockerfile 中运行 &lt;code&gt;godep restore&lt;/code&gt; 就可以自动安装所有依赖，当然，前提是你要安装了 godep: &lt;code&gt;go get github.com/tools/godep&lt;/code&gt;。&lt;/li&gt;
   &lt;li&gt;run.sh，启动脚本，内容如下：&lt;/li&gt;
 &lt;/ol&gt;
