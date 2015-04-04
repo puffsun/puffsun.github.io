@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 04 Apr 2015 10:41:58 +0800</pubDate>
-    <lastBuildDate>Sat, 04 Apr 2015 10:41:58 +0800</lastBuildDate>
+    <pubDate>Sat, 04 Apr 2015 10:44:16 +0800</pubDate>
+    <lastBuildDate>Sat, 04 Apr 2015 10:44:16 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -15,18 +15,30 @@
 &lt;p&gt;按照惯例，先废话几句，再切入正题。学习 Go 语言快一个月了，期间用 Go 语言实现了&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;常见的数据结构和算法(持续更新中)&lt;/a&gt;，也用 Go 和 AngularJS 创建了一个&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;迷你 Todo List 项目&lt;/a&gt;，回头我会大致介绍一下这个 Todo List 项目的大致结构，现在先聊聊我到目前为止对 Go 语言的观感。因为水平问题，我不可能聊得深入，只是我的个人感受。Go 语言在我看来有如下的优势：&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Go 编译器把代码和依赖直接编译成机器码，所以部署极其简单，一个二进制文件就可以任意部署。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Go 编译器把代码和依赖直接编译成机器码，所以部署极其简单，一个二进制文件就可以任意部署。&lt;/p&gt;
+  &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;语言层面的并发支持，可以充分支持多核。多核已经成为我们这个时代的常态，Go 代码不需要额外的努力就可以做到充分利用多核。Go 语言的并发范式是&lt;a href=&quot;http://en.wikipedia.org/wiki/Communicating_sequential_processes&quot;&gt;CSP(Communicating Sequential Processes)&lt;/a&gt;，它的好处之一在于并发程序之间的解耦，从而也有利于并发代码的维护和扩展，在软件领域，解耦永远是一个褒义词。拿 Java 和 Ruby 来比较：&lt;/p&gt;
 
     &lt;ul&gt;
-      &lt;li&gt;Java 的内置并发支持来自于 &lt;code&gt;Thread&lt;/code&gt; 和 &lt;code&gt;Lock&lt;/code&gt;，我们这里没有足够篇幅讨论 Java 内置库 &lt;code&gt;java.util.concurrent&lt;/code&gt; 或者 第三方库 &lt;a href=&quot;http://akka.io/&quot;&gt;AKKA&lt;/a&gt;。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。&lt;/li&gt;
-      &lt;li&gt;Ruby 的并发由于&lt;a href=&quot;http://en.wikipedia.org/wiki/Ruby_MRI&quot;&gt;MRI&lt;/a&gt; 虚拟机中&lt;a href=&quot;http://en.wikipedia.org/wiki/Global_Interpreter_Lock&quot;&gt;GIL&lt;/a&gt;的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 &lt;a href=&quot;http://jruby.org/&quot;&gt;JRuby&lt;/a&gt; 或者 &lt;a href=&quot;http://rubini.us/&quot;&gt;Rubinius&lt;/a&gt; 这些支持真正并发的虚拟机上，多半会有严重的并发问题。&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Java 的内置并发支持来自于 &lt;code&gt;Thread&lt;/code&gt; 和 &lt;code&gt;Lock&lt;/code&gt;，我们这里没有足够篇幅讨论 Java 内置库 &lt;code&gt;java.util.concurrent&lt;/code&gt; 或者 第三方库 &lt;a href=&quot;http://akka.io/&quot;&gt;AKKA&lt;/a&gt;。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Ruby 的并发由于&lt;a href=&quot;http://en.wikipedia.org/wiki/Ruby_MRI&quot;&gt;MRI&lt;/a&gt; 虚拟机中&lt;a href=&quot;http://en.wikipedia.org/wiki/Global_Interpreter_Lock&quot;&gt;GIL&lt;/a&gt;的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 &lt;a href=&quot;http://jruby.org/&quot;&gt;JRuby&lt;/a&gt; 或者 &lt;a href=&quot;http://rubini.us/&quot;&gt;Rubinius&lt;/a&gt; 这些支持真正并发的虚拟机上，多半会有严重的并发问题。&lt;/p&gt;
+      &lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;Go 的工具链非常强大，比如 &lt;code&gt;gofmt&lt;/code&gt;, &lt;code&gt;godef&lt;/code&gt;, &lt;code&gt;goimports&lt;/code&gt;, &lt;code&gt;golint&lt;/code&gt;, &lt;code&gt;godoc&lt;/code&gt;, 等等，Go 核心开发者还特意为 Vim, Emacs 和常见 IDE 用户配备了 &lt;a href=&quot;https://github.com/nsf/gocode&quot;&gt;Gocode&lt;/a&gt;，在 Gocode 里面，日常编程所需的工具，应有尽有。&lt;/li&gt;
-  &lt;li&gt;语法简单，代码简洁。这一条因人而异，对我来说，相对于我以前初学 &lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala&lt;/a&gt; 的时候，被 Scala 的类型推导搞得七荤八素。而在 Go 语言的学习过程中从没遇到难以理解的概念，一切都顺其自然。&lt;/li&gt;
-  &lt;li&gt;函数是 Go 语言的一等公民，这意味着函数可以接收函数作为参数，可以返回函数，带来了无穷的想象力。这一点 Java 和 Ruby 都做不到。Java 刚刚在 Java8 里面支持了闭包；而 Ruby 只能够用代码块来模拟这一功能，而且 Ruby 代码块的限制是最多只能有一个代码块作为参数，即使有这样的限制，Ruby 代码块已经成为 Ruby 的标志性构件之一，那么你想想 Go 里面作为一等公民的函数带来的威力吧。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Go 的工具链非常强大，比如 &lt;code&gt;gofmt&lt;/code&gt;, &lt;code&gt;godef&lt;/code&gt;, &lt;code&gt;goimports&lt;/code&gt;, &lt;code&gt;golint&lt;/code&gt;, &lt;code&gt;godoc&lt;/code&gt;, 等等，Go 核心开发者还特意为 Vim, Emacs 和常见 IDE 用户配备了 &lt;a href=&quot;https://github.com/nsf/gocode&quot;&gt;Gocode&lt;/a&gt;，在 Gocode 里面，日常编程所需的工具，应有尽有。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;语法简单，代码简洁。这一条因人而异，对我来说，相对于我以前初学 &lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala&lt;/a&gt; 的时候，被 Scala 的类型推导搞得七荤八素。而在 Go 语言的学习过程中从没遇到难以理解的概念，一切都顺其自然。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;函数是 Go 语言的一等公民，这意味着函数可以接收函数作为参数，可以返回函数，带来了无穷的想象力。这一点 Java 和 Ruby 都做不到。Java 刚刚在 Java8 里面支持了闭包；而 Ruby 只能够用代码块来模拟这一功能，而且 Ruby 代码块的限制是最多只能有一个代码块作为参数，即使有这样的限制，Ruby 代码块已经成为 Ruby 的标志性构件之一，那么你想想 Go 里面作为一等公民的函数带来的威力吧。&lt;/p&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;基于以上的理由，Go 语言已经在我的最喜爱编程语言排行榜上位居第三，前两个分别是 &lt;code&gt;Java&lt;/code&gt; 和 &lt;code&gt;JavaScript&lt;/code&gt;, 不服莫辩，个人喜好。&lt;/p&gt;
