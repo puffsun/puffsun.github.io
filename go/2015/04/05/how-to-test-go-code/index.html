@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>如何测试 Go 代码 - 单元测试 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/go/2015/04/05/how-to-test-go-code/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>如何测试 Go 代码 - 单元测试</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on April 5, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="section">软件测试的重要性</h3>
+<p>关于软件测试是否重要，我想大家都有共识。ThoughtWorks 的大牛Michael C. Feathers在他的成名作<a href="http://www.amazon.com/Working-Effectively-Legacy-Michael-Feathers/dp/0131177052">Working Effectively with Legacy Code</a>的序言写道：</p>
+
+<blockquote>
+  <p>对于我来说，遗留代码简单来讲就是没有测试覆盖的代码。不管它写得多好，也不管它面向对象封装得有多精美，没有测试覆盖的代码都是烂代码。有了测试覆盖，我们可以在可被验证的情况下快速的改变我们代码的行为，而如果没有测试覆盖，我们无从得知我们的代码是在变好还是在变坏。</p>
+</blockquote>
+
+<p>随便列几条好处：</p>
+
+<ul>
+  <li>更容易也更有信心来对现有代码进行重构，没有单元测试覆盖的重构就像是在沼泽地行军，你根本无从知道下一步将会遇到什么；</li>
+  <li>在代码层面建立项目文档，可以通过阅读测试来了解整个项目是如何工作的；</li>
+  <li>通过提高测试覆盖，发现 bug；</li>
+  <li>通过单元测试来给代码解耦，通常写单元测试的时候，你需要建立一些外部依赖。如果在某个时候你发觉无法正确的建立单元测试的依赖，那么这时候你要反思项目的架构是不是出了问题；</li>
+  <li>通过视觉回馈，在编码的时候给你更多的信心；</li>
+  <li>。。。</li>
+</ul>
+
+<p>那为什么还有很多程序员从来不写测试呢？其实在我看来原因有两条：</p>
+
+<ol>
+  <li><em>懒</em></li>
+  <li>还是<em>懒</em></li>
+</ol>
+
+<h3 id="section-1">写这篇文章的目的</h3>
+<p>在这篇文章里我来介绍一下 Go 语言对单元测试的支持，并会顺便介绍两个我自己用过的测试类库，分别是<a href="https://github.com/smartystreets/goconvey">Goconvey</a>， <a href="https://github.com/onsi/ginkgo">Ginkgo</a> 和 <a href="https://github.com/onsi/gomega">GΩmega</a>。其他的 Go 第三方测试类库/Mock/Coverage 测试等等有很多，有兴趣可以参考<a href="http://nathany.com/go-testing-toolbox/">Go Testing Toolbox</a>，这篇文章里面分门别类讲了不少，推荐阅读。</p>
+
+<h3 id="section-2">阅读本文的前提</h3>
+<p>在写测试之前，会写 Go 的代码一定是必要条件，如果你对 Go 语言还没有入门，那么你先移步 <a href="https://gobyexample.com/">Go by Example</a> 或者 <a href="http://tour.golang.org/">A Tour of Go</a>，这篇文章先放进你的 Evernote 或者 书签好了。</p>
+
+<h3 id="section-3">我们开始吧</h3>
+<p>假定我们手上有这么一段代码，我们将它保存为 <code>stringutil.go</code>（代码来自<a href="https://github.com/golang/example/blob/master/stringutil/reverse.go">golang/example</a>）：</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="lineno"> 1</span> <span class="c1">// Package stringutil contains utility functions for working with strings.</span>
+<span class="lineno"> 2</span> <span class="kn">package</span> <span class="nx">stringutil</span>
+<span class="lineno"> 3</span> 
+<span class="lineno"> 4</span> <span class="c1">// Reverse returns its argument string reversed rune-wise left to right.</span>
+<span class="lineno"> 5</span> <span class="kd">func</span> <span class="nx">Reverse</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+<span class="lineno"> 6</span> 	<span class="nx">r</span> <span class="o">:=</span> <span class="p">[]</span><span class="nb">rune</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+<span class="lineno"> 7</span> 	<span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="p">=</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">j</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+<span class="lineno"> 8</span> 		<span class="nx">r</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">r</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">r</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">r</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+<span class="lineno"> 9</span> 	<span class="p">}</span>
+<span class="lineno">10</span> 	<span class="k">return</span> <span class="nb">string</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="lineno">11</span> <span class="p">}</span></code></pre></div>
+
+<p>我们现在希望用单元测试覆盖这段代码，用Go 语言内置的 <code>testing</code> 库可以这么写单元测试：</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="lineno"> 1</span> <span class="kn">package</span> <span class="nx">stringutil</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="kn">import</span> <span class="s">&quot;testing&quot;</span>
+<span class="lineno"> 4</span> 
+<span class="lineno"> 5</span> <span class="kd">func</span> <span class="nx">TestReverse</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno"> 6</span> 	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+<span class="lineno"> 7</span> 		<span class="nx">in</span><span class="p">,</span> <span class="nx">want</span> <span class="kt">string</span>
+<span class="lineno"> 8</span> 	<span class="p">}{</span>
+<span class="lineno"> 9</span> 		<span class="p">{</span><span class="s">&quot;Hello, world&quot;</span><span class="p">,</span> <span class="s">&quot;dlrow ,olleH&quot;</span><span class="p">},</span>
+<span class="lineno">10</span> 		<span class="p">{</span><span class="s">&quot;Hello, 世界&quot;</span><span class="p">,</span> <span class="s">&quot;界世 ,olleH&quot;</span><span class="p">},</span>
+<span class="lineno">11</span> 		<span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">},</span>
+<span class="lineno">12</span> 	<span class="p">}</span> <span class="p">{</span>
+<span class="lineno">13</span> 		<span class="nx">got</span> <span class="o">:=</span> <span class="nx">Reverse</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">in</span><span class="p">)</span>
+<span class="lineno">14</span> 		<span class="k">if</span> <span class="nx">got</span> <span class="o">!=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">want</span> <span class="p">{</span>
+<span class="lineno">15</span> 			<span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;Reverse(%q) == %q, want %q&quot;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">in</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">want</span><span class="p">)</span>
+<span class="lineno">16</span> 		<span class="p">}</span>
+<span class="lineno">17</span> 	<span class="p">}</span>
+<span class="lineno">18</span> <span class="p">}</span></code></pre></div>
+
+<p>在代码的根目录下运行 <code>go test</code>，输出如下：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="lineno">1</span> <span class="nv">$ </span>go <span class="nb">test</span>
+<span class="lineno">2</span> PASS
+<span class="lineno">3</span> ok      github.com/golang/example/stringutil    0.008s</code></pre></div>
+
+<p>这里有几点需要注意的：</p>
+
+<ol>
+  <li>Go 提供的运行测试代码的工具 <code>go test</code>，这个工具会自动寻找 filename_test.go 的测试代码并运行，这里我们应该给上面的测试代码命名为 <code>stringutil_test.go</code>。</li>
+  <li>Go 代码的测试用例必须以 <code>Test</code>起头才会被 <code>go test</code> 识别为一个合法的 Test Case。一个 Test Case 函数接受一个参数，类型为 <code>*testing.T</code>。至于 Test 后面的部分一般来说是我们想测试的函数，但这不是强制的。</li>
+  <li><code>*testing.T</code>这个类型的主要目的是用来报告测试的错误，打印日志，在测试运行过程中日志会一直累积，并在测试代码运行结束后打印到控制台。</li>
+  <li>Go 还提供了 <code>*testing.B</code> 和 <code>*testing.M</code> 分别用于基准测试(Benchmark Testing)和做一些测试的设置和清理工作，具体可以参见<a href="http://golang.org/pkg/testing/">Go testing 文档</a>。</li>
+</ol>
+
+<p>大家可以看到，Go 语言虽然提供了丰富的测试支持，比如单元测试、基准测试、性能测试，以及把测试结果输出到控制台或者保存为其他格式，但是这种测试写起来还是有点别扭，不是我们常见的 xUnit 测试框架或者 BDD 测试风格。那接下来我要介绍一个风格是大家比较熟悉的测试框架，叫做<a href="https://github.com/smartystreets/goconvey">GoConvey</a>，测试代码的风格有点类似于 Ruby 社区的 RSpec。</p>
+
+<h3 id="goconvey">GoConvey</h3>
+<p>我们来用 GoConvey 重写上面的单元测试：</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="lineno"> 1</span> <span class="kn">package</span> <span class="nx">stringutil</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="lineno"> 4</span> 	<span class="p">.</span> <span class="s">&quot;github.com/smartystreets/goconvey/convey&quot;</span>
+<span class="lineno"> 5</span> 	<span class="s">&quot;testing&quot;</span>
+<span class="lineno"> 6</span> <span class="p">)</span>
+<span class="lineno"> 7</span> 
+<span class="lineno"> 8</span> <span class="kd">func</span> <span class="nx">TestSpec</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno"> 9</span> 
+<span class="lineno">10</span> 	<span class="c1">// Only pass t into top-level Convey calls</span>
+<span class="lineno">11</span> 	<span class="nx">Convey</span><span class="p">(</span><span class="s">&quot;Given some ASCII and UTF8 strings&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">12</span> 		<span class="nx">strs</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+<span class="lineno">13</span> 			<span class="nx">in</span><span class="p">,</span> <span class="nx">want</span> <span class="kt">string</span>
+<span class="lineno">14</span> 		<span class="p">}{</span>
+<span class="lineno">15</span> 			<span class="p">{</span><span class="s">&quot;Hello, world&quot;</span><span class="p">,</span> <span class="s">&quot;dlrow ,olleH&quot;</span><span class="p">},</span>
+<span class="lineno">16</span> 			<span class="p">{</span><span class="s">&quot;Hello, 世界&quot;</span><span class="p">,</span> <span class="s">&quot;界世 ,olleH&quot;</span><span class="p">},</span>
+<span class="lineno">17</span> 			<span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">},</span>
+<span class="lineno">18</span> 		<span class="p">}</span>
+<span class="lineno">19</span> 		<span class="nx">Convey</span><span class="p">(</span><span class="s">&quot;The value should be equal the reversed one&quot;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">20</span> 			<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">strs</span> <span class="p">{</span>
+<span class="lineno">21</span> 				<span class="nx">got</span> <span class="o">:=</span> <span class="nx">Reverse</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">in</span><span class="p">)</span>
+<span class="lineno">22</span> 				<span class="nx">So</span><span class="p">(</span><span class="nx">got</span><span class="p">,</span> <span class="nx">ShouldEqual</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">want</span><span class="p">)</span>
+<span class="lineno">23</span> 			<span class="p">}</span>
+<span class="lineno">24</span> 		<span class="p">})</span>
+<span class="lineno">25</span> 	<span class="p">})</span>
+<span class="lineno">26</span> <span class="p">}</span></code></pre></div>
+
+<p>这里我们需要注意的是：</p>
+
+<ol>
+  <li>在 import 代码后面有个 <code>.</code>，这里的含义是把引入后的 Go <code>package</code> 中被导出(大写字母开头)的变量，结构体和函数直接放入执行 <code>import</code> 的 <code>package</code>，这样在引用的时候就不必要加 <code>package</code> 名作为前缀了。其他的方式还有 <code>import _ package_name</code> (仅仅运行 package 中的 <code>init</code> 方法来初始化), <code>import P package_name</code> (以 P 作为别名), 以及 <code>import package_name</code> (使用 package 来引用其中导出的元素)；</li>
+  <li>GoConvey 遵循 <code>go test</code> 一样的规则，这是因为它要和 <code>go test</code> 紧密集成；</li>
+  <li>GoConvey 还支持自动生成测试的一些样板代码(Boilerplate code)，也支持在浏览器中写测试，以及Chrome 浏览器通知等等高级特性，详细请查看<a href="https://github.com/smartystreets/goconvey">文档</a>。</li>
+</ol>
+
+<p>另外一个我也比较喜欢的测试框架是<a href="https://github.com/onsi/ginkgo">Ginkgo</a>，<a href="https://github.com/onsi/gomega">Gomega</a>是和 Ginkgo 结合得很紧密的匹配库(Matcher Library)，提供了很多人性化的匹配语法。在 Ginkgo 家族中还有另外的成员<a href="https://github.com/sclevine/agouti">Agouti</a>，它主要用于集成测试(integration test)，我会在以后的博文中介绍。</p>
+
+<h3 id="ginkgo--gomega">Ginkgo 和 Gomega</h3>
+<p>我们用 Ginkgo 和 Gomega 来改写上面的单元测试：</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="lineno"> 1</span> <span class="kn">package</span> <span class="nx">stringutil_test</span>
+<span class="lineno"> 2</span> 
+<span class="lineno"> 3</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="lineno"> 4</span> 	<span class="p">.</span> <span class="s">&quot;github.com/golang/example/stringutil&quot;</span>
+<span class="lineno"> 5</span> 	<span class="p">.</span> <span class="s">&quot;github.com/onsi/ginkgo&quot;</span>
+<span class="lineno"> 6</span> 	<span class="p">.</span> <span class="s">&quot;github.com/onsi/gomega&quot;</span>
+<span class="lineno"> 7</span> <span class="p">)</span>
+<span class="lineno"> 8</span> 
+<span class="lineno"> 9</span> <span class="kd">var</span> <span class="nx">_</span> <span class="p">=</span> <span class="nx">Describe</span><span class="p">(</span><span class="s">&quot;StringutilTest&quot;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">10</span> 	<span class="kd">var</span> <span class="p">(</span>
+<span class="lineno">11</span> 		<span class="nx">strs</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+<span class="lineno">12</span> 			<span class="nx">in</span><span class="p">,</span> <span class="nx">want</span> <span class="kt">string</span>
+<span class="lineno">13</span> 		<span class="p">}</span>
+<span class="lineno">14</span> 	<span class="p">)</span>
+<span class="lineno">15</span> 
+<span class="lineno">16</span> 	<span class="nx">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">17</span> 		<span class="nx">strs</span> <span class="p">=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+<span class="lineno">18</span> 			<span class="nx">in</span><span class="p">,</span> <span class="nx">want</span> <span class="kt">string</span>
+<span class="lineno">19</span> 		<span class="p">}{</span>
+<span class="lineno">20</span> 			<span class="p">{</span><span class="s">&quot;Hello, world&quot;</span><span class="p">,</span> <span class="s">&quot;dlrow ,olleH&quot;</span><span class="p">},</span>
+<span class="lineno">21</span> 			<span class="p">{</span><span class="s">&quot;Hello, 世界&quot;</span><span class="p">,</span> <span class="s">&quot;界世 ,olleH&quot;</span><span class="p">},</span>
+<span class="lineno">22</span> 			<span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">},</span>
+<span class="lineno">23</span> 		<span class="p">}</span>
+<span class="lineno">24</span> 	<span class="p">})</span>
+<span class="lineno">25</span> 
+<span class="lineno">26</span> 	<span class="nx">Describe</span><span class="p">(</span><span class="s">&quot;With ASCII and UTF8 strings defined&quot;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">27</span> 		<span class="nx">Context</span><span class="p">(</span><span class="s">&quot;Reverse the give strings&quot;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">28</span> 			<span class="nx">It</span><span class="p">(</span><span class="s">&quot;should be reversed&quot;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">29</span> 				<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">strs</span> <span class="p">{</span>
+<span class="lineno">30</span> 					<span class="nx">got</span> <span class="o">:=</span> <span class="nx">Reverse</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">in</span><span class="p">)</span>
+<span class="lineno">31</span> 					<span class="nx">Expect</span><span class="p">(</span><span class="nx">got</span><span class="p">).</span><span class="nx">To</span><span class="p">(</span><span class="nx">Equal</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">want</span><span class="p">))</span>
+<span class="lineno">32</span> 				<span class="p">}</span>
+<span class="lineno">33</span> 			<span class="p">})</span>
+<span class="lineno">34</span> 		<span class="p">})</span>
+<span class="lineno">35</span> 	<span class="p">})</span>
+<span class="lineno">36</span> <span class="p">})</span></code></pre></div>
+
+<p>这里需要注意的是：</p>
+
+<ol>
+  <li>我们在Ginkgo 测试里面使用的 package 名为 <code>stringutil_test</code>，这个命名有值得注意的地方。通常在 Go 代码中，我们会把代码和测试代码放在同样的 <code>package</code>下面，这样测试代码就可以直接访问需要测试的代码。但是有些情况下我们不能这么做，比如 在单元测试中我们需要打印测试结果，需要调用 <code>fmt</code> 的代码，而 <code>fmt</code> 包自身的代码也需要测试。Go 给出的解决方案是将测试代码的 <code>package</code> 命名为 <code>fmt_test</code>, 这样就同时导入了 <code>fmt</code> 和 <code>testing</code> 的代码，他们相互直接也避免了循环引用；</li>
+  <li><code>Expect(got).To(Equal(c.want))</code> 风格的断言就来自于 Gomega；</li>
+  <li>Ginkgo 可以自动生成一些样板代码(Boilerplate code)，并可以监视文件系统，在文件变化以后自动运行测试，等等高级特性，详见<a href="http://onsi.github.io/ginkgo/">它的文档</a>。</li>
+</ol>
+
+<h3 id="section-4">其他非常有价值工具</h3>
+
+<ol>
+  <li>Go 还提供了检测并发代码竞争条件的工具，默认没有启用，可以通过 <code>go test -race</code> 来指定；</li>
+  <li>另外，<code>go vet</code> 相当于代码的静态分析工具，如果集成到项目的 CI 中会对代码质量的保证大有帮助；</li>
+  <li>其他工具，请见 Go <a href="https://golang.org/cmd/go/">官方文档</a>，这里没提到不是因为它们不重要，而是有的我也不了解，:)</li>
+</ol>
+
+<p>接下来本文的第二部分，我会介绍一下 Go 代码中如何写集成测试。</p>
+
+<h3 id="section-5">资源</h3>
+<p><a href="http://nathany.com/go-testing-toolbox/">Go Testing Toolbox</a></p>
+
+<p><a href="http://onsi.github.io/ginkgo/">Ginkgo 主页</a></p>
+
+<p><a href="http://onsi.github.io/gomega/">Gomdga 主页</a></p>
+
+<p><a href="http://agouti.org/">Agouti 主页</a></p>
+
+<p><a href="http://golang.org/pkg/testing/">Go testing 官方文档</a></p>
+
+<p><a href="https://github.com/smartystreets/goconvey">GoConvey 主页</a></p>
+
+<p><a href="https://github.com/golang/example">Go Example 源代码</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=ndmB0bj7eyw">Testing Techniques - Youtube 视频</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/go/2015/04/04/deploy-go-web-app-with-docker/" data-toggle="tooltip" data-placement="top" title="用 Docker 部署 Go Web 应用">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
