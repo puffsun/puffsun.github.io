@@ -5,14 +5,14 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 05 Apr 2015 18:06:08 +0800</pubDate>
-    <lastBuildDate>Sun, 05 Apr 2015 18:06:08 +0800</lastBuildDate>
+    <pubDate>Sun, 05 Apr 2015 18:06:47 +0800</pubDate>
+    <lastBuildDate>Sun, 05 Apr 2015 18:06:47 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>如何测试 Go 代码 - 单元测试</title>
         <description>&lt;h3 id=&quot;section&quot;&gt;软件测试的重要性&lt;/h3&gt;
-&lt;p&gt;关于软件测试是否重要，我想大家都有共识。ThoughtWorks 的大牛Michael C. Feathers在他的成名作&lt;a href=&quot;http://www.amazon.com/Working-Effectively-Legacy-Michael-Feathers/dp/0131177052&quot;&gt;Working Effectively with Legacy Code&lt;/a&gt;的序言写道：&lt;/p&gt;
+&lt;p&gt;关于软件测试是否重要，我想大家都有共识。ThoughtWorks 的大牛Michael C. Feathers在他的成名作 &lt;a href=&quot;http://www.amazon.com/Working-Effectively-Legacy-Michael-Feathers/dp/0131177052&quot;&gt;Working Effectively with Legacy Code&lt;/a&gt; 的序言写道：&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;对于我来说，遗留代码简单来讲就是没有测试覆盖的代码。不管它写得多好，也不管它面向对象封装得有多精美，没有测试覆盖的代码都是烂代码。有了测试覆盖，我们可以在可被验证的情况下快速的改变我们代码的行为，而如果没有测试覆盖，我们无从得知我们的代码是在变好还是在变坏。&lt;/p&gt;
