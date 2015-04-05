@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 05 Apr 2015 18:08:05 +0800</pubDate>
-    <lastBuildDate>Sun, 05 Apr 2015 18:08:05 +0800</lastBuildDate>
+    <pubDate>Sun, 05 Apr 2015 18:12:11 +0800</pubDate>
+    <lastBuildDate>Sun, 05 Apr 2015 18:12:11 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -178,9 +178,10 @@
 &lt;p&gt;这里需要注意的是：&lt;/p&gt;
 
 &lt;ol&gt;
+  &lt;li&gt;我们需要在项目根目录下运行 &lt;code&gt;ginkgo -r .&lt;/code&gt; 来运行 Ginkgo 测试代码；&lt;/li&gt;
   &lt;li&gt;我们在Ginkgo 测试里面使用的 package 名为 &lt;code&gt;stringutil_test&lt;/code&gt;，这个命名有值得注意的地方。通常在 Go 代码中，我们会把代码和测试代码放在同样的 &lt;code&gt;package&lt;/code&gt;下面，这样测试代码就可以直接访问需要测试的代码。但是有些情况下我们不能这么做，比如 在单元测试中我们需要打印测试结果，需要调用 &lt;code&gt;fmt&lt;/code&gt; 的代码，而 &lt;code&gt;fmt&lt;/code&gt; 包自身的代码也需要测试。Go 给出的解决方案是将测试代码的 &lt;code&gt;package&lt;/code&gt; 命名为 &lt;code&gt;fmt_test&lt;/code&gt;, 这样就同时导入了 &lt;code&gt;fmt&lt;/code&gt; 和 &lt;code&gt;testing&lt;/code&gt; 的代码，他们相互直接也避免了循环引用；&lt;/li&gt;
   &lt;li&gt;&lt;code&gt;Expect(got).To(Equal(c.want))&lt;/code&gt; 风格的断言就来自于 Gomega；&lt;/li&gt;
-  &lt;li&gt;Ginkgo 可以自动生成一些样板代码(Boilerplate code)，并可以监视文件系统，在文件变化以后自动运行测试，等等高级特性，详见&lt;a href=&quot;http://onsi.github.io/ginkgo/&quot;&gt;它的文档&lt;/a&gt;。&lt;/li&gt;
+  &lt;li&gt;Ginkgo 可以自动生成一些样板代码(Boilerplate code)，并可以监视文件系统 (ginkgo watch -r)，在文件变化以后自动运行测试，等等高级特性，详见&lt;a href=&quot;http://onsi.github.io/ginkgo/&quot;&gt;它的文档&lt;/a&gt;。&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&quot;section-4&quot;&gt;其他非常有价值工具&lt;/h3&gt;
