@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>Play! Framework 大致观感 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/java/2015/04/25/play-framework-overview/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Play! Framework 大致观感</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on April 25, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="section">为什么写这篇文章</h3>
+<p>前段时间花时间比较了几个 Web 框架，考量的对象来自于 Golang 社区和 Java 社区：<a href="http://beego.me/">Beego</a>, <a href="http://martini.codegangsta.io/">Martini</a>, <a href="https://www.playframework.com/">Play! 2</a>, <a href="http://projects.spring.io/spring-framework/">Spring MVC</a>。在选择的过程中并没有多少客观的统计数据，全凭我的个人理解和不同社区人选型时候的分析，在这篇文章里面我想聊聊为什么会最终选择 <a href="https://www.playframework.com/">Play! 2 Framework</a>，以及对 Play! 2 Framework 的大致观感。</p>
+
+<h3 id="web-">Web 框架选型的依据</h3>
+<p>通常来说，你需要考量以下方面：</p>
+
+<ul>
+  <li>数据库/NoSQL 支持</li>
+  <li>缓存支持</li>
+  <li>日志管理</li>
+  <li>开发工具和社区活跃程度</li>
+  <li>Session 管理</li>
+  <li>宿主语言</li>
+  <li>性能</li>
+  <li>扩展性</li>
+</ul>
+
+<h3 id="ruby-on-rails">为什么没有 Ruby on Rails</h3>
+<p>Rails 框架完全符合上面的依据，同时也是非常成熟和流行的框架，但是我现在对于动态语言有些不太感冒，更倾向于静态，编译型语言。Ruby 代码的风格过于奔放，读优秀程序员写出的 Ruby 代码固然优美，维护新手程序员写出的 Ruby 代码又恨不得让你把眼珠子都挖出来；另一方面 Ruby 这样的动态语言代码极度依赖于测试，包括但也不限于单元测试和集成测试，没有测试覆盖的 Ruby 代码就是狗屎。而在国内的IT公司，不写或者尽量少写测试代码似乎成了默契，起码我待过的数家公司都是如此，这些地方技术选型上都不应该采用动态语言。</p>
+
+<h3 id="section-1">大致观感</h3>
+<p>Play! 框架可以说是我用过的最顺手，开发效率最高的Web 开发框架，提供了开发、测试、发布一揽子的工具支持，甚至有插件支持直接打包为各种操作系统的安装包。</p>
+
+<h3 id="play-framework-">Play! framework 的特点</h3>
+<p>简单讲，Play! 框架是个类Ruby on Rails 风格的全栈(full-stack)开发框架，在设计上内置 RESTful 支持，从 <code>Play! 2</code> 开始, Play! 全面拥抱了 Scala，采用了 Scala 作为模板语言，事实上，从2.0版本开始，Play! 框架可以说原生支持 Scala。</p>
+
+<h4 id="javaee">抛弃 JavaEE</h4>
+<p>传统的 Java Web 开发中，程序员一定避不开 Servlet，以往的 Java Web 框架都是基于 Servlet 来构建的，最终开发完成的应用也一定要在Servlet 容器里运行。Java 程序员应该都知道，Servlet API 提供了一套底层的 API 来处理 HTTP 请求和响应，Play! framework 在这里的做法非常大胆，也带来了新的优势。Play! 采用 Apache Mina 作为底层 HTTP Server，并做了自己的封装，从而实现代码的热替换(hot swapping)，这里的优势是修改了代码，只要刷新浏览器新修改的代码就可以立即生效，这对开发生产力的提升大有好处，具体的代码分析可以参见<a href="http://androider.iteye.com/blog/710533">这篇文章</a>。</p>
+
+<h4 id="xml-">抛弃 XML 配置文件</h4>
+<p>写过 Java Web 项目的程序员都知道 XML 噩梦是怎么回事，现在又向 元注释(Annotation)噩梦前进了。Play! 给出的回应是它只有一个全局配置文件，绝大部分的配置是自动设置，或者是默认设置，这一点深得 Ruby on Rails CoC(Code on Convension) 的精髓。</p>
+
+<h4 id="stateless">无状态(Stateless)框架</h4>
+<p>这意味着 Play! 不会把状态保存在 Server 端。Play! 认为数据库可以存储状态，Play! 框架在每次 HTTP Request 之间不会在 Server 端存储状态，所需的状态都需要在 HTTP Request 之间传递。当然在 Play! 里也有 session 的概念，也有一个方法 <code>session()</code>可以存取 session，但是这里只不过是浏览器端的 cookie，你调用 <code>session()</code>方法也只能存取 String 类型的值。</p>
+
+<p>另外，无状态也对应用程序的扩展性很有利，你只需要新增一个节点，重新部署一个 Play! 应用就可以立即增加系统的负载能力。</p>
+
+<h4 id="template">强类型模板(template)</h4>
+<p>Play! 2 对Play! 框架进行了完全的重写，完全拥抱了 Scala，并用 Scala 替代 Groovy 作为模板语言。事实上，Play! 2的模板就是可编译的 Scala 代码，如果编译通不过，你可以立即从浏览器或者控制台(console)看到错误信息，而不必等到重新部署，调用了相应页面才可以发现错误，这也可以大大提高开发生产力。</p>
+
+<h4 id="section-2">工具支持</h4>
+<p>Play! 提供了类似 Rails 的命令行工具来生成样板代码(boilerplate code)，而在最新的版本<code>2.3</code>又和<code>activator</code>平台集成，提供了浏览器中开发的工具支持。</p>
+
+<h4 id="section-3">社区以及市场占有率</h4>
+<p>Play! 的市场占有率大约在8%, 虽然不算高，但是考虑到它的推出时间，我觉得已经很不错了，在社区方面做得也还算不错，在 StackOverflow 上提出的问题很多有高质量的解答。</p>
+
+<h3 id="play-framework--1">Play! framework 缺点</h3>
+<p>不是所有的框架都是十全十美的，Play! 也不例外。我认为 Play! 最主要的问题在于 Scala 语言的复杂性和它的后向兼容性。</p>
+
+<h4 id="section-4">模板引擎</h4>
+
+<p>Scala 语言本身的学习曲线非常高，我在刚接触 Scala 语言的时候被它的类型推导折腾得七荤八素，我觉得其他人也不例外，相比较学习 Go 语言这样核心精简的语言简直就是手到擒来，拿 Scala 作为模板引擎大大提高了模板的复杂性。</p>
+
+<h4 id="section-5">后向兼容性</h4>
+
+<p>Play! 2 是对 Play! 1 的完全重写，Play! 2 是和 Scala 无缝集成的，如果想完全发挥 Play! 2 的威力，最好采用 Scala 语言。同时它也不对 Play! 1 后向兼容，如果希望从 Play! 1 升级到 2，那么只有完全重写，这样会导致它失去一批老用户。</p>
+
+<h3 id="section-6">示例</h3>
+
+<h4 id="play">安装 Play!</h4>
+
+<p>首先到 Play! 框架<a href="https://www.playframework.com/download">下载页面</a>下载安装包并解压到本地目录，最好下载 <a href="http://downloads.typesafe.com/typesafe-activator/1.3.2/typesafe-activator-1.3.2.zip">Offline Distribution</a> 包，否则所有依赖仍然要远程下载，这在我国网络环境下是个巨大的挑战。当然你也可以修改为国内的源来增加下载速度，遗憾的是我目前还没有发现一个稳定并且完整的国内源。可以参考<a href="https://www.playframework.com/documentation/2.3.x/Installing">这个页面</a>来安装 Play!。</p>
+
+<h4 id="section-7">新建项目</h4>
+<p>首先新建一个目录，并查看一下 Play! 提供的命令行工具：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd</span> ~/prog/play <span class="o">&amp;&amp;</span> mkdir demo <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="nv">$_</span>
+<span class="nv">$ </span>activator -h
+
+Usage: activator &lt;<span class="nb">command</span>&gt; <span class="o">[</span>options<span class="o">]</span>
+
+  Command:
+  ui                 Start the Activator UI
+  new <span class="o">[</span>name<span class="o">]</span> <span class="o">[</span>template-id<span class="o">]</span>  Create a new project with <span class="o">[</span>name<span class="o">]</span> using template <span class="o">[</span>template-id<span class="o">]</span>
+  list-templates     Print all available template names
+  -h <span class="p">|</span> -help         Print this message
+
+  Options:
+  -v <span class="p">|</span> -verbose      Make this runner chattier
+  -d <span class="p">|</span> -debug        Set sbt log level to debug
+  -mem &lt;integer&gt;     Set memory options <span class="o">(</span>default: , which is -Xms1024m -Xmx1024m -XX:PermSize<span class="o">=</span>64m -XX:MaxPermSize<span class="o">=</span>256m<span class="o">)</span>
+  -jvm-debug &lt;port&gt;  Turn on JVM debugging, open at the given port.
+
+  <span class="c"># java version (default: java from PATH, currently java version &quot;1.7.0_45&quot;)</span>
+  -java-home &lt;path&gt;  Alternate JAVA_HOME
+
+  <span class="c"># jvm options and output control</span>
+  -Dkey<span class="o">=</span>val          Pass -Dkey<span class="o">=</span>val directly to the java runtime
+  -J-X               Pass option -X directly to the java runtime
+                     <span class="o">(</span>-J is stripped<span class="o">)</span>
+
+  <span class="c"># environment variables (read from context)</span>
+  JAVA_OPTS          Environment variable, <span class="k">if</span> <span class="nb">unset </span>uses <span class="s2">&quot;&quot;</span>
+  SBT_OPTS           Environment variable, <span class="k">if</span> <span class="nb">unset </span>uses <span class="s2">&quot;&quot;</span>
+  ACTIVATOR_OPTS     Environment variable, <span class="k">if</span> <span class="nb">unset </span>uses <span class="s2">&quot;&quot;</span>
+
+In the <span class="k">case</span> of duplicated or conflicting options, the order above
+shows precedence: environment variables lowest, <span class="nb">command </span>line options highest.</code></pre></div>
+
+<p>这里可以看到，Play! 提供了很多选项，其中 <code>activator ui</code> 提供了在浏览器中新建、编译、运行、编写 Play! 代码的功能；<code>activator --jvm-debug &lt;port&gt;</code> 则提供了调试 Play! 项目代码的快捷方式； <code>activator new</code> 可以新建项目，也就是我们下一步要做的。</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>activator new sample
+
+Fetching the latest list of templates...
+
+Browse the list of templates: http://typesafe.com/activator/templates
+Choose from these featured templates or enter a template name:
+  1<span class="o">)</span> minimal-akka-java-seed
+  2<span class="o">)</span> minimal-akka-scala-seed
+  3<span class="o">)</span> minimal-java
+  4<span class="o">)</span> minimal-scala
+  5<span class="o">)</span> play-java
+  6<span class="o">)</span> play-scala
+<span class="o">(</span>hit tab to see a list of all templates<span class="o">)</span></code></pre></div>
+
+<p>Play! 提供了很多模板，我们可以基于这些模板快速创建项目。目前从命令行可以存取的所有模板众多，这里就不一一列举了，可以用<code>Tab</code>把它们都调出来。这里假定我们希望基于<code>play-java</code>模板来创建我们的新项目：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>&gt; play-java
+OK, application <span class="s2">&quot;sample&quot;</span> is being created using the <span class="s2">&quot;play-java&quot;</span> template.
+
+To run <span class="s2">&quot;sample&quot;</span> from the <span class="nb">command </span>line, <span class="s2">&quot;cd sample&quot;</span> <span class="k">then</span>:
+/Users/gsun/prog/play/demo/sample/activator run
+
+To run the <span class="nb">test </span><span class="k">for</span> <span class="s2">&quot;sample&quot;</span> from the <span class="nb">command </span>line, <span class="s2">&quot;cd sample&quot;</span> <span class="k">then</span>:
+/Users/gsun/prog/play/demo/sample/activator <span class="nb">test</span>
+
+To run the Activator UI <span class="k">for</span> <span class="s2">&quot;sample&quot;</span> from the <span class="nb">command </span>line, <span class="s2">&quot;cd sample&quot;</span> <span class="k">then</span>:
+/Users/gsun/prog/play/demo/sample/activator ui</code></pre></div>
+
+<p>按照 Play!的指示，我们进入项目目录，并且再次运行 <code>activator run</code>命令：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>activator run
+<span class="o">[</span>info<span class="o">]</span> Loading global plugins from /Users/gsun/.sbt/0.13/plugins
+<span class="o">[</span>info<span class="o">]</span> downloading file:/Users/gsun/dev/activator-1.3.2/repository/com.typesafe.play/play-java-ws_2.11/2.3.8/jars/play-java-ws_2.11.jar ...
+<span class="o">[</span>info<span class="o">]</span>  <span class="o">[</span>SUCCESSFUL <span class="o">]</span> com.typesafe.play#play-java-ws_2.11<span class="p">;</span>2.3.8!play-java-ws_2.11.jar <span class="o">(</span>7ms<span class="o">)</span>
+<span class="o">[</span>info<span class="o">]</span> Done updating.
+
+--- <span class="o">(</span>Running the application, auto-reloading is enabled<span class="o">)</span> ---
+
+<span class="o">[</span>info<span class="o">]</span> play - Listening <span class="k">for</span> HTTP on /0:0:0:0:0:0:0:0:9000
+
+<span class="o">(</span>Server started, use Ctrl+D to stop and go back to the console...<span class="o">)</span>
+
+<span class="o">[</span>info<span class="o">]</span> Compiling <span class="m">4</span> Scala sources and <span class="m">2</span> Java sources to /Users/gsun/prog/play/demo/sample/target/scala-2.11/classes...
+<span class="o">[</span>info<span class="o">]</span> <span class="s1">&#39;compiler-interface&#39;</span> not yet compiled <span class="k">for</span> Scala 2.11.1. Compiling...
+<span class="o">[</span>info<span class="o">]</span>   Compilation completed in 20.839 s
+<span class="o">[</span>info<span class="o">]</span> play - Application started <span class="o">(</span>Dev<span class="o">)</span></code></pre></div>
+
+<p>这时候打开浏览器，并访问<code>http://localhost:9000</code>，你会发现一个完整的应用已经运行，你只需要根据需要增加或者修改功能就可以了，可以说搭建一个 Play! 框架的项目需要的时间非常短，效率非常高。</p>
+
+<p>另外 <code>activator ~run</code> 可以实现代码的热替换(hot swapping)，修改代码之后，程序员只需要刷新浏览器就可以立即看到修改结果。这里是在项目目录内部运行<code>activator help</code> 的结果：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">[</span>sample<span class="o">]</span> <span class="nv">$ </span><span class="nb">help</span>
+
+<span class="nb">  help                                    </span>Displays this <span class="nb">help </span>message or prints detailed <span class="nb">help </span>on requested commands <span class="o">(</span>run <span class="s1">&#39;help &lt;command&gt;&#39;</span><span class="o">)</span>.
+  completions                             Displays a list of completions <span class="k">for</span> the given argument string <span class="o">(</span>run <span class="s1">&#39;completions &lt;string&gt;&#39;</span><span class="o">)</span>.
+  about                                   Displays basic information about sbt and the build.
+  tasks                                   Lists the tasks defined <span class="k">for</span> the current project.
+  settings                                Lists the settings defined <span class="k">for</span> the current project.
+  reload                                  reload
+
+        <span class="o">(</span>Re<span class="o">)</span>loads the project in the current directory.
+
+reload plugins
+
+        <span class="o">(</span>Re<span class="o">)</span>loads the plugins project <span class="o">(</span>under project directory<span class="o">)</span>.
+
+reload <span class="k">return</span>
+
+        <span class="o">(</span>Re<span class="o">)</span>loads the root project <span class="o">(</span>and leaves the plugins project<span class="o">)</span>.
+  projects                                Lists the names of available projects or temporarily adds/removes extra builds to the session.
+  project                                 Displays the current project or changes to the provided <span class="sb">`</span>project<span class="sb">`</span>.
+  <span class="nb">set</span> <span class="o">[</span>every<span class="o">]</span> &lt;setting&gt;                   Evaluates a Setting and applies it to the current project.
+  session                                 Manipulates session settings.  For details, run <span class="s1">&#39;help session&#39;</span>.
+  inspect <span class="o">[</span>uses<span class="p">|</span>tree<span class="p">|</span>definitions<span class="o">]</span> &lt;key&gt;   Prints the value <span class="k">for</span> <span class="s1">&#39;key&#39;</span>, the defining scope, delegates, related definitions, and dependencies.
+  &lt;log-level&gt;                             Sets the logging level to <span class="s1">&#39;log-level&#39;</span>.  Valid levels: debug, info, warn, error
+  plugins                                 Lists currently available plugins.
+  <span class="p">;</span> &lt;<span class="nb">command</span>&gt; <span class="o">(</span><span class="p">;</span> &lt;<span class="nb">command</span>&gt;<span class="o">)</span>*              Runs the provided semicolon-separated commands.
+  ~ &lt;<span class="nb">command</span>&gt;                             Executes the specified <span class="nb">command </span>whenever <span class="nb">source </span>files change.
+  last                                    Displays output from a previous <span class="nb">command </span>or the output from a specific task.
+  last-grep                               Shows lines from the last output <span class="k">for</span> <span class="s1">&#39;key&#39;</span> that match <span class="s1">&#39;pattern&#39;</span>.
+  <span class="nb">export</span> &lt;tasks&gt;+                         Executes tasks and displays the equivalent <span class="nb">command </span>lines.
+  <span class="nb">exit                                    </span>Terminates the build.
+  --&lt;<span class="nb">command</span>&gt;                             Schedules a <span class="nb">command </span>to run before other commands on startup.
+  show &lt;key&gt;                              Displays the result of evaluating the setting or task associated with <span class="s1">&#39;key&#39;</span>.
+  all &lt;task&gt;+                             Executes all of the specified tasks concurrently.
+
+More <span class="nb">command help </span>available using <span class="s1">&#39;help &lt;command&gt;&#39;</span> <span class="k">for</span>:
+  !, +, ++, &lt;, <span class="nb">alias</span>, append, apply, <span class="nb">eval</span>, iflast, onFailure, reboot, shell
+
+<span class="o">[</span>sample<span class="o">]</span> <span class="err">$</span></code></pre></div>
+
+<p>这里我就不再一一讲解了，如果你有兴趣，那么可以自己去探索。</p>
+
+<h3 id="section-8">结语</h3>
+<p>如果你喜欢 Ruby on Rails 开发的高效，有喜欢 Java/Scala 静态语言的编译期代码检查以及稳定性，那么 Play! 框架你应该认真考虑一下，它是我至今用过的开发最高效的 Java Web 框架。</p>
+
+<h3 id="section-9">资源</h3>
+<p><a href="https://www.playframework.com/">Play! framework 官网</a></p>
+
+<p><a href="http://androider.iteye.com/blog/710533">Play! framework hotswap及源码分析</a></p>
+
+<p><a href="https://www.playframework.com/documentation/2.3.x/Home">Play! framework 官方文档</a></p>
+
+<p><a href="http://www.scala-lang.org/">Scala 编程语言官网</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/go/2015/04/05/how-to-test-go-code/" data-toggle="tooltip" data-placement="top" title="如何测试 Go 代码 - 单元测试">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

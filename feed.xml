@@ -5,9 +5,226 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 08 Apr 2015 19:25:21 +0800</pubDate>
-    <lastBuildDate>Wed, 08 Apr 2015 19:25:21 +0800</lastBuildDate>
+    <pubDate>Sat, 25 Apr 2015 21:52:51 +0800</pubDate>
+    <lastBuildDate>Sat, 25 Apr 2015 21:52:51 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Play! Framework 大致观感</title>
+        <description>&lt;h3 id=&quot;section&quot;&gt;为什么写这篇文章&lt;/h3&gt;
+&lt;p&gt;前段时间花时间比较了几个 Web 框架，考量的对象来自于 Golang 社区和 Java 社区：&lt;a href=&quot;http://beego.me/&quot;&gt;Beego&lt;/a&gt;, &lt;a href=&quot;http://martini.codegangsta.io/&quot;&gt;Martini&lt;/a&gt;, &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2&lt;/a&gt;, &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot;&gt;Spring MVC&lt;/a&gt;。在选择的过程中并没有多少客观的统计数据，全凭我的个人理解和不同社区人选型时候的分析，在这篇文章里面我想聊聊为什么会最终选择 &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2 Framework&lt;/a&gt;，以及对 Play! 2 Framework 的大致观感。&lt;/p&gt;
+
+&lt;h3 id=&quot;web-&quot;&gt;Web 框架选型的依据&lt;/h3&gt;
+&lt;p&gt;通常来说，你需要考量以下方面：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;数据库/NoSQL 支持&lt;/li&gt;
+  &lt;li&gt;缓存支持&lt;/li&gt;
+  &lt;li&gt;日志管理&lt;/li&gt;
+  &lt;li&gt;开发工具和社区活跃程度&lt;/li&gt;
+  &lt;li&gt;Session 管理&lt;/li&gt;
+  &lt;li&gt;宿主语言&lt;/li&gt;
+  &lt;li&gt;性能&lt;/li&gt;
+  &lt;li&gt;扩展性&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;ruby-on-rails&quot;&gt;为什么没有 Ruby on Rails&lt;/h3&gt;
+&lt;p&gt;Rails 框架完全符合上面的依据，同时也是非常成熟和流行的框架，但是我现在对于动态语言有些不太感冒，更倾向于静态，编译型语言。Ruby 代码的风格过于奔放，读优秀程序员写出的 Ruby 代码固然优美，维护新手程序员写出的 Ruby 代码又恨不得让你把眼珠子都挖出来；另一方面 Ruby 这样的动态语言代码极度依赖于测试，包括但也不限于单元测试和集成测试，没有测试覆盖的 Ruby 代码就是狗屎。而在国内的IT公司，不写或者尽量少写测试代码似乎成了默契，起码我待过的数家公司都是如此，这些地方技术选型上都不应该采用动态语言。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;大致观感&lt;/h3&gt;
+&lt;p&gt;Play! 框架可以说是我用过的最顺手，开发效率最高的Web 开发框架，提供了开发、测试、发布一揽子的工具支持，甚至有插件支持直接打包为各种操作系统的安装包。&lt;/p&gt;
+
+&lt;h3 id=&quot;play-framework-&quot;&gt;Play! framework 的特点&lt;/h3&gt;
+&lt;p&gt;简单讲，Play! 框架是个类Ruby on Rails 风格的全栈(full-stack)开发框架，在设计上内置 RESTful 支持，从 &lt;code&gt;Play! 2&lt;/code&gt; 开始, Play! 全面拥抱了 Scala，采用了 Scala 作为模板语言，事实上，从2.0版本开始，Play! 框架可以说原生支持 Scala。&lt;/p&gt;
+
+&lt;h4 id=&quot;javaee&quot;&gt;抛弃 JavaEE&lt;/h4&gt;
+&lt;p&gt;传统的 Java Web 开发中，程序员一定避不开 Servlet，以往的 Java Web 框架都是基于 Servlet 来构建的，最终开发完成的应用也一定要在Servlet 容器里运行。Java 程序员应该都知道，Servlet API 提供了一套底层的 API 来处理 HTTP 请求和响应，Play! framework 在这里的做法非常大胆，也带来了新的优势。Play! 采用 Apache Mina 作为底层 HTTP Server，并做了自己的封装，从而实现代码的热替换(hot swapping)，这里的优势是修改了代码，只要刷新浏览器新修改的代码就可以立即生效，这对开发生产力的提升大有好处，具体的代码分析可以参见&lt;a href=&quot;http://androider.iteye.com/blog/710533&quot;&gt;这篇文章&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h4 id=&quot;xml-&quot;&gt;抛弃 XML 配置文件&lt;/h4&gt;
+&lt;p&gt;写过 Java Web 项目的程序员都知道 XML 噩梦是怎么回事，现在又向 元注释(Annotation)噩梦前进了。Play! 给出的回应是它只有一个全局配置文件，绝大部分的配置是自动设置，或者是默认设置，这一点深得 Ruby on Rails CoC(Code on Convension) 的精髓。&lt;/p&gt;
+
+&lt;h4 id=&quot;stateless&quot;&gt;无状态(Stateless)框架&lt;/h4&gt;
+&lt;p&gt;这意味着 Play! 不会把状态保存在 Server 端。Play! 认为数据库可以存储状态，Play! 框架在每次 HTTP Request 之间不会在 Server 端存储状态，所需的状态都需要在 HTTP Request 之间传递。当然在 Play! 里也有 session 的概念，也有一个方法 &lt;code&gt;session()&lt;/code&gt;可以存取 session，但是这里只不过是浏览器端的 cookie，你调用 &lt;code&gt;session()&lt;/code&gt;方法也只能存取 String 类型的值。&lt;/p&gt;
+
+&lt;p&gt;另外，无状态也对应用程序的扩展性很有利，你只需要新增一个节点，重新部署一个 Play! 应用就可以立即增加系统的负载能力。&lt;/p&gt;
+
+&lt;h4 id=&quot;template&quot;&gt;强类型模板(template)&lt;/h4&gt;
+&lt;p&gt;Play! 2 对Play! 框架进行了完全的重写，完全拥抱了 Scala，并用 Scala 替代 Groovy 作为模板语言。事实上，Play! 2的模板就是可编译的 Scala 代码，如果编译通不过，你可以立即从浏览器或者控制台(console)看到错误信息，而不必等到重新部署，调用了相应页面才可以发现错误，这也可以大大提高开发生产力。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-2&quot;&gt;工具支持&lt;/h4&gt;
+&lt;p&gt;Play! 提供了类似 Rails 的命令行工具来生成样板代码(boilerplate code)，而在最新的版本&lt;code&gt;2.3&lt;/code&gt;又和&lt;code&gt;activator&lt;/code&gt;平台集成，提供了浏览器中开发的工具支持。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-3&quot;&gt;社区以及市场占有率&lt;/h4&gt;
+&lt;p&gt;Play! 的市场占有率大约在8%, 虽然不算高，但是考虑到它的推出时间，我觉得已经很不错了，在社区方面做得也还算不错，在 StackOverflow 上提出的问题很多有高质量的解答。&lt;/p&gt;
+
+&lt;h3 id=&quot;play-framework--1&quot;&gt;Play! framework 缺点&lt;/h3&gt;
+&lt;p&gt;不是所有的框架都是十全十美的，Play! 也不例外。我认为 Play! 最主要的问题在于 Scala 语言的复杂性和它的后向兼容性。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-4&quot;&gt;模板引擎&lt;/h4&gt;
+
+&lt;p&gt;Scala 语言本身的学习曲线非常高，我在刚接触 Scala 语言的时候被它的类型推导折腾得七荤八素，我觉得其他人也不例外，相比较学习 Go 语言这样核心精简的语言简直就是手到擒来，拿 Scala 作为模板引擎大大提高了模板的复杂性。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-5&quot;&gt;后向兼容性&lt;/h4&gt;
+
+&lt;p&gt;Play! 2 是对 Play! 1 的完全重写，Play! 2 是和 Scala 无缝集成的，如果想完全发挥 Play! 2 的威力，最好采用 Scala 语言。同时它也不对 Play! 1 后向兼容，如果希望从 Play! 1 升级到 2，那么只有完全重写，这样会导致它失去一批老用户。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-6&quot;&gt;示例&lt;/h3&gt;
+
+&lt;h4 id=&quot;play&quot;&gt;安装 Play!&lt;/h4&gt;
+
+&lt;p&gt;首先到 Play! 框架&lt;a href=&quot;https://www.playframework.com/download&quot;&gt;下载页面&lt;/a&gt;下载安装包并解压到本地目录，最好下载 &lt;a href=&quot;http://downloads.typesafe.com/typesafe-activator/1.3.2/typesafe-activator-1.3.2.zip&quot;&gt;Offline Distribution&lt;/a&gt; 包，否则所有依赖仍然要远程下载，这在我国网络环境下是个巨大的挑战。当然你也可以修改为国内的源来增加下载速度，遗憾的是我目前还没有发现一个稳定并且完整的国内源。可以参考&lt;a href=&quot;https://www.playframework.com/documentation/2.3.x/Installing&quot;&gt;这个页面&lt;/a&gt;来安装 Play!。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-7&quot;&gt;新建项目&lt;/h4&gt;
+&lt;p&gt;首先新建一个目录，并查看一下 Play! 提供的命令行工具：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~/prog/play &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; mkdir demo &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;activator -h
+
+Usage: activator &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;options&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+  Command:
+  ui                 Start the Activator UI
+  new &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;name&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;template-id&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;  Create a new project with &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;name&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; using template &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;template-id&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  list-templates     Print all available template names
+  -h &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -help         Print this message
+
+  Options:
+  -v &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -verbose      Make this runner chattier
+  -d &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -debug        Set sbt log level to debug
+  -mem &amp;lt;integer&amp;gt;     Set memory options &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: , which is -Xms1024m -Xmx1024m -XX:PermSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64m -XX:MaxPermSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;256m&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  -jvm-debug &amp;lt;port&amp;gt;  Turn on JVM debugging, open at the given port.
+
+  &lt;span class=&quot;c&quot;&gt;# java version (default: java from PATH, currently java version &amp;quot;1.7.0_45&amp;quot;)&lt;/span&gt;
+  -java-home &amp;lt;path&amp;gt;  Alternate JAVA_HOME
+
+  &lt;span class=&quot;c&quot;&gt;# jvm options and output control&lt;/span&gt;
+  -Dkey&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;val          Pass -Dkey&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;val directly to the java runtime
+  -J-X               Pass option -X directly to the java runtime
+                     &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;-J is stripped&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# environment variables (read from context)&lt;/span&gt;
+  JAVA_OPTS          Environment variable, &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;unset &lt;/span&gt;uses &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+  SBT_OPTS           Environment variable, &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;unset &lt;/span&gt;uses &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+  ACTIVATOR_OPTS     Environment variable, &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;unset &lt;/span&gt;uses &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+
+In the &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; of duplicated or conflicting options, the order above
+shows precedence: environment variables lowest, &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line options highest.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里可以看到，Play! 提供了很多选项，其中 &lt;code&gt;activator ui&lt;/code&gt; 提供了在浏览器中新建、编译、运行、编写 Play! 代码的功能；&lt;code&gt;activator --jvm-debug &amp;lt;port&amp;gt;&lt;/code&gt; 则提供了调试 Play! 项目代码的快捷方式； &lt;code&gt;activator new&lt;/code&gt; 可以新建项目，也就是我们下一步要做的。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;activator new sample
+
+Fetching the latest list of templates...
+
+Browse the list of templates: http://typesafe.com/activator/templates
+Choose from these featured templates or enter a template name:
+  1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-akka-java-seed
+  2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-akka-scala-seed
+  3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-java
+  4&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-scala
+  5&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; play-java
+  6&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; play-scala
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;hit tab to see a list of all templates&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Play! 提供了很多模板，我们可以基于这些模板快速创建项目。目前从命令行可以存取的所有模板众多，这里就不一一列举了，可以用&lt;code&gt;Tab&lt;/code&gt;把它们都调出来。这里假定我们希望基于&lt;code&gt;play-java&lt;/code&gt;模板来创建我们的新项目：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&amp;gt; play-java
+OK, application &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; is being created using the &lt;span class=&quot;s2&quot;&gt;&amp;quot;play-java&amp;quot;&lt;/span&gt; template.
+
+To run &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; from the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd sample&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;:
+/Users/gsun/prog/play/demo/sample/activator run
+
+To run the &lt;span class=&quot;nb&quot;&gt;test &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; from the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd sample&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;:
+/Users/gsun/prog/play/demo/sample/activator &lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt;
+
+To run the Activator UI &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; from the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd sample&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;:
+/Users/gsun/prog/play/demo/sample/activator ui&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;按照 Play!的指示，我们进入项目目录，并且再次运行 &lt;code&gt;activator run&lt;/code&gt;命令：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;activator run
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Loading global plugins from /Users/gsun/.sbt/0.13/plugins
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; downloading file:/Users/gsun/dev/activator-1.3.2/repository/com.typesafe.play/play-java-ws_2.11/2.3.8/jars/play-java-ws_2.11.jar ...
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;SUCCESSFUL &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; com.typesafe.play#play-java-ws_2.11&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;2.3.8!play-java-ws_2.11.jar &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;7ms&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Done updating.
+
+--- &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Running the application, auto-reloading is enabled&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; ---
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; play - Listening &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; HTTP on /0:0:0:0:0:0:0:0:9000
+
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Server started, use Ctrl+D to stop and go back to the console...&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Compiling &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; Scala sources and &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; Java sources to /Users/gsun/prog/play/demo/sample/target/scala-2.11/classes...
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;compiler-interface&amp;#39;&lt;/span&gt; not yet compiled &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; Scala 2.11.1. Compiling...
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   Compilation completed in 20.839 s
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; play - Application started &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Dev&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这时候打开浏览器，并访问&lt;code&gt;http://localhost:9000&lt;/code&gt;，你会发现一个完整的应用已经运行，你只需要根据需要增加或者修改功能就可以了，可以说搭建一个 Play! 框架的项目需要的时间非常短，效率非常高。&lt;/p&gt;
+
+&lt;p&gt;另外 &lt;code&gt;activator ~run&lt;/code&gt; 可以实现代码的热替换(hot swapping)，修改代码之后，程序员只需要刷新浏览器就可以立即看到修改结果。这里是在项目目录内部运行&lt;code&gt;activator help&lt;/code&gt; 的结果：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;sample&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;help&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;  help                                    &lt;/span&gt;Displays this &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;message or prints detailed &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;on requested commands &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;run &lt;span class=&quot;s1&quot;&gt;&amp;#39;help &amp;lt;command&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
+  completions                             Displays a list of completions &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the given argument string &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;run &lt;span class=&quot;s1&quot;&gt;&amp;#39;completions &amp;lt;string&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
+  about                                   Displays basic information about sbt and the build.
+  tasks                                   Lists the tasks defined &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the current project.
+  settings                                Lists the settings defined &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the current project.
+  reload                                  reload
+
+        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Re&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;loads the project in the current directory.
+
+reload plugins
+
+        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Re&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;loads the plugins project &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;under project directory&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
+
+reload &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
+
+        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Re&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;loads the root project &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;and leaves the plugins project&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
+  projects                                Lists the names of available projects or temporarily adds/removes extra builds to the session.
+  project                                 Displays the current project or changes to the provided &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;project&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;.
+  &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;every&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;setting&amp;gt;                   Evaluates a Setting and applies it to the current project.
+  session                                 Manipulates session settings.  For details, run &lt;span class=&quot;s1&quot;&gt;&amp;#39;help session&amp;#39;&lt;/span&gt;.
+  inspect &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;uses&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;tree&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;definitions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;key&amp;gt;   Prints the value &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;key&amp;#39;&lt;/span&gt;, the defining scope, delegates, related definitions, and dependencies.
+  &amp;lt;log-level&amp;gt;                             Sets the logging level to &lt;span class=&quot;s1&quot;&gt;&amp;#39;log-level&amp;#39;&lt;/span&gt;.  Valid levels: debug, info, warn, error
+  plugins                                 Lists currently available plugins.
+  &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;*              Runs the provided semicolon-separated commands.
+  ~ &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt;                             Executes the specified &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;whenever &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;files change.
+  last                                    Displays output from a previous &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;or the output from a specific task.
+  last-grep                               Shows lines from the last output &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;key&amp;#39;&lt;/span&gt; that match &lt;span class=&quot;s1&quot;&gt;&amp;#39;pattern&amp;#39;&lt;/span&gt;.
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; &amp;lt;tasks&amp;gt;+                         Executes tasks and displays the equivalent &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;lines.
+  &lt;span class=&quot;nb&quot;&gt;exit                                    &lt;/span&gt;Terminates the build.
+  --&amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt;                             Schedules a &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;to run before other commands on startup.
+  show &amp;lt;key&amp;gt;                              Displays the result of evaluating the setting or task associated with &lt;span class=&quot;s1&quot;&gt;&amp;#39;key&amp;#39;&lt;/span&gt;.
+  all &amp;lt;task&amp;gt;+                             Executes all of the specified tasks concurrently.
+
+More &lt;span class=&quot;nb&quot;&gt;command help &lt;/span&gt;available using &lt;span class=&quot;s1&quot;&gt;&amp;#39;help &amp;lt;command&amp;gt;&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;:
+  !, +, ++, &amp;lt;, &lt;span class=&quot;nb&quot;&gt;alias&lt;/span&gt;, append, apply, &lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;, iflast, onFailure, reboot, shell
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;sample&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里我就不再一一讲解了，如果你有兴趣，那么可以自己去探索。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-8&quot;&gt;结语&lt;/h3&gt;
+&lt;p&gt;如果你喜欢 Ruby on Rails 开发的高效，有喜欢 Java/Scala 静态语言的编译期代码检查以及稳定性，那么 Play! 框架你应该认真考虑一下，它是我至今用过的开发最高效的 Java Web 框架。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-9&quot;&gt;资源&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! framework 官网&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://androider.iteye.com/blog/710533&quot;&gt;Play! framework hotswap及源码分析&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.playframework.com/documentation/2.3.x/Home&quot;&gt;Play! framework 官方文档&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala 编程语言官网&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 25 Apr 2015 10:02:59 +0800</pubDate>
+        <link>http://codethoughts.info/java/2015/04/25/play-framework-overview/</link>
+        <guid isPermaLink="true">http://codethoughts.info/java/2015/04/25/play-framework-overview/</guid>
+        
+        
+        <category>java</category>
+        
+      </item>
     
       <item>
         <title>如何测试 Go 代码 - 单元测试</title>
@@ -2258,158 +2475,6 @@ To locate an encoder for a given encoding name, the internal I/O code would do s
         <pubDate>Sun, 09 Mar 2014 20:03:35 +0800</pubDate>
         <link>http://codethoughts.info/scala/2014/03/09/scala-for-the-impatient-chapter5/</link>
         <guid isPermaLink="true">http://codethoughts.info/scala/2014/03/09/scala-for-the-impatient-chapter5/</guid>
-        
-        
-        <category>scala</category>
-        
-      </item>
-    
-      <item>
-        <title>Solutions to Scala for the Impatient - Chapter4</title>
-        <description>&lt;p&gt;1. Set up a map of prices for a number of gizmos that you covet. Then produce a second map with the same keys and the prices at a 10 percent discount.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;books&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Scala for the Impatient&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Ruby under a Microscope&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;40&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Ruby Cookbook&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;35&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;discounted&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;books&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;2. Write a program that reads words from a file. Use a mutable map to count how often each word appears. To read the words, simply use a &lt;code&gt;java.util.Scanner&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Scanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;myfile.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Or look at Chapter 9 for a Scalaesque way.
-At the end, print out all words and their counts.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count_words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Unit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;collection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mutable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Scanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;: &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;3. Repeat the preceding exercise with an immutable map.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count_words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Unit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Scanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getOrElse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;7&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;8&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;9&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Or we can achieve nearly the same more Scalaesque(the result is little different, but you get the idea)&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;scala.io.Source&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count_words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Unit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;source&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getLines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wordCounts&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;distinct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wordCountsMap&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wordCounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toMap&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wordCountsMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;4. Repeat the preceding exercise with a sorted map, so that the words are printed in sorted order.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count_words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Unit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;collection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;immutable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;SortedMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Scanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getOrElse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;7&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;8&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;9&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;5. Repeat the preceding exercise with a &lt;code&gt;java.util.TreeMap&lt;/code&gt; that you adapt to the Scala API.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count_words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Unit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;TreeMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Scanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;6. Define a linked hash map that maps “Monday” to &lt;code&gt;java.util.Calendar.MONDAY&lt;/code&gt;, and similarly for the other weekdays. Demonstrate that the elements are visited in insertion order.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysOfTheWeek&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LinkedHashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Monday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;MONDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;Tuesday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;TUESDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;Wednesday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;WEDNESDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;Thursday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;THURSDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;Friday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;FRIDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;Saturday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;SATURDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;7&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;Sunday&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Calendar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;SUNDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;8&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;9&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daysOfTheWeek&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;7. Print a table of all Java properties, like this:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;java.runtime.name             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Java&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;TM&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; SE Runtime Environment
-sun.boot.library.path         &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; /home/apps/jdk1.6.0_21/jre/lib/i386
-java.vm.version               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 17.0-b16
-java.vm.vendor                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Sun Microsystems Inc.
-java.vendor.url               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; http://java.sun.com/
-path.separator                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; :
-java.vm.name                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; Java HotSpot&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;TM&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; Server VM&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;You need to find the length of the longest key before you can print the table.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;scala.collection.JavaConversions.propertiesAsScalaMap&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;scala.collection.Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProperties&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;len&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maxBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// java.vm.specification.version&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%-&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;len&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;s|%s\n&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;8. Write a function &lt;code&gt;min_max(values: Array[Int])&lt;/code&gt; that returns a pair containing the smallest and largest values in the array.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;min_max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Tuple2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;9. Write a function lt_eq_gt(values: Array[Int], v: Int) that returns a triple containing the counts of values less than v, equal to v, and greater than v.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lt_eg_gt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Tuple3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;values&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;10. What happens when you zip together two strings, such as &lt;code&gt;&quot;Hello&quot;.zip(&quot;World&quot;)&lt;/code&gt;? Come up with a plausible use case.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// produce: scala.collection.immutable.IndexedSeq[(Char, Char)] = Vector((H,W), (e,o), (l,r), (l,l), (o,d))&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;&amp;quot;Hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;World&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;From above code we can see that the zip of two String will produce a immutable Vector, which contains Tuples. The Tuples contains a pair of characters in the same position. A possible use case is to produce a immutable map with left characters as keys and right side characters as values, you can transfer the zipped characters to a immutable map via:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;World&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toMap&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;https://bitbucket.org/McDamon/scalaimpatient/src/4a11167459b2/ch04/answers.txt&quot;&gt;Scala for the Impatient solutions, by McDamon&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Sat, 08 Mar 2014 20:49:44 +0800</pubDate>
-        <link>http://codethoughts.info/scala/2014/03/08/scala-for-the-impatient-chapter4/</link>
-        <guid isPermaLink="true">http://codethoughts.info/scala/2014/03/08/scala-for-the-impatient-chapter4/</guid>
         
         
         <category>scala</category>
