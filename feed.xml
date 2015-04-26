@@ -5,14 +5,14 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 25 Apr 2015 22:04:35 +0800</pubDate>
-    <lastBuildDate>Sat, 25 Apr 2015 22:04:35 +0800</lastBuildDate>
+    <pubDate>Sun, 26 Apr 2015 16:37:51 +0800</pubDate>
+    <lastBuildDate>Sun, 26 Apr 2015 16:37:51 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>Play! Framework 大致观感</title>
         <description>&lt;h3 id=&quot;section&quot;&gt;为什么写这篇文章&lt;/h3&gt;
-&lt;p&gt;前段时间花时间比较了几个 Web 框架，考量的对象来自于 Golang 社区和 Java 社区：&lt;a href=&quot;http://beego.me/&quot;&gt;Beego&lt;/a&gt;, &lt;a href=&quot;http://martini.codegangsta.io/&quot;&gt;Martini&lt;/a&gt;, &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2&lt;/a&gt;, &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot;&gt;Spring MVC&lt;/a&gt;。在选择的过程中并没有多少客观的统计数据，全凭我的个人理解和不同社区人选型时候的分析，在这篇文章里面我想聊聊为什么会最终选择 &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2 Framework&lt;/a&gt;，以及对 Play! 2 Framework 的大致观感，最后就是用最少的步骤搭建一个基于 Play! 的项目。&lt;/p&gt;
+&lt;p&gt;前段时间花时间比较了几个 Web 框架，考量的对象来自于 Golang 社区和 Java 社区：&lt;a href=&quot;http://beego.me/&quot;&gt;Beego&lt;/a&gt;, &lt;a href=&quot;http://martini.codegangsta.io/&quot;&gt;Martini&lt;/a&gt;, &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2&lt;/a&gt;, &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot;&gt;Spring MVC&lt;/a&gt;。在选择的过程中并没有多少客观的统计数据，全凭我的个人理解和不同社区的开发者在选型时候的分析，在这篇文章里面我想聊聊为什么会最终选择 &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2 Framework&lt;/a&gt;，以及对 Play! 2 Framework 的大致观感，最后就是用最少的步骤搭建一个基于 Play! 的项目。&lt;/p&gt;
 
 &lt;h3 id=&quot;web-&quot;&gt;Web 框架选型的依据&lt;/h3&gt;
 &lt;p&gt;通常来说，你需要考量以下方面：&lt;/p&gt;
@@ -206,7 +206,7 @@ More &lt;span class=&quot;nb&quot;&gt;command help &lt;/span&gt;available using 
 &lt;p&gt;这里我就不再一一讲解了，如果你有兴趣，那么可以自己去探索。&lt;/p&gt;
 
 &lt;h3 id=&quot;section-8&quot;&gt;结语&lt;/h3&gt;
-&lt;p&gt;如果你喜欢 Ruby on Rails 开发的高效，有喜欢 Java/Scala 静态语言的编译期代码检查以及稳定性，那么 Play! 框架你应该认真考虑一下，它是我至今用过的开发最高效的 Java Web 框架。&lt;/p&gt;
+&lt;p&gt;如果你喜欢 Ruby on Rails 开发的高效，又喜欢 Java/Scala 静态语言的编译期代码检查以及稳定性，那么 Play! 框架你应该认真考虑一下，它是我至今用过的开发最高效的 Java Web 框架。&lt;/p&gt;
 
 &lt;h3 id=&quot;section-9&quot;&gt;资源&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! framework 官网&lt;/a&gt;&lt;/p&gt;
