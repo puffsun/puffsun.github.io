@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>Bootstrap 响应式栅格 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/bootstrap/2015/04/26/responsive-grid-layout-with-bootstrap/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Bootstrap 响应式栅格</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on April 26, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="section">写在前面的废话</h3>
+<p>按照惯例，先废话几句。全栈工程师(Full Stack Developer)的概念现在越来越流行，在Web 开发领域，这一般指的是前端(Front-end)，后端(Back-end)都可以拿得起，放得下的工程师；如果水平更高一些，甚至可以做 Native App。一般来说公司为了降低招聘难度和人力资源成本，会分开招聘前端工程师(Front-end Developer)和后端(Back-end Developer)，究其原因，无外乎 Web 开发这里领域的技术栈非常庞大，对于一个新手程序员，如果一股脑把前端后端抛过去，那他一定会不知从何下手。比如 Web 应用的后端需要知道的知识有：关系数据库、SQL 语言、NoSQL、应用服务器、Web 服务器、框架，后端编程语言，MVC(Model-View-Controller)，ORM(Object-Relational Mapping)、网络协议，操作系统的常见开发、调试工具、IDE、等等，前端需要的知识有：HTML、JavaScript、CSS、CoffeeScript、CSS 预处理器、UI框架，CSS 框架，MVC 以及其变种，Web Components、NodeJS(现在前端工程师的必备工具很多依赖 NodeJS，比如 Yeoman，Grunt，Bower，等等)等等等等。别忘了，现在是前端技术爆棚的时代，现在市面上的很多技术和框架都在迅速演化。另一方面，上面所列的技术基本上只是统称，还需要详细分门别类，整个技术栈在新手看来就是浩瀚的大海，根本无从下手。在这种情况下，根据工业时代的传统来分工就自然而然了。</p>
+
+<p>那为什么现在关于全栈工程师的讨论多了呢？我觉得跟 Facebook 的声称的他们只招聘全栈工程师的标准有关。那是不是说我把上面列出的或者遗漏的技术都学完了那就算是全栈工程师了呢？我认为不是。在我看来原因有两条：</p>
+
+<ol>
+  <li>全栈工程师的本质是学习能力和开放思维，你无须把自己局限在前端工程师和后端工程师的思维陷阱里面。如果这个项目有前端需求，那就去把前端需要的某种技术快速搞清楚，后端也是如此，掌握多种技术知识全栈工程师的第一步，快速学习能力才是关键。</li>
+  <li>把所有技术学完这个想法本身就很荒唐。</li>
+</ol>
+
+<h3 id="bootstrap">为什么要用 Bootstrap</h3>
+<p>如果你像我一样，开发了几年后端(Back-end)代码，然后又因为有成为全栈工程师的渴望，并在实践中学习前端技术，那么 CSS 和页面布局不出意外的话会成为你的绊脚石，起码对于我来说就是如此。我一直觉得 Web 页面的页面布局是个老大难问题，这个我个人感觉没有一年两年功底做不出美观的页面。另一方面，现在 Web 页面，响应式(Responsive), 移动优先(Mobile First)是趋势，这给页面布局带来了新的难题。不过没关系，有了 Bootstrap，只需要为数不多的 HTML 代码，你就可以轻松获得Responsive, Mobile First的页面布局。</p>
+
+<h3 id="section-1">写这篇文章的目的</h3>
+<p>主要是为了介绍如何用 Bootstrap 来写一个 Responsive, Mobile First 的栅格页面布局(Grid Layout)。目的是编写一个页面，可以在桌面系统，平板电脑和手机上自适应，根据屏幕分辨率自动调整页面的布局。如果你已经熟悉 Bootstrap，那么可以停止阅读了，而如果你对这个话题和 Bootstrap 都很感兴趣，那么请读下去。</p>
+
+<h3 id="bootstrap-1">什么是 Bootstrap</h3>
+<p>Bootstrap 是一个帮助开发者快速开发 Web 应用的前端框架，在我看来，它几乎是像是从后端开发转向全栈工程师的救星。有了 Bootstrap，你只需要寥寥几行 HTML 代码，就可以开发出美观的，响应式的，移动设备优先的 Web 布局，Bootstrap 在背后默默的完成那些复杂的，有很多浏览器兼容性大坑的工作。 Bootstrap 由 Twitter 工程师开发，最新的版本是3.3.4，也是我们要用的版本，请注意，Bootstrap 3 是 Mobile First的设计，并且和 Bootstrap 2 并不后向兼容，<a href="http://getbootstrap.com/">这里是它的官方网站</a>。</p>
+
+<p>Bootstrap 主要的竞争者是：</p>
+
+<ul>
+  <li><a href="http://foundation.zurb.com/">Foundation framework</a></li>
+  <li><a href="http://semantic-ui.com/">Semantic UI</a></li>
+  <li><a href="http://gumbyframework.com/">Gumby framework</a></li>
+  <li><a href="http://purecss.io/">Pure</a></li>
+</ul>
+
+<h3 id="grid">什么是栅格(Grid)</h3>
+<p>栅格系统(Grid System)把一个页面分隔成多个行和列，从而可以根据 Grid 划分情况产生不同的布局，HTML 的内容可以分布在不同的栅格里。Bootstrap 把一个 Web 页面分隔成12列，每一列的宽度根据所在页面的屏幕分辨率和窗口大小而有所差别，也就是说 Bootstrap 的栅格系统是响应式的，并会根据窗口的大小动态调整。</p>
+
+<h3 id="wireframe">设计原型图(Wireframe)</h3>
+<p>假定我们要开发一个博客，页面原型图我用<a href="https://moqups.com/">Moqups</a>大致画出来了，为了保证博客的加载速度，我没有截屏，二是链接了原型图的链接。<a href="https://moqups.com/">Moqups</a>是很赞的在线原型图(Online Wireframe)工具，免费用户可以创建两个公开或私密项目，并可以拥有5M 存储空间。</p>
+
+<p>这是面向桌面浏览器的原型图：
+<a href="https://moqups.com/sunwinner3@gmail.com/autujKdy">https://moqups.com/sunwinner3@gmail.com/autujKdy</a></p>
+
+<p>这是面向平板电脑浏览器的原型图: 
+<a href="https://moqups.com/sunwinner3@gmail.com/autujKdy/p:ad5cd25bf">https://moqups.com/sunwinner3@gmail.com/autujKdy/p:ad5cd25bf</a></p>
+
+<p>这是面向手机浏览器的原型图：
+<a href="https://moqups.com/sunwinner3@gmail.com/autujKdy/p:add5d9731">https://moqups.com/sunwinner3@gmail.com/autujKdy/p:add5d9731</a></p>
+
+<h3 id="bootstrap-">用 Bootstrap 来实现</h3>
+
+<h4 id="section-2">桌面浏览器适配</h4>
+<p>我们知道，桌面一般指的是台式机(Desktop)或者笔记本(Laptop)，它们的分辨率一般很大，所以我们会选择<code>col-md</code>来布局。这里讲解一下，在 Bootstrap Grid System 里，列分4种：</p>
+
+<ol>
+  <li>col-xs 用在很小的屏幕上，小于768px 一般是手机；</li>
+  <li>col-sm 用在较小的屏幕上，大于768px，一般是平板电脑；</li>
+  <li>col-md 用在中等屏幕上，大于992px，一般是桌面系统；</li>
+  <li>col-lg 用在特别打的屏幕上，大于1200px，一般是大显示器或者电视机。</li>
+</ol>
+
+<p>我们来写代码实现桌面原型图，受限创建一个文件，叫做<code>blog.html</code>:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd</span> ~/projects <span class="o">&amp;&amp;</span> mkdir bootstrap-demo <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="nv">$_</span>
+<span class="nv">$ </span>vim blog.html</code></pre></div>
+
+<p>填入以下 HTML 代码：</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+    <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;X-UA-Compatible&quot;</span> <span class="na">content=</span><span class="s">&quot;IE=edge&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;width=device-width,initial-scale=1&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;title&gt;</span>My First Bootstrap Website<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;css/bootstrap.css&quot;</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!--[if lt IE 9]&gt;</span>
+<span class="c">          &lt;script src=&quot;https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js&quot;&gt;&lt;/script&gt;</span>
+<span class="c">&lt;script src=&quot;https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js&quot;&gt;&lt;/script&gt; &lt;![endif]--&gt;</span>
+      <span class="nt">&lt;/head&gt;</span>
+      <span class="nt">&lt;body&gt;</span>
+            <span class="c">&lt;!-- Body content goes here --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//code.jquery.com/jquery-1.11.1.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="c">&lt;!-- Latest compiled and minified JavaScript --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+      <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre></div>
+
+<p>这里我们用 CDN 引入了 <a href="http://jquery.com">jQuery</a>, <a href="http://getbootstrap.com/">Bootstrap</a>, <a href="https://github.com/aFarkas/html5shiv">html5shiv</a> 和 <a href="http://responsejs.com/">respond.js</a> 依赖，后两个库是用来来解决低版本 IE 对 HTML5支持不足的问题；对 Bootstrap 的安装，请参考<a href="http://getbootstrap.com/getting-started/">这个页面</a>。</p>
+
+<p>接下来，我们要完成页面的开发，在上面的标记<code>Body content goes here</code>位置填入以下代码：</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-12 text-center&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h1&gt;</span>My First Bootstrap Blog<span class="nt">&lt;/h1&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;hr&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 1<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 2<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 3<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 4<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 5<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 6<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>我把代码放在<a href="jsbin.com">jsbin.com</a>上面了，可以通过<a href="http://jsbin.com/vejixoceje/2">这个链接</a>来预览效果。jsbin 是很赞的前端快速分享、协作工具，并且支持 GitHub 集成登录。</p>
+
+<p>这里我们可以看到，Bootstrap 允许一行被分隔成12列，我们设定每列占宽为4，多余的列则被挤到下一行显示。</p>
+
+<h4 id="section-3">平板电脑浏览器适配</h4>
+<p>平板电脑需要显示为2列，这样我们就需要用<code>col-sm-6</code>来设计这个页面，修改以上代码：</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-12 text-center&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h1&gt;</span>My First Bootstrap Blog<span class="nt">&lt;/h1&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;hr&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 1<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 2<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 3<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 4<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 5<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 6<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>页面效果可以从<a href="http://jsbin.com/qawoji/1">这里</a>预览，如果你拖动浏览器边框来改变窗口大小，可以看到页面布局会在三列和两列之间变化。</p>
+
+<h4 id="section-4">手机浏览器适配</h4>
+<p>手机和平板电脑一样，可以横放(Landscape Mode)和竖放(Portrait Mode)。对玉分辨率较高的手机，横放会进入平板电脑的布局，我们就不再考虑这种情况。而竖放的手机，我们认为它的宽度小于768px，所以屏幕上只显示一列内容，占满了所有宽度，在这里我们用<code>col-xs-12</code>来布局。</p>
+
+<p>修改上面平板电脑适配的代码：</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-12 text-center&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h1&gt;</span>My First Bootstrap Blog<span class="nt">&lt;/h1&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;hr&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6 col-xs-12&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 1<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6 col-xs-12&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 2<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6 col-xs-12&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 3<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6 col-xs-12&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 4<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6 col-xs-12&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 5<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-4 col-sm-6 col-xs-12&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;h3&gt;</span>Post Title 6<span class="nt">&lt;/h3&gt;</span>
+            <span class="nt">&lt;p&gt;</span>Lorem ipsum dolor sit amet ... <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>效果可以通过<a href="http://jsbin.com/haciwo/1">这个链接</a>来预览，感谢 <a href="jsbin.com">jsbin.com</a>。</p>
+
+<h3 id="section-5">结论</h3>
+<p>到这里我们就可以看到用 Bootstrap 来开发一个 Responsive, Mobile First的网站有多么容易，也大大减小了像我这样从后端向全栈转型的工程师的阻力。Bootstrap 除了 Grid System 以外，还提供了很多内容，包括导航(Navigation)，面包屑(Breadcramp)，Form 以及其他组件，并提供了Less/SASS扩展支持，详细情况请参考<a href="http://getbootstrap.com/components/">这个页面</a>。</p>
+
+<h3 id="section-6">资源</h3>
+
+<p><a href="http://getbootstrap.com/">Bootstrap 官网</a></p>
+
+<p><a href="http://moqups.com">Moqups - 原型图设计</a></p>
+
+<p><a href="http://jsbin.com">JSBin</a></p>
+
+<p><a href="http://www.sitepoint.com/">Site Point, 在线学习</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/java/2015/04/25/play-framework-overview/" data-toggle="tooltip" data-placement="top" title="Play! Framework 大致观感">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
