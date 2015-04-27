@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 27 Apr 2015 07:51:34 +0800</pubDate>
-    <lastBuildDate>Mon, 27 Apr 2015 07:51:34 +0800</lastBuildDate>
+    <pubDate>Mon, 27 Apr 2015 08:03:57 +0800</pubDate>
+    <lastBuildDate>Mon, 27 Apr 2015 08:03:57 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -43,7 +43,7 @@
 &lt;p&gt;栅格系统(Grid System)把一个页面分隔成多个行和列，从而可以根据 Grid 划分情况产生不同的布局，HTML 的内容可以分布在不同的栅格里。Bootstrap 把一个 Web 页面分隔成12列，每一列的宽度根据所在页面的屏幕分辨率和窗口大小而有所差别，也就是说 Bootstrap 的栅格系统是响应式的，并会根据窗口的大小动态调整。&lt;/p&gt;
 
 &lt;h3 id=&quot;wireframe&quot;&gt;设计原型图(Wireframe)&lt;/h3&gt;
-&lt;p&gt;假定我们要开发一个博客，页面原型图我用&lt;a href=&quot;https://moqups.com/&quot;&gt;Moqups&lt;/a&gt;大致画出来了，为了保证博客的加载速度，我没有截屏，二是链接了原型图的链接。&lt;a href=&quot;https://moqups.com/&quot;&gt;Moqups&lt;/a&gt;是很赞的在线原型图(Online Wireframe)工具，免费用户可以创建两个公开或私密项目，并可以拥有5M 存储空间。&lt;/p&gt;
+&lt;p&gt;假定我们要开发一个博客，页面原型图我用&lt;a href=&quot;https://moqups.com/&quot;&gt;Moqups&lt;/a&gt;大致画出来了，为了保证博客的加载速度，我没有截屏，而是链接了原型图的链接。&lt;a href=&quot;https://moqups.com/&quot;&gt;Moqups&lt;/a&gt;是很赞的在线原型图(Online Wireframe)工具，免费用户可以创建两个公开或私密项目，并可以拥有5M 存储空间。&lt;/p&gt;
 
 &lt;p&gt;这是面向桌面浏览器的原型图：
 &lt;a href=&quot;https://moqups.com/sunwinner3@gmail.com/autujKdy&quot;&gt;https://moqups.com/sunwinner3@gmail.com/autujKdy&lt;/a&gt;&lt;/p&gt;
