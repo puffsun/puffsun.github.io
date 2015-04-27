@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 27 Apr 2015 08:18:12 +0800</pubDate>
-    <lastBuildDate>Mon, 27 Apr 2015 08:18:12 +0800</lastBuildDate>
+    <pubDate>Mon, 27 Apr 2015 18:40:58 +0800</pubDate>
+    <lastBuildDate>Mon, 27 Apr 2015 18:40:58 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -17,7 +17,7 @@
 &lt;p&gt;那为什么现在关于全栈工程师的讨论多了呢？我觉得跟 Facebook 的声称的他们只招聘全栈工程师的标准有关。那是不是说我把上面列出的或者遗漏的技术都学完了那就算是全栈工程师了呢？我认为不是。在我看来原因有两条：&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;全栈工程师的本质是学习能力和开放思维，你无须把自己局限在前端工程师和后端工程师的思维陷阱里面。如果这个项目有前端需求，那就去把前端需要的某种技术快速搞清楚，后端也是如此，掌握多种技术知识全栈工程师的第一步，快速学习能力才是关键。&lt;/li&gt;
+  &lt;li&gt;全栈工程师的本质是学习能力和开放思维，你无须把自己局限在前端工程师和后端工程师的思维陷阱里面。如果这个项目有前端需求，那就去把前端需要的某种技术快速搞清楚，后端也是如此，掌握多种技术只是全栈工程师的第一步，快速学习能力才是关键。&lt;/li&gt;
   &lt;li&gt;把所有技术学完这个想法本身就很荒唐。&lt;/li&gt;
 &lt;/ol&gt;
 
