@@ -5,9 +5,120 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 27 Apr 2015 21:38:17 +0800</pubDate>
-    <lastBuildDate>Mon, 27 Apr 2015 21:38:17 +0800</lastBuildDate>
+    <pubDate>Fri, 15 May 2015 23:22:29 +0800</pubDate>
+    <lastBuildDate>Fri, 15 May 2015 23:22:29 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>关于 Angular.js 你应该知道的</title>
+        <description>&lt;h3 id=&quot;section&quot;&gt;译者写在前面的话&lt;/h3&gt;
+&lt;p&gt;最近时间一直比较紧张，没有足够的时间深入学习任何东西，但是博客更新频率还是要保证的。这里挑了一篇 Angular.js 的好文来翻译，不仅可以温故而知新，也能帮助希望深入学习 Angular.js 框架的同行。想看原文请移步&lt;a href=&quot;http://ruoyusun.com/2013/05/25/things-i-wish-i-were-told-about-angular-js.html&quot;&gt;Things I Wish I Were Told About Angular.js&lt;/a&gt;。如需转载译文，请标明出处。&lt;/p&gt;
+
+&lt;p&gt;翻译说明：原文中关于 Angular.js 的术语，比如 Controller, Module, Directive 保持英文不翻译，我认为这样便于理解。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;译文&lt;/h3&gt;
+&lt;p&gt;最近我参与了一个使用了 Angular.js 的项目。到我写这篇文章的时候，这个项目达到了中等规模（大约10个 Module，20个 Controller, 5个 Service, 10个 Directive 左右），单元测试的覆盖率也非常不错。当我回过头来看，发现跟以前相比，我学习了多得多的关于 Angular.js 的知识。整个过程并不是顺风顺水，在整个过程我重构并重写了很多代码，而且有很多事情我希望在我开始使用 Angular.js 之前就有人告诉我了。&lt;/p&gt;
+
+&lt;p&gt;提醒：这篇文章基于 Angujar.js 1.0.x 稳定分支，如果你目前正在使用更新的版本，其中的部分内容可能并不适用。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;关于学习曲线&lt;/h3&gt;
+&lt;p&gt;Angular.js 的学习曲线和 Backbone.js 非常不同。Backbone.js 在开始学习的时候有很高的学习曲线，在写一个简单的应用之前，你需要知道几乎所有的关于 Backbone.js 的知识。如果你搞定了这些，那么关于 Backbo.js 你需要了解的也就剩下一些常见的构建块(Building Blocks)和最佳实践了。&lt;/p&gt;
+
+&lt;p&gt;然而，Angular.js 非常不一样，刚起步的时候几乎没有障碍，浏览一下 Angular.js 主页上的一些示例，你就可以起步了。这个时候，你不需要理解它的核心概念，比如：Module, Service, Dependency Injection, Scope. 有了 Controller 和一些 Directive 你就可以开始了，而且它的文档对于快速上手 Angular.js 也足够好。&lt;/p&gt;
+
+&lt;p&gt;问题是当你深入 Angular.js，打算开发一些正式的应用，它的学习曲线会陡增，在这个时候，你会发现 Angular.js 的文档要么不完整，要么过于繁琐。要想跨越这个阶段，并且真正从所学的知识在项目中获益需要不少时间。这也是我希望一开始就有人告诉我的第一件事，至少我在遇到那么多问题的时候不会备感挫折。&lt;/p&gt;
+
+&lt;h3 id=&quot;module&quot;&gt;在一开始就理解 Module&lt;/h3&gt;
+&lt;p&gt;Angular.js 不会强制你使用它的 Module 系统，所以在一开始，我只写了一个巨大的 CoffeeScript 文件，里面包含了一堆 Controller。很快，这个巨大的源文件失控了，你几乎没有办法浏览整个源文件；另一方面，即使只用到了其中一个 Controller，我也必须把这个大文件加载到每一个页面。&lt;/p&gt;
+
+&lt;p&gt;在这种情况下，我停止写新代码，并着手重构这些代码。第一步，根据不同的页面，把每个 Controller 拆分到不同的 Module 中，然后抽取了一些公用的 Filter 和 Service。随后，我确保所有的模块都正确的设置了依赖，并且所有的 Components 都成功的注入了。当然，在这个阶段，你必须理解依赖注入（Dependency Injection）：一个在 Java 和 C# 社区里很流行的概念，可在动态语言的社区中却不是如此。幸运的是（有些人可能是恰好相反），我写过不少 Java 和 C#代码，理解 Angular.js 的依赖注入没有花我太多的时间 - 即便是第一次在 JavaScript 代码中使用依赖注入显得不太自然。一旦你理解了依赖注入，你一定会爱上它，它会使你的代码低耦合，容易维护。&lt;/p&gt;
+
+&lt;p&gt;如果你不想大规模的重构你的 Angular.js 代码，那么你应该在一开始学习并且计划你的代码模块。&lt;/p&gt;
+
+&lt;h3 id=&quot;controller--scope&quot;&gt;当你的 Controller 过大的时候，学习 Scope&lt;/h3&gt;
+&lt;p&gt;我确信你在一开始使用 Angular.js 就会使用&lt;code&gt;$scope&lt;/code&gt;, 但是你可能并没有完全理解它，其实你不必完全理解它，你可以把它当做一个魔法。然而，这里有些你可能会遇到的常见问题：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;为什么我的 View 没有被更新？&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SomeCtrl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I am here!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;为什么&lt;code&gt;ng-model=&quot;touched&quot;&lt;/code&gt; 不工作？&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SomeCtrl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;items&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}];&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;touched&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;ul&amp;gt;&lt;/span&gt;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;li&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-repeat=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;item in items&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+		&lt;span class=&quot;nt&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-model=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;item.value&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+		&lt;span class=&quot;nt&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;checkbox&amp;quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-model=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;touched&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;/li&amp;gt;&lt;/span&gt;	
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ul&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这些都和&lt;code&gt;$scope&lt;/code&gt;有关。更重要的是，当你的 Controller 变得越来越大的时候，你应该把它分割成子 Controller，Controller 之间的继承关系也和&lt;code&gt;$scope&lt;/code&gt;紧密相关。那么你需要理解&lt;code&gt;$scope&lt;/code&gt;是如何工作的：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;那些神奇的数据绑定(Data Binding)是如何和&lt;code&gt;$scope.$watch()&lt;/code&gt; 和 &lt;code&gt;$scope.$apply()&lt;/code&gt;扯上关系的；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;$scope&lt;/code&gt;是如何在父子 Controller之间共享的；&lt;/li&gt;
+  &lt;li&gt;什么时候 Angular.js 会偷偷的创建一个新的&lt;code&gt;$scope&lt;/code&gt;；&lt;/li&gt;
+  &lt;li&gt;在&lt;code&gt;$scope&lt;/code&gt;之间，这些事件（&lt;code&gt;$scope.$on&lt;/code&gt;, &lt;code&gt;$scope.$emit&lt;/code&gt;, &lt;code&gt;$scope.$broadcast&lt;/code&gt;）是如何在&lt;code&gt;$scope&lt;/code&gt;之间通信的；&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;一开始的两个问题答案分别是：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;你需要&lt;code&gt;$scope.$apply()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Angular.js 在 &lt;code&gt;ng-repeat&lt;/code&gt;中偷偷的创建了一个新的 Scope&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;controller--dom--directive-&quot;&gt;当你尝试在 Controller 中操作 DOM 的时候，写一个 Directive 吧&lt;/h3&gt;
+&lt;p&gt;Angular.js 提倡分离 Controller 和 View(DOM)，但有些时候，你可能需要在 Controller 中存取 DOM，一个典型的例子是 jQuery 插件。虽然 jQuery 插件看起来有点“过时”了，但是它的生态系统并不会很快消失。在 Controller 中使用 jQuery 插件绝对是个坏主意，这样做会使得这个 Controller 难以重用，难以测试。&lt;/p&gt;
+
+&lt;p&gt;这时候，最佳做法是写一个 Directive。我非常确信你用过 Directive，但是你可能不会想到你可以自己写一个。事实上，Directive 是 Angu.js 里最强大的概念，你可以把它想象成可重用的组件，不仅对于 jQuery 插件，而且是对于任何在多个地方使用的子 Controller而言，看起来有点像&lt;a href=&quot;http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/&quot;&gt;Shadow DOM&lt;/a&gt;。最神奇的地方在于，你的 Controller 不需要知道 Directive 的存在，通过 Scope 共享和&lt;code&gt;$scope&lt;/code&gt;事件可以达到这个目的。&lt;/p&gt;
+
+&lt;p&gt;不幸的是，Directive 的文档可以说是 Angular.js 文档中最差的一部分，其中满是术语和抽象的、没有上下文的解释，只有很少的实例，所以如果你不能完全理解 Directive 也别被吓到了。我过了这一关的办法是开始写自己的 Directive，即使是在没有完全理解文档的情况下。当我处于不知道如何是好的阶段的时候，我就回到文档或者去 Google 一番。在我成功的把 jQuery 插件封装到自己的 Directive 之后，我几乎掌握了关于 Directive 的大部分概念，通过实践来学习应该是在没有好文档的情况下最有效的学习方式了。&lt;/p&gt;
+
+&lt;p&gt;如果你们想找到一字箴言，那么我的建议是：把控制逻辑放入 Directive Controller，DOM 逻辑放在链接过来的函数(function)中，二者通过 Scope 共享来结合。&lt;/p&gt;
+
+&lt;h3 id=&quot;angularjs-router&quot;&gt;Angular.js 的路由(Router)可能跟你期待的不一样&lt;/h3&gt;
+&lt;p&gt;这是一个我花了好些时间才爬出来的坑。Angular.js 的路由有特定的用途，它不像 Backbone.js 的路由那样，监听&lt;code&gt;location.hash&lt;/code&gt;，并在路由匹配的时候调用相应的函数。Angular.js 的路由就像服务端的路由一样，用来和&lt;code&gt;ng-view&lt;/code&gt;一起工作。当路由被触发的时候，一个预定义的模板(template)被加载并被注入到&lt;code&gt;ng-view&lt;/code&gt;中，与此同时，一些 Controller 会被实例化。如果你不喜欢这个解决方案，那么你只能开发自定义的 Service (把已有的类库封装到 Angular.js 的 Service 中去)。&lt;/p&gt;
+
+&lt;p&gt;这并不是一个通用的办法，仅仅是一个特定的解决方案。然而，我在这里花了大量的时间，希望这个提示可以节约你一些时间。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;关于测试&lt;/h3&gt;
+&lt;p&gt;Angular.js 提倡分离 View 和 Controller，所以给 Controller 写单元测试就是一件非常容易的事情，因为你不需要和 DOM 打交道。写单元测试的意图并不是要证明你的应用可以无误的运行 - 这是集成测试(Integration Test)的目的。单元测试只是用来在集成测试失败的时候快速定位有 bug 的代码，唯一需要和 DOM 打交道的单元测试是在 Directive 中。&lt;/p&gt;
+
+&lt;p&gt;因为有依赖注入，在给 Controller 写单元测试的时候，你可以很容易 Mock 任何依赖，这也使得测试的断言简单很多。一个典型的场景是在实例化 Controller 的时候使用 Mock，另一方面，Angular.js 的依赖注入是&lt;code&gt;以最后一个为准(last win rule)&lt;/code&gt;，你可以通过在测试中注册一个假的实现重新绑定（覆盖）其依赖。&lt;/p&gt;
+
+&lt;p&gt;Angular.js 还有 E2E 测试，虽然设置和运行起来稍显麻烦，特别是你的页面在进入 JavaScript 控制之前先被一些服务端语言渲染。在花了好些时间来设置 E2E 测试之后，我又重新回到了把 Selenium 测试作为高阶的集成测试。（译者注：时至今日，Angular.js 的 E2E 测试已经成为主流，可以参考&lt;a href=&quot;http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/&quot;&gt;Protractor&lt;/a&gt;）。&lt;/p&gt;
+
+&lt;p&gt;虽然我最近大量使用了 Angular.js，我现在还不是Angular.js 的专家。事实上，我写这篇博客的原因之一也是抱着学习的目的，如果本文有误，我也很欢迎你能纠正文中的错误或者我理解有误的地方。如果你有任何评论，请到 &lt;a href=&quot;https://news.ycombinator.com/item?id=5770733&quot;&gt;HackerNews&lt;/a&gt; 讨论，也欢迎你到&lt;a href=&quot;https://twitter.com/insraq&quot;&gt;Twitter&lt;/a&gt;联系原作者。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-4&quot;&gt;资源&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;http://ruoyusun.com/2013/05/25/things-i-wish-i-were-told-about-angular-js.html&quot;&gt;Things I Wish I Were Told About Angular.js&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/&quot;&gt;Shadow DOM&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/&quot;&gt;Protractor&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 15 May 2015 19:50:20 +0800</pubDate>
+        <link>http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/</link>
+        <guid isPermaLink="true">http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/</guid>
+        
+        
+        <category>angular.js</category>
+        
+      </item>
     
       <item>
         <title>Bootstrap 响应式栅格</title>
@@ -2298,182 +2409,6 @@ To locate an encoder for a given encoding name, the internal I/O code would do s
         <pubDate>Sun, 06 Apr 2014 22:39:44 +0800</pubDate>
         <link>http://codethoughts.info/java/2014/04/06/service-provider-frameworks-pattern/</link>
         <guid isPermaLink="true">http://codethoughts.info/java/2014/04/06/service-provider-frameworks-pattern/</guid>
-        
-        
-        <category>java</category>
-        
-      </item>
-    
-      <item>
-        <title>Enum, EnumSet, and EnumMap Sample</title>
-        <description>&lt;p&gt;&lt;a href=&quot;http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html&quot;&gt;Enum&lt;/a&gt; was introduced in Java 1.5, although the Java enum can be used with any Java collection, its full power is best leveraged when used with the &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Why should you use &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;, rather than their counterparts &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html&quot;&gt;HashMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html&quot;&gt;HashSet&lt;/a&gt;. The primary reason boil down to performance and memory usage advantage. Let’s see their JavaDoc firstly.&lt;/p&gt;
-
-&lt;!-- more --&gt;
-
-&lt;h2 id=&quot;document-of-enummaphttpdocsoraclecomjavase7docsapijavautilenummaphtml&quot;&gt;Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt;:&lt;/h2&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;A specialized Map implementation for use with enum type keys. All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created. Enum maps are represented internally as arrays. This representation is extremely compact and efficient.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;…&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be faster than their HashMap counterparts.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;document-of-enumsethttpdocsoraclecomjavase7docsapijavautilenumsethtml&quot;&gt;Document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;:&lt;/h2&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;A specialized Set implementation for use with enum types. All of the elements in an enum set must come from a single enum type that is specified, explicitly or implicitly, when the set is created. Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient. The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional int-based “bit flags.” Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;…&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Implementation note: All basic operations execute in constant time. They are likely (though not guaranteed) to be much faster than their HashSet counterparts. Even bulk operations execute in constant time if their argument is also an enum set.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Both of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt; belong to &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html&quot;&gt;Java Collections Framework&lt;/a&gt;, so they’re easy to use because as Java developer, you should familiar with &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/collections/index.html&quot;&gt;Java Collections Framework&lt;/a&gt;; in the mean time, they’re compact and efficient,  they’re also enum-powered collections which are easy to use, you can see that in below sample code.&lt;/p&gt;
-
-&lt;p&gt;First, let’s see an enum deifiniation:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;MONDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Monday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;TUESDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Tuesday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;WEDNESDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Wednesday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;THURSDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Thursday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;30&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;31&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;32&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;FRIDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;33&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;34&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;35&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Friday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;36&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;37&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;38&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;39&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;SATURDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;40&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;41&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;42&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Saturday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;43&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;44&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;45&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;46&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;SUNDAY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;47&lt;/span&gt;         &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;48&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;49&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Sunday&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;50&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;51&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;52&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;53&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;54&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;55&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WORKDAYS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MONDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FRIDAY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;56&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;57&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;isWorkday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;58&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WORKDAYS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;59&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;60&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;61&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;allOf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;62&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;You can see that one of interesting feature of Java enum is that you can declare &lt;strong&gt;abstract methods&lt;/strong&gt;, in above example getDetail() is the abstract method and all the enum fields have implemented it. You can check some other details of Java enum &lt;a href=&quot;http://docs.oracle.com/javase/tutorial/java/javaOO/enum.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Let’s move on to our sample code of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.EnumMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EnumSetExample&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Work Schedule:&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isWorkday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt;                     &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;have to work&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt;                     &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;can relax&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt;             &lt;span class=&quot;c1&quot;&gt;// Enum.ordinal starts with 0&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%d. On %s you &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Do I have to work the whole week?&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;WORKDAYS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt;                 &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Yes, unfortunately.&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt;                 &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Certainly not.&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt;         &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekend&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;clone&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;weekend&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;removeAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;WORKDAYS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;The weekend is %d days long.&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weekend&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()));&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;30&lt;/span&gt;         &lt;span class=&quot;c1&quot;&gt;// EnumMap example&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;31&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;EnumMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eMap&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EnumMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;32&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;THE_WHOLE_WEEK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;33&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;eMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDetail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;34&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;35&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;36&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Print weekdays:&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;37&lt;/span&gt;         &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Weekday&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;entrySet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;38&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;\t&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;39&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;40&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;41&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;You can run above source code by yourself, check the result then find related API of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumMap.html&quot;&gt;EnumMap&lt;/a&gt; and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/util/EnumSet.html&quot;&gt;EnumSet&lt;/a&gt;. The above source code makes use of the following features in Java.&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;enum keyword&lt;/li&gt;
-  &lt;li&gt;enum custom methods&lt;/li&gt;
-  &lt;li&gt;enum toString() method&lt;/li&gt;
-  &lt;li&gt;EnumSet#range()&lt;/li&gt;
-  &lt;li&gt;EnumSet#allOf()&lt;/li&gt;
-  &lt;li&gt;EnumSet#clone()&lt;/li&gt;
-  &lt;li&gt;EnumSet#removeAll()&lt;/li&gt;
-  &lt;li&gt;EnumSet#size()&lt;/li&gt;
-  &lt;li&gt;EnumSet iteration&lt;/li&gt;
-  &lt;li&gt;String#format()&lt;/li&gt;
-  &lt;li&gt;EnumMap construction and iteration&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;https://weblogs.java.net/blog/mkarg/archive/2010/01/03/fun-enumset&quot;&gt;Fun with EnumSet&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Sun, 06 Apr 2014 20:50:38 +0800</pubDate>
-        <link>http://codethoughts.info/java/2014/04/06/enum-enumset-enummap-sample/</link>
-        <guid isPermaLink="true">http://codethoughts.info/java/2014/04/06/enum-enumset-enummap-sample/</guid>
         
         
         <category>java</category>
