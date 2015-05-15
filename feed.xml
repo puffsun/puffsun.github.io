@@ -5,12 +5,12 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 15 May 2015 23:27:47 +0800</pubDate>
-    <lastBuildDate>Fri, 15 May 2015 23:27:47 +0800</lastBuildDate>
+    <pubDate>Fri, 15 May 2015 23:28:12 +0800</pubDate>
+    <lastBuildDate>Fri, 15 May 2015 23:28:12 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>关于Angular.js 你需要知道的知识</title>
+        <title>关于 Angular.js 你需要知道的知识</title>
         <description>&lt;h3 id=&quot;section&quot;&gt;译者写在前面的话&lt;/h3&gt;
 &lt;p&gt;最近时间一直比较紧张，没有足够的时间深入学习任何东西，但是博客更新频率还是要保证的。这里挑了一篇 Angular.js 的好文来翻译，不仅可以温故而知新，也能帮助希望深入学习 Angular.js 框架的同行。想看原文请移步&lt;a href=&quot;http://ruoyusun.com/2013/05/25/things-i-wish-i-were-told-about-angular-js.html&quot;&gt;Things I Wish I Were Told About Angular.js&lt;/a&gt;。如需转载译文，请标明出处。&lt;/p&gt;
 
