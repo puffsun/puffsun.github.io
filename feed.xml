@@ -5,14 +5,14 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 23 May 2015 10:47:10 +0800</pubDate>
-    <lastBuildDate>Sat, 23 May 2015 10:47:10 +0800</lastBuildDate>
+    <pubDate>Sat, 23 May 2015 10:51:53 +0800</pubDate>
+    <lastBuildDate>Sat, 23 May 2015 10:51:53 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>JavaScript 闭包详解</title>
         <description>&lt;h3 id=&quot;section&quot;&gt;为什么写这篇文章&lt;/h3&gt;
-&lt;p&gt;在实际项目中用 JavaScript 写了一些代码之后，我一直想着能用一种方式来把脑子里对 JavaScript 编程语言一些比较凌乱的知识点整理一下。所以接下来的几篇博客，我会用几篇文章分别解释 JavaScript 语言中我认为最为重要的几个概念，目前我想写的几个知识点分别是闭包(Closure),作用域(Scope), 原型继承(Prototype Inhertance), this 以及函数(Function)，如果以后我觉得有重要的知识还会继续写下去。这篇文章里我想先聊聊 JavaScript 的闭包，下面我们就直入主题。&lt;/p&gt;
+&lt;p&gt;在实际项目中用 JavaScript 写了一些代码之后，我一直希望把 JavaScript 编程语言的一些知识点整理一下。所以接下来的几篇博客，我会用几篇文章分别解释 JavaScript 语言中我认为最为重要的几个概念，目前我想写的几个知识点分别是闭包(Closure)，作用域(Scope)，原型继承(Prototype Inhertance)， this 以及函数(Function)，如果以后我觉得有重要的知识还会继续写下去。这篇文章里我想先聊聊 JavaScript 的闭包，下面我们就直入主题。&lt;/p&gt;
 
 &lt;h3 id=&quot;section-1&quot;&gt;为什么要学习闭包&lt;/h3&gt;
 &lt;p&gt;闭包是 JavaScript 中一个很重要的概念，简单讲，理解了闭包，你可以写出更好的 JavaScript 代码。另外，不管你是否意识到，只要你写过一些JavaScript 代码，你就一定写过闭包，至少读过别人写的闭包代码。很多重要的JavaScript 构建块(building blocks)会通过闭包来实现，比如代码模块化，单例模式，封装私有变量和函数，以及避免全局变量污染等等，下面我们会看到一些实例来说明这些应用场景。&lt;/p&gt;
