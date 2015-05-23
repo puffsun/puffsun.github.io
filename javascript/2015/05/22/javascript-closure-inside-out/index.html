@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>JavaScript 闭包详解 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JavaScript 闭包详解</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on May 22, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="section">为什么写这篇文章</h3>
+<p>在实际项目中用 JavaScript 写了一些代码之后，我一直想着能用一种方式来把脑子里对 JavaScript 编程语言一些比较凌乱的知识点整理一下。所以接下来的几篇博客，我会用几篇文章分别解释 JavaScript 语言中我认为最为重要的几个概念，目前我想写的几个知识点分别是闭包(Closure),作用域(Scope), 原型继承(Prototype Inhertance), this 以及函数(Function)，如果以后我觉得有重要的知识还会继续写下去。这篇文章里我想先聊聊 JavaScript 的闭包，下面我们就直入主题。</p>
+
+<h3 id="section-1">为什么要学习闭包</h3>
+<p>闭包是 JavaScript 中一个很重要的概念，简单讲，理解了闭包，你可以写出更好的 JavaScript 代码。另外，不管你是否意识到，只要你写过一些JavaScript 代码，你就一定写过闭包，至少读过别人写的闭包代码。很多重要的JavaScript 构建块(building blocks)会通过闭包来实现，比如代码模块化，单例模式，封装私有变量和函数，以及避免全局变量污染等等，下面我们会看到一些实例来说明这些应用场景。</p>
+
+<h3 id="section-2">闭包的定义</h3>
+<p>我们先来看一个关于闭包的定义：</p>
+
+<blockquote>
+  <p>当一个函数即便在离开了它的词法作用域(Lexical Scope)的情况下，仍然存储并可以存取它的词法作用域(Lexical Scope)，这个函数就构成了闭包。</p>
+</blockquote>
+
+<p>很抽象？我也这么认为。至少从这个定义，你可以看出JavaScript 的闭包和作用域有紧密的联系。</p>
+
+<h3 id="javascript-">JavaScript 的作用域</h3>
+<p>作用域一般有两种模型，一种叫做词法作用域(Lexical Scope)，这就是 JavaScript 所采用的作用域模型；另外一种叫做动态作用域(Dynamic Scope)，比如 Perl，Bash Shell 等采用了这种模型，因为动态作用域和 JavaScript 无关，我们不做进一步解释，感兴趣的可以自己找<a href="http://en.wikipedia.org/wiki/Scope_(computer_science)">相关资料</a>。</p>
+
+<p>词法作用域是静态的作用域模型，它在编写源代码的过程中已经确定了，和程序的调用者和运行上下文无关。具体到 JavaScript 来说，JavaScript 中有全局变量和局部变量，全局变量是在函数之外定义的变量或者函数内部没有用 var 关键字定义的变量，而局部变量则是用 var 关键字定义在函数内部的变量。在这里我想多说两句，在函数内部如果没有指定 var 关键字那么默认会创建全局变量；另一个问题是全局变量可以通过 window 对象来存取，很多人认为这是 window 对象上存储了一个全局变量的拷贝，其实不然，通过 window 存取的全局变量和不通过它访问的是同一个变量，指向同一块内存，就像是是一个硬币的正反面。</p>
+
+<p>全局变量在任何地方都可以访问，而局部变量则不然，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">global_var</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m global&quot;</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">A</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">local_var</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m local&quot;</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;global: &quot;</span> <span class="o">+</span> <span class="nx">global_var</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;local: &quot;</span> <span class="o">+</span> <span class="nx">local_var</span><span class="p">);</span> <span class="c1">// 引用错误，类型是 ReferenceError: local_var is not defined</span></code></pre></div>
+
+<p>上面的引用错误说明在函数外部无法访问这里定义的<code>lcoal_var</code>。</p>
+
+<h3 id="section-3">嵌套的函数定义</h3>
+<p>我们只能通过变通的办法来访问函数的局部变量，一般来说，这个变通的办法就是在函数内部再定义一个函数，因为一个函数不仅可以访问全局变量，还可以访问它的外部函数(Outer function)定义的局部变量，比如下面的代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">global_var</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m global&quot;</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">outer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">local_var</span> <span class="o">=</span> <span class="s2">&quot;I&#39;m local&quot;</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="nx">inner</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;local: &quot;</span> <span class="o">+</span> <span class="nx">local_var</span><span class="p">);</span>
+    <span class="p">};</span> 
+<span class="p">}</span>
+<span class="nx">outer</span><span class="p">()();</span> <span class="c1">// 输出：local: I&#39;m local</span></code></pre></div>
+
+<p>函数 inner 不仅有自己的内部作用域，还可以访问全局变量，也可以访问它外部的 outer 函数定义的所有局部变量。我们知道函数是 JavaScript 的一等公民，可以作为其他函数的参数或者作为函数的返回值，这里我们把 inner 函数返回，这样我们就通过变通的方法在 outer 函数外部访问了 outer 函数内部定义的局部变量。那这里的内部函数 inner 就构成了闭包。在 JavaScript 语言中，闭包的定义可以简化为嵌套定义在函数内部的函数。</p>
+
+<h3 id="section-4">闭包和循环</h3>
+<p>在很多地方，比如 JavaScript 教程，论坛，书籍中，你会看到下面的一段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span> <span class="kd">function</span> <span class="nx">timer</span><span class="p">(){</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">i</span> <span class="p">);</span>
+    <span class="p">},</span> <span class="nx">i</span><span class="o">*</span><span class="mi">1000</span> <span class="p">);</span>
+<span class="p">}</span></code></pre></div>
+
+<p>很明显，这个的 timer 函数是一个闭包。那么，这段代码的输出将会是什么呢？直觉上，一般人会认为这段代码会每隔一秒打印一个数字，数字分别是1, 2, 3, 4, 5. 但我可以负责任的告诉你，这个结论是错误的。如果你去运行这段代码，你会发现这段代码会每隔一秒打印一个数字6，一共5次.那为什么会这样呢？</p>
+
+<p>首先来看，为什么是数字6？这段代码中循环的结束条件是<code>i &lt;= 5</code>，另一方面，因为 JavaScript 是单线程执行，只有循环结束以后，setTimeout 中指定的函数才会被异步执行，也就是说在循环结束之前，setTimeout 没有被分配任何的 CPU 时间。</p>
+
+<p>其次，为什么全都是数字6？直觉会认为，每个闭包都会有一份自己的变量拷贝，就像对此时运行的上下文的一个镜像一样。但事实上，JavaScript 闭包和作用域不是这样工作的。在上面的代码中，5次循环将会有5个函数被异步执行，这5个函数，每一个都指向同一个 <code>i</code> 变量，所以每次输出的 i 都是相同的值。</p>
+
+<h3 id="section-5">问题清楚了，如何解决呢</h3>
+<p>理解了问题所在，解决起来也就不难了。既然这5个异步函数指向同样的变量，那么我们只要能让他们都指向自己的那一份拷贝就可以了。如下代码所示：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+        <span class="nx">setTimeout</span><span class="p">(</span> <span class="kd">function</span> <span class="nx">timer</span><span class="p">(){</span>    
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">j</span> <span class="p">);</span>
+        <span class="p">},</span> <span class="nx">j</span><span class="o">*</span><span class="mi">1000</span> <span class="p">);</span>
+    <span class="p">})();</span>
+<span class="p">}</span></code></pre></div>
+
+<p>这里我们用一个立即执行函数表达式(Immediately-Invoked Function Expression (IIFE))，并在 IIFE 中声明了自己的本地变量<code>j</code>来获取并保存当时的 <code>i</code> 值。更优雅一些的解决方案是：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;=</span><span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">j</span><span class="p">){</span>
+        <span class="nx">setTimeout</span><span class="p">(</span> <span class="kd">function</span> <span class="nx">timer</span><span class="p">(){</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">j</span> <span class="p">);</span>
+        <span class="p">},</span> <span class="nx">j</span><span class="o">*</span><span class="mi">1000</span> <span class="p">);</span>
+    <span class="p">})(</span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span></code></pre></div>
+
+<p>这里我们通过函数参数的形式来保存这个变量<code>i</code>的本地拷贝，也达到了同样的目的。</p>
+
+<h3 id="section-6">闭包的应用</h3>
+<p>在这篇文章里，我想列举两种闭包在 JavaScript 中的应用场景。</p>
+
+<ul>
+  <li>单例模式</li>
+  <li>代码模块化</li>
+</ul>
+
+<p>首先来看单例模式。</p>
+
+<h4 id="section-7">单例模式</h4>
+<p>但凡写过代码的人应该对<a href="http://en.wikipedia.org/wiki/Singleton_pattern">单例模式</a>都不陌生，这里我也就不在多阐述了，直接上代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">Singleton</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">instance</span><span class="p">;</span>
+
+    <span class="kd">function</span> <span class="nx">createInstance</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">(</span><span class="s2">&quot;I am the instance&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+ 
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">getInstance</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">instance</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">instance</span> <span class="o">=</span> <span class="nx">createInstance</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">instance</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">})();</span>
+ 
+<span class="kd">function</span> <span class="nx">run</span><span class="p">()</span> <span class="p">{</span>
+ 
+    <span class="kd">var</span> <span class="nx">instance1</span> <span class="o">=</span> <span class="nx">Singleton</span><span class="p">.</span><span class="nx">getInstance</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">instance2</span> <span class="o">=</span> <span class="nx">Singleton</span><span class="p">.</span><span class="nx">getInstance</span><span class="p">();</span>
+ 
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Same instance? &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">instance1</span> <span class="o">===</span> <span class="nx">instance2</span><span class="p">));</span>  
+<span class="p">}</span></code></pre></div>
+
+<p>再来看模块化：</p>
+
+<h4 id="section-8">代码模块化</h4>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">CoolModule</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">something</span> <span class="o">=</span> <span class="s2">&quot;cool&quot;</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">another</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+	<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">something</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="kd">function</span> <span class="nx">doAnother</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">another</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span> <span class="s2">&quot; ! &quot;</span> <span class="p">)</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="p">{</span>
+		<span class="nx">doSomething</span><span class="o">:</span> <span class="nx">doSomething</span><span class="p">,</span>
+		<span class="nx">doAnother</span><span class="o">:</span> <span class="nx">doAnother</span>
+	<span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="nx">CoolModule</span><span class="p">();</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span> <span class="c1">// cool</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">doAnother</span><span class="p">();</span> <span class="c1">// 1 ! 2 ! 3</span></code></pre></div>
+
+<p>这就是 JavaScript 中模块化最基本的实现形式，上面展示的代码一般被称为暴露模块(Revealing Module)。代码模块化在大规模的 JavaScript 应用中很常见，也是必不可少的模式，如果没有模块化来解除代码之间的耦合，到了一定规模以后，代码会变得不可维护。关于 JavaScript 模块化模式的讨论，如果有兴趣了解的话可以参考<a href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">JavaScript Module Pattern: In-Depth</a>。</p>
+
+<h3 id="section-9">资源</h3>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures">Mozilla MDN - Closure</a></p>
+
+<p><a href="http://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html">学习Javascript闭包（Closure）</a></p>
+
+<p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&amp;%20closures/ch5.md">You Don’t Know JS: Scope &amp; Closures</a></p>
+
+<p><a href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">JavaScript Module Pattern: In-Depth</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/" data-toggle="tooltip" data-placement="top" title="关于 Angular.js 你需要知道的知识">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

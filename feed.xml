@@ -5,9 +5,178 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 15 May 2015 23:28:12 +0800</pubDate>
-    <lastBuildDate>Fri, 15 May 2015 23:28:12 +0800</lastBuildDate>
+    <pubDate>Sat, 23 May 2015 10:47:10 +0800</pubDate>
+    <lastBuildDate>Sat, 23 May 2015 10:47:10 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>JavaScript 闭包详解</title>
+        <description>&lt;h3 id=&quot;section&quot;&gt;为什么写这篇文章&lt;/h3&gt;
+&lt;p&gt;在实际项目中用 JavaScript 写了一些代码之后，我一直想着能用一种方式来把脑子里对 JavaScript 编程语言一些比较凌乱的知识点整理一下。所以接下来的几篇博客，我会用几篇文章分别解释 JavaScript 语言中我认为最为重要的几个概念，目前我想写的几个知识点分别是闭包(Closure),作用域(Scope), 原型继承(Prototype Inhertance), this 以及函数(Function)，如果以后我觉得有重要的知识还会继续写下去。这篇文章里我想先聊聊 JavaScript 的闭包，下面我们就直入主题。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;为什么要学习闭包&lt;/h3&gt;
+&lt;p&gt;闭包是 JavaScript 中一个很重要的概念，简单讲，理解了闭包，你可以写出更好的 JavaScript 代码。另外，不管你是否意识到，只要你写过一些JavaScript 代码，你就一定写过闭包，至少读过别人写的闭包代码。很多重要的JavaScript 构建块(building blocks)会通过闭包来实现，比如代码模块化，单例模式，封装私有变量和函数，以及避免全局变量污染等等，下面我们会看到一些实例来说明这些应用场景。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;闭包的定义&lt;/h3&gt;
+&lt;p&gt;我们先来看一个关于闭包的定义：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;当一个函数即便在离开了它的词法作用域(Lexical Scope)的情况下，仍然存储并可以存取它的词法作用域(Lexical Scope)，这个函数就构成了闭包。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;很抽象？我也这么认为。至少从这个定义，你可以看出JavaScript 的闭包和作用域有紧密的联系。&lt;/p&gt;
+
+&lt;h3 id=&quot;javascript-&quot;&gt;JavaScript 的作用域&lt;/h3&gt;
+&lt;p&gt;作用域一般有两种模型，一种叫做词法作用域(Lexical Scope)，这就是 JavaScript 所采用的作用域模型；另外一种叫做动态作用域(Dynamic Scope)，比如 Perl，Bash Shell 等采用了这种模型，因为动态作用域和 JavaScript 无关，我们不做进一步解释，感兴趣的可以自己找&lt;a href=&quot;http://en.wikipedia.org/wiki/Scope_(computer_science)&quot;&gt;相关资料&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;词法作用域是静态的作用域模型，它在编写源代码的过程中已经确定了，和程序的调用者和运行上下文无关。具体到 JavaScript 来说，JavaScript 中有全局变量和局部变量，全局变量是在函数之外定义的变量或者函数内部没有用 var 关键字定义的变量，而局部变量则是用 var 关键字定义在函数内部的变量。在这里我想多说两句，在函数内部如果没有指定 var 关键字那么默认会创建全局变量；另一个问题是全局变量可以通过 window 对象来存取，很多人认为这是 window 对象上存储了一个全局变量的拷贝，其实不然，通过 window 存取的全局变量和不通过它访问的是同一个变量，指向同一块内存，就像是是一个硬币的正反面。&lt;/p&gt;
+
+&lt;p&gt;全局变量在任何地方都可以访问，而局部变量则不然，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;global_var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I&amp;#39;m global&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;local_var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I&amp;#39;m local&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;global: &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;global_var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;local: &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;local_var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 引用错误，类型是 ReferenceError: local_var is not defined&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的引用错误说明在函数外部无法访问这里定义的&lt;code&gt;lcoal_var&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;嵌套的函数定义&lt;/h3&gt;
+&lt;p&gt;我们只能通过变通的办法来访问函数的局部变量，一般来说，这个变通的办法就是在函数内部再定义一个函数，因为一个函数不仅可以访问全局变量，还可以访问它的外部函数(Outer function)定义的局部变量，比如下面的代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;global_var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I&amp;#39;m global&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;outer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;local_var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I&amp;#39;m local&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;inner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;local: &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;local_var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt; 
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;outer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 输出：local: I&amp;#39;m local&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;函数 inner 不仅有自己的内部作用域，还可以访问全局变量，也可以访问它外部的 outer 函数定义的所有局部变量。我们知道函数是 JavaScript 的一等公民，可以作为其他函数的参数或者作为函数的返回值，这里我们把 inner 函数返回，这样我们就通过变通的方法在 outer 函数外部访问了 outer 函数内部定义的局部变量。那这里的内部函数 inner 就构成了闭包。在 JavaScript 语言中，闭包的定义可以简化为嵌套定义在函数内部的函数。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-4&quot;&gt;闭包和循环&lt;/h3&gt;
+&lt;p&gt;在很多地方，比如 JavaScript 教程，论坛，书籍中，你会看到下面的一段代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;timer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;很明显，这个的 timer 函数是一个闭包。那么，这段代码的输出将会是什么呢？直觉上，一般人会认为这段代码会每隔一秒打印一个数字，数字分别是1, 2, 3, 4, 5. 但我可以负责任的告诉你，这个结论是错误的。如果你去运行这段代码，你会发现这段代码会每隔一秒打印一个数字6，一共5次.那为什么会这样呢？&lt;/p&gt;
+
+&lt;p&gt;首先来看，为什么是数字6？这段代码中循环的结束条件是&lt;code&gt;i &amp;lt;= 5&lt;/code&gt;，另一方面，因为 JavaScript 是单线程执行，只有循环结束以后，setTimeout 中指定的函数才会被异步执行，也就是说在循环结束之前，setTimeout 没有被分配任何的 CPU 时间。&lt;/p&gt;
+
+&lt;p&gt;其次，为什么全都是数字6？直觉会认为，每个闭包都会有一份自己的变量拷贝，就像对此时运行的上下文的一个镜像一样。但事实上，JavaScript 闭包和作用域不是这样工作的。在上面的代码中，5次循环将会有5个函数被异步执行，这5个函数，每一个都指向同一个 &lt;code&gt;i&lt;/code&gt; 变量，所以每次输出的 i 都是相同的值。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-5&quot;&gt;问题清楚了，如何解决呢&lt;/h3&gt;
+&lt;p&gt;理解了问题所在，解决起来也就不难了。既然这5个异步函数指向同样的变量，那么我们只要能让他们都指向自己的那一份拷贝就可以了。如下代码所示：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;timer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;    
+            &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里我们用一个立即执行函数表达式(Immediately-Invoked Function Expression (IIFE))，并在 IIFE 中声明了自己的本地变量&lt;code&gt;j&lt;/code&gt;来获取并保存当时的 &lt;code&gt;i&lt;/code&gt; 值。更优雅一些的解决方案是：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;timer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里我们通过函数参数的形式来保存这个变量&lt;code&gt;i&lt;/code&gt;的本地拷贝，也达到了同样的目的。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-6&quot;&gt;闭包的应用&lt;/h3&gt;
+&lt;p&gt;在这篇文章里，我想列举两种闭包在 JavaScript 中的应用场景。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;单例模式&lt;/li&gt;
+  &lt;li&gt;代码模块化&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;首先来看单例模式。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-7&quot;&gt;单例模式&lt;/h4&gt;
+&lt;p&gt;但凡写过代码的人应该对&lt;a href=&quot;http://en.wikipedia.org/wiki/Singleton_pattern&quot;&gt;单例模式&lt;/a&gt;都不陌生，这里我也就不在多阐述了，直接上代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;createInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;I am the instance&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+ 
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nx&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;createInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})();&lt;/span&gt;
+ 
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+ 
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;instance1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;instance2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+ 
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Same instance? &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;instance1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;instance2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;  
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;再来看模块化：&lt;/p&gt;
+
+&lt;h4 id=&quot;section-8&quot;&gt;代码模块化&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;CoolModule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;something&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;cool&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;another&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;doSomething&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;something&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;doAnother&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;another&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; ! &amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;doSomething&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;doSomething&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;doAnother&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;doAnother&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;CoolModule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;doSomething&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// cool&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;doAnother&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 1 ! 2 ! 3&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这就是 JavaScript 中模块化最基本的实现形式，上面展示的代码一般被称为暴露模块(Revealing Module)。代码模块化在大规模的 JavaScript 应用中很常见，也是必不可少的模式，如果没有模块化来解除代码之间的耦合，到了一定规模以后，代码会变得不可维护。关于 JavaScript 模块化模式的讨论，如果有兴趣了解的话可以参考&lt;a href=&quot;http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html&quot;&gt;JavaScript Module Pattern: In-Depth&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-9&quot;&gt;资源&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures&quot;&gt;Mozilla MDN - Closure&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html&quot;&gt;学习Javascript闭包（Closure）&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&amp;amp;%20closures/ch5.md&quot;&gt;You Don’t Know JS: Scope &amp;amp; Closures&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html&quot;&gt;JavaScript Module Pattern: In-Depth&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 22 May 2015 23:07:39 +0800</pubDate>
+        <link>http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/</link>
+        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/</guid>
+        
+        
+        <category>javascript</category>
+        
+      </item>
     
       <item>
         <title>关于 Angular.js 你需要知道的知识</title>
@@ -2308,107 +2477,6 @@ Done.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
         <pubDate>Mon, 07 Apr 2014 06:54:11 +0800</pubDate>
         <link>http://codethoughts.info/java/2014/04/07/singleton-pattern-in-java/</link>
         <guid isPermaLink="true">http://codethoughts.info/java/2014/04/07/singleton-pattern-in-java/</guid>
-        
-        
-        <category>java</category>
-        
-      </item>
-    
-      <item>
-        <title>Service Provider Frameworks Pattern</title>
-        <description>&lt;h3 id=&quot;overview&quot;&gt;Overview&lt;/h3&gt;
-&lt;p&gt;In &lt;a href=&quot;http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683&quot;&gt;Effective Java, second edition&lt;/a&gt;, the author mentioned a pattern called Service Provider frameworks. The author wrote:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;A service provider framework is a system in which multiple service providers implement a service, and the system makes the implementations available to its clients, decoupling them from the implementations.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In this blog post, I’ll talk about the details of Service Provider Frameworks thru it’s application in JDK, to be specific, in JDBC and Codec lookup.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;As the author said, there are three essential components of a service provider framework: a &lt;strong&gt;service interface&lt;/strong&gt;, which providers implement; a &lt;strong&gt;provider registration API&lt;/strong&gt;, which the system uses to register implementations, giving clients access to them; and a &lt;strong&gt;service access API&lt;/strong&gt;, which clients use to obtain an instance of the service. The service access API typically allows but does not require the client to specify some criteria for choosing a provider. In the absence of such a specification, the API returns an instance of a default implementation. The service access API is the “flexible static factory” that forms the basis of the service provider framework.&lt;/p&gt;
-
-&lt;p&gt;An optional fourth component of a service provider framework is a &lt;strong&gt;service provider interface&lt;/strong&gt;, which providers implement to create instances of their service implementation. &lt;em&gt;In the absence of a service provider interface, implementations are registered by class name and instantiated reflectively&lt;/em&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;service-provider-frameworks-in-jdbc&quot;&gt;Service Provider Frameworks in JDBC&lt;/h3&gt;
-&lt;p&gt;In the case of &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/jdbc/index.html&quot;&gt;JDBC&lt;/a&gt;, &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/Connection.html&quot;&gt;Connection&lt;/a&gt; plays the part of the service interface, &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/DriverManager.html#registerDriver\(java.sql.Driver\)&quot;&gt;DriverManager.registerDriver&lt;/a&gt; is the provider registration API, &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/DriverManager.html#getConnection\(java.lang.String\)&quot;&gt;DriverManager.getConnection&lt;/a&gt; is the service access API, and &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/Driver.html&quot;&gt;Driver&lt;/a&gt; is the service provider interface.&lt;/p&gt;
-
-&lt;p&gt;Usually in order to use JDBC, you should write below code:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Register JDBC driver, before JDBC 4.0 only&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;com.mysql.jdbc.Driver&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Open a connection&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connecting to database...&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DriverManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getConnection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DB_URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;USER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PASS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The &lt;code&gt;Class.forname(&quot;com.mysql.jdbc.Driver&quot;)&lt;/code&gt; can be eliminated after JDBC 4.0, as you can see in the document of &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/api/java/sql/DriverManager.html&quot;&gt;DriverManager&lt;/a&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;The DriverManager methods getConnection and getDrivers have been enhanced to support the Java Standard Edition &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/jar/jar.html#Service%20Provider&quot;&gt;Service Provider&lt;/a&gt; mechanism. JDBC 4.0 Drivers must include the file META-INF/services/java.sql.Driver. This file contains the name of the JDBC drivers implementation of java.sql.Driver. For example, to load the my.sql.Driver class, the META-INF/services/java.sql.Driver file would contain the entry:&lt;/p&gt;
-
-  &lt;p&gt;my.sql.Driver&lt;/p&gt;
-
-  &lt;p&gt;Applications no longer need to explicitly load JDBC drivers using &lt;code&gt;Class.forName()&lt;/code&gt;. Existing programs which currently load JDBC drivers using Class.forName() will continue to work without modification.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;service-provider-mechanism2&quot;&gt;Service Provider mechanism&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
-&lt;p&gt;Now let’s dig deeper into the &lt;strong&gt;Service Provider mechanism&lt;/strong&gt; and &lt;strong&gt;Service Provider configuration file&lt;/strong&gt;, you can find it &lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/jar/jar.html#Service%20Provider&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
-
-&lt;p&gt;Files in the &lt;code&gt;META-INF/services&lt;/code&gt; directory are service provider configuration files. A service is a well-known set of interfaces and (usually abstract) classes. A service provider is a specific implementation of a service. The classes in a provider typically implement the interfaces and subclass the classes defined in the service itself. Service providers may be installed in an implementation of the Java platform in the form of extensions, that is, jar files placed into any of the usual extension directories. Providers may also be made available by adding them to the applet or application class path or by some other platform-specific means.&lt;/p&gt;
-
-&lt;p&gt;A service is represented by an abstract class. A provider of a given service contains one or more concrete classes that extend this service class with data and code specific to the provider. This provider class will typically not be the entire provider itself but rather a proxy that contains enough information to decide whether the provider is able to satisfy a particular request together with code that can create the actual provider on demand. The details of provider classes tend to be highly service-specific; no single class or interface could possibly unify them, so no such class has been defined. The only requirement enforced here is that provider classes must have a zero-argument constructor so that they may be instantiated during lookup.&lt;/p&gt;
-
-&lt;h3 id=&quot;provider-configuration-file&quot;&gt;Provider-Configuration File&lt;/h3&gt;
-&lt;p&gt;A service provider identifies itself by placing a provider-configuration file in the resource directory &lt;code&gt;META-INF/services&lt;/code&gt;. The file’s name should consist of the fully-qualified name of the abstract service class. The file should contain a newline-separated list of unique concrete provider-class names. Space and tab characters, as well as blank lines, are ignored. The comment character is ‘#’ (0x23); on each line all characters following the first comment character are ignored. The file must be encoded in UTF-8.&lt;/p&gt;
-
-&lt;h3 id=&quot;example-of-service-provider-mechanism&quot;&gt;Example of Service Provider mechanism&lt;/h3&gt;
-&lt;p&gt;Suppose we have a service class named &lt;code&gt;java.io.spi.CharCodec&lt;/code&gt;. It has two abstract methods:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CharEncoder&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getEncoder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encodingName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CharDecoder&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getDecoder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encodingName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Each method returns an appropriate object or null if it cannot translate the given encoding. Typical CharCodec providers will support more than one encoding.&lt;/p&gt;
-
-&lt;p&gt;If &lt;code&gt;sun.io.StandardCodec&lt;/code&gt; is a provider of the &lt;code&gt;CharCodec&lt;/code&gt; service then its jar file would contain the file &lt;code&gt;META-INF/services/java.io.spi.CharCodec&lt;/code&gt;. This file would contain the single line:
-&lt;code&gt;sun.io.StandardCodec    # Standard codecs for the platform&lt;/code&gt;
-To locate an encoder for a given encoding name, the internal I/O code would do something like this:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CharEncoder&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getEncoder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encodingName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;Iterator&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ps&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;providers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CharCodec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;CharCodec&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CharCodec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;CharEncoder&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ce&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getEncoder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encodingName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ce&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ce&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The provider-lookup mechanism always executes in the security context of the caller. Trusted system code should typically invoke the methods in this class from within a privileged security context.&lt;/p&gt;
-
-&lt;h3 id=&quot;how-service-provider-mechanism-works-in-jdbc&quot;&gt;How Service Provider mechanism works in JDBC&lt;/h3&gt;
-&lt;p&gt;Now we can draw the conclusion that with service provider configuration file, during jar loading, the loading thread will find the configuration first, then register the services by name from the configuration file. The service configuration file contains the name of the JDBC driver’s implementation of &lt;code&gt;java.sql.Driver&lt;/code&gt;. For example, to load the JDBC driver to connect to a Apache Derby database, the &lt;code&gt;META-INF/services/java.sql.Driver&lt;/code&gt; file would contain the following entry:
-&lt;code&gt;org.apache.derby.jdbc.EmbeddedDriver&lt;/code&gt;. Then it will call &lt;code&gt;DriverManager.registerDriver&lt;/code&gt; to register specific Database driver automatically, so you don’t need to call &lt;code&gt;Class.forName()&lt;/code&gt; yourself. After that, you can access the service thru &lt;strong&gt;Service Access Interface&lt;/strong&gt;, &lt;code&gt;java.sql.DriverManager.getConnection&lt;/code&gt; to get the service, which in this case, is a implementation of &lt;code&gt;java.sql.Connection&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;However, before JDBC 4.0, you don’t have the facility, you have to register database driver manually by calling &lt;code&gt;Class.forName&lt;/code&gt; to register the driver before accessing the service interface.&lt;/p&gt;
-
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683&quot;&gt;Effective Java, second edition&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-    &lt;li id=&quot;fn:2&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;http://docs.oracle.com/javase/7/docs/technotes/guides/jar/jar.html#Service%20Provider&quot;&gt;jar file specification#Service Provider&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Sun, 06 Apr 2014 22:39:44 +0800</pubDate>
-        <link>http://codethoughts.info/java/2014/04/06/service-provider-frameworks-pattern/</link>
-        <guid isPermaLink="true">http://codethoughts.info/java/2014/04/06/service-provider-frameworks-pattern/</guid>
         
         
         <category>java</category>

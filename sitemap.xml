@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/</loc>
+    <lastmod>2015-05-22T23:07:39+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/</loc>
     <lastmod>2015-05-15T19:50:20+08:00</lastmod>
   </url>
@@ -88,11 +92,5 @@
   </url>
   <url>
     <loc>http://codethoughts.info/</loc>
-  </url>
-  <url>
-    <loc>http://codethoughts.info/page2/</loc>
-  </url>
-  <url>
-    <loc>http://codethoughts.info/page3/</loc>
   </url>
 </urlset>
