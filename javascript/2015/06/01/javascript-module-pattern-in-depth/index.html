@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>深度解析 JavaScript 模块化 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>深度解析 JavaScript 模块化</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on June 1, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h3 id="section">译者写在前面的话</h3>
+<p>看到一篇自己写不出来的好文章，顺手把它翻译了，一来自己可以深入阅读原文，二来也可以帮助希望深入学习 JavaScript 的同行。原文请见 <a href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">JavaScript Module Pattern: In-Depth</a>，转载请注明出处。</p>
+
+<h2 id="section-1">译文：</h2>
+<p>模块化是 JavaScript 中很常见的模式，这个模式已经被广泛的理解并接受了，但是它仍然有一些没有引起足够重视的高级用法。在这篇文章中，我会回顾模块化的基础知识并覆盖一些需要引起足够注意力的高级主题，其中甚至有一个是我自己原创的。</p>
+
+<h2 id="section-2">基础知识</h2>
+<p>我们从一些简单的回顾开始，这些知识在 Eric Miraglia（YUI 作者）在几年前写了关于 <a href="http://yuiblog.com/blog/2007/06/12/module-pattern/">JavaScript 模块化的博客</a> 之后就人尽皆知了。如果你已经非常熟悉 JavaScript 模块化，那么请直接跳至“高级模式”部分。</p>
+
+<h3 id="section-3">匿名闭包</h3>
+<p>这是 JavaScript 模块化得以实现的基础，也是 JavaScript 最佳的特性，没有之一。我们只需要创建一个匿名函数，并立刻执行它，这个匿名函数中运行的所有的代码就会存活于一个闭包之中，并在应用程序的生命周期内提供私密性和状态。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// 所有的变量和函数都只属于本作用域</span>
+	<span class="c1">// 但仍然维护着对全局作用域的访问</span>
+<span class="p">}());</span></code></pre></div>
+
+<p>请注意那个包围在匿名函数外的<code>( )</code>，为了满足 JavaScript 语法的正确性，我们必须添加它，因为以 function 开头的语句总是被认为是函数声明，被 <code>( )</code> 括起来以后函数声明则变成了函数表达式。</p>
+
+<h3 id="section-4">全局导入</h3>
+<p>JavaScript 有一个特性叫做“隐含全局”。任何时候，只要有被使用的变量名，JavaScript 解释器就会沿着作用域链向上查找一个定义了该变量名的 var 声明。如果在这个过程中没有找到这个变量声明，那这个变量就假定是全局的。而如果这个变量是被赋值而且此时这个变量尚不存在，那么这个变量会被创建为全局变量，这也意味着在匿名闭包中可以很容易的创建全局变量。不过，很不幸，这样会导致难以维护的代码，因为对人来说，很难区分在一个源文件中那些变量是全局的。</p>
+
+<p>幸好，匿名函数为这种情况提供了一个简单的解决方案，我们可以把全局变量作为参数传入匿名函数，从而把他们的导入我们的代码，这样既清晰，相比“默认全局”又可以提高性能，来看一个例子：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">,</span> <span class="nx">YAHOO</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 现在我们可以在匿名函数中用$访问 jQuery，用 YAHOO 访问全局变量的 YAHOO 了。</span>
+<span class="p">}(</span><span class="nx">jQuery</span><span class="p">,</span> <span class="nx">YAHOO</span><span class="p">));</span></code></pre></div>
+
+<h3 id="section-5">模块导出</h3>
+<p>有时候你声明变量的时候并不想使用全局变量，而是局部变量，这时候你可以通过把变量当做匿名函数的返回值导出来达到目的。这也就是基本的JavaScript 模块模式，来看一个例子：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">MODULE</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">my</span> <span class="o">=</span> <span class="p">{},</span>
+	    <span class="nx">privateVariable</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+	<span class="kd">function</span> <span class="nx">privateMethod</span><span class="p">()</span> <span class="p">{</span>
+		<span class="c1">// ...</span>
+	<span class="p">}</span>
+
+	<span class="nx">my</span><span class="p">.</span><span class="nx">moduleProperty</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="nx">my</span><span class="p">.</span><span class="nx">moduleMethod</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="c1">// ...</span>
+	<span class="p">};</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}());</span></code></pre></div>
+
+<p>注意到这里我们声明了一个叫做<code>MODULE</code>的全局模块，它有两个公有属性：一个叫做<code>MODULE.moduleMethod</code>的函数，和一个叫做<code>MODULE.moduleProperty</code>的属性。应该留意的是它利用匿名函数的闭包维护了<code>私有的内部状态</code>，而且，利用上面我们所学的全局导入，我们可以很容易的导入我们所需要的全局变量。</p>
+
+<h2 id="section-6">高级模式</h2>
+<p>虽然上面所学的知识已经足够应付大部分的情况，但对于 JavaScript 模块模式，我们仍然可以更进一步，创建一些强大的，可扩展的模式。那我们现在通过一个名叫 <code>MODULE</code> 的模块来把这些模式过一遍。</p>
+
+<h3 id="augmentation">扩容（Augmentation）</h3>
+<p>到目前为止我们见到的模块都有一个限制，就是整个模块只能存活于一个源文件中，而任何一个在大型项目中工作过的人都会理解把一个模块分解到多个源文件的价值。还好，我们有一个很漂亮的解决方案叫做 <code>模块扩容</code>。首先我们导入模块，然后我们增加一些属性，再重新导出这个模块，从而对上述的 <code>MODULE</code> 模块达到扩容的目的：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">MODULE</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">my</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">my</span><span class="p">.</span><span class="nx">anotherMethod</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="c1">// 增加新方法</span>
+	<span class="p">};</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}(</span><span class="nx">MODULE</span><span class="p">));</span></code></pre></div>
+
+<p>虽然不是必须的，但我们仍然使用了 var 关键字来保持一致性。上面的代码运行以后，我们的模块将会拥有一个新的公有方法叫做 <code>MODULE.anotherMethod</code>，这个额外的源文件仍然可以维护它自己的私有内部状态和导入的变量。</p>
+
+<h3 id="loose-augmentation">宽松扩容（Loose Augmentation）</h3>
+<p>虽然我们上面的例子要求初始的模块必须先被创建，然后才可以进行扩容，但是事实上也不是必须这样做。JavaScript 中为了提高性能，可以异步的加载脚本。我们可以灵活的创建由多个部分组成的模块，并通过宽松扩容来以任何顺序加载它们。要求就是，每个源文件有如下的代码结构：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">MODULE</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">my</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// add capabilities...</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}(</span><span class="nx">MODULE</span> <span class="o">||</span> <span class="p">{}));</span></code></pre></div>
+
+<p>这个模式中的<code>var</code>关键字是必须的，另外注意到，被导入的模块如果尚未存在的话，将会被创建，这意味着你可以使用像<a href="http://labjs.com/">LAB.js</a>这样的工具来并行的加载这些模块，而通常情况下多个模块同时加载则会被阻塞。</p>
+
+<h3 id="tight-augmentation">紧缩扩容（Tight Augmentation）</h3>
+<p>虽然宽松扩容很赞，但是它还是在你的模块上加了一些限制，最关键的问题是你无法安全的覆盖模块(Overwrite)属性。另外在模块初始化的时候，你不能使用来自其他源文件的模块（但是在运行时是可以的）。而紧缩扩容指定了一系列加载顺序，并且运行覆盖，下面是一个简单的例子（为前面的 <code>MODULE</code> 模块扩容）：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">MODULE</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">my</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">old_moduleMethod</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">moduleMethod</span><span class="p">;</span>
+
+	<span class="nx">my</span><span class="p">.</span><span class="nx">moduleMethod</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="c1">// 方法覆盖，但是仍然通过 old_module.moduleMethod 保持对原有方法的访问</span>
+	<span class="p">};</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}(</span><span class="nx">MODULE</span><span class="p">));</span></code></pre></div>
+
+<p>这里我们覆盖了<code>MODULE.moduleMethod</code>，但是如果需要的话，我们仍然可以访问被覆盖方法。</p>
+
+<h3 id="cloning-and-inheritance">克隆和继承（Cloning and Inheritance）</h3>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">MODULE_TWO</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">old</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">my</span> <span class="o">=</span> <span class="p">{},</span>
+		<span class="nx">key</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">old</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">old</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">my</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">old</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="kd">var</span> <span class="nx">super_moduleMethod</span> <span class="o">=</span> <span class="nx">old</span><span class="p">.</span><span class="nx">moduleMethod</span><span class="p">;</span>
+	<span class="nx">my</span><span class="p">.</span><span class="nx">moduleMethod</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	    <span class="c1">// 覆盖被克隆的方法，并通过 super_moduleMethod 维护对服方法的访问</span>
+	<span class="p">};</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}(</span><span class="nx">MODULE</span><span class="p">));</span></code></pre></div>
+
+<p>这个模式可能是最<code>不灵活</code>的，虽然它允许一些巧妙的组合(compositions)，但是以付出灵活性为代价。就像我之前所写的，一些作为属性的对象和函数不会被复制，他们仅仅作为一个对象的两个引用而存在。改变其中的一个则会同时改变另外一个。即使我们可以通过递归的克隆来解决这个问题，对函数我们仍然没有更多的办法，除了使用 <code>eval</code>。在这篇文章包括这个模式仅仅是为了完整性。</p>
+
+<h3 id="cross-file-private-state">跨文件私有状态（Cross-File Private State）</h3>
+<p>把一个模块分割到多个文件的最大缺陷是每个文件都将会维护它自己的私有状态，并且没有任何途径访问其他文件的私有状态。这个问题有解决方案，下面这个宽松扩容模块（Loose Augmentation Module）的例子可以 <code>维护跨所有扩容模块的私有状态</code>。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">MODULE</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">my</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">_private</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_private</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_private</span> <span class="o">||</span> <span class="p">{},</span>
+		<span class="nx">_seal</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_seal</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_seal</span> <span class="o">||</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">delete</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_private</span><span class="p">;</span>
+			<span class="k">delete</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_seal</span><span class="p">;</span>
+			<span class="k">delete</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_unseal</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">_unseal</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_unseal</span> <span class="o">=</span> <span class="nx">my</span><span class="p">.</span><span class="nx">_unseal</span> <span class="o">||</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">my</span><span class="p">.</span><span class="nx">_private</span> <span class="o">=</span> <span class="nx">_private</span><span class="p">;</span>
+			<span class="nx">my</span><span class="p">.</span><span class="nx">_seal</span> <span class="o">=</span> <span class="nx">_seal</span><span class="p">;</span>
+			<span class="nx">my</span><span class="p">.</span><span class="nx">_unseal</span> <span class="o">=</span> <span class="nx">_unseal</span><span class="p">;</span>
+		<span class="p">};</span>
+
+	<span class="c1">// 永久维护了对_private, _seal, 和 _unseal 私有状态的访问</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}(</span><span class="nx">MODULE</span> <span class="o">||</span> <span class="p">{}));</span></code></pre></div>
+
+<p>在这里，任何文件都可以在 <code>_private</code> 中设置它们的局部私有变量，它们立即对其他文件可见。在这个模块完全加载以后，该应用程序应该调用 <code>MODULE._seal()</code>, 它可以阻止模块外部对内部的 <code>_private</code> 变量的访问。如果这个模块在整个应用程序的存活期间内被再次扩容，模块内部的方法可以在新文件被加载之前再次调用 <code>_seal()</code>，然后在方法被执行之后再次调用 <code>_unseal()</code>。这个模式是我今天在工作的时候突然想到的，而且之前我在其他地方都没见过它。我认为它是一个非常有用的模式，而且这个模式也值得单独写一篇文章。</p>
+
+<h3 id="sub-modules">子模块（Sub-modules）</h3>
+<p>我们要讨论的最后一个高级模式其实是最简单的，而且已经有很多创建子模块的很好的用例，其实它就像创建普通的模块一样：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">MODULE</span><span class="p">.</span><span class="nx">sub</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">my</span> <span class="o">=</span> <span class="p">{};</span>
+	<span class="c1">// ...</span>
+
+	<span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}());</span></code></pre></div>
+
+<p>虽然看起来很简单，但我认为它值得在这里一提。子模块具有普通模块的所有高级特性，包括扩容和私有状态。</p>
+
+<h2 id="conclusions">结论（Conclusions）</h2>
+<p>大部分 JavaScript 模块的高级模式可以被组合起来，并得到更多的有用的模式。如果是非选不可的话，我提倡组合 <code>宽松扩容</code>，<code>私有状态</code>，和 <code>子模块</code>来设计复杂应用程序这样一种途径，我自己也曾经这样做过。</p>
+
+<p>在这篇文章里我还没有讨论过性能，这里我可以给出一个小小的提示：模块模式对 <code>提升性能</code> 很有好处。模块化的代码可以被很好的压缩，从而可以更快的下载，使用 <code>宽松的扩容(loose augmentation)</code> 模式使得非阻塞并行下载成为可能，也可以提高下载速度。虽然和其他方法相比，初始化的时间可能略有增加，但是这样的折衷是值得的。并且，只要全局变量都正确导入了，运行时性能应该不会降低，甚至会有所增加，因为局部变量的引用搜索链被模块缩短了。</p>
+
+<p>最后通过一个例子总结一下：一个用来加载自身的子模块，如果模块尚不存在的话就创建一个新的。为了使程序简短，我去掉了私有状态，但是把它加进来也不是什么难事。这个模式允许并发加载一个具有层级关系的，复杂的代码库，这个代码库包括该模块自身，子模块和其他所有的模块。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">UTIL</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">my</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">ajax</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">ajax</span> <span class="o">||</span> <span class="p">{};</span>
+
+	<span class="nx">my</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c1">// ok, so I&#39;m cheating a bit :)</span>
+		<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+	<span class="p">};</span>
+
+	<span class="c1">// etc...</span>
+
+	<span class="k">return</span> <span class="nx">parent</span><span class="p">;</span>
+<span class="p">}(</span><span class="nx">UTIL</span> <span class="o">||</span> <span class="p">{},</span> <span class="nx">jQuery</span><span class="p">));</span></code></pre></div>
+
+<p>我希望你会觉得这篇文章所讲述的东西都很有用，也请你在评论处留下你的想法，现在你可以继续去写更好，也更模块化的 JavaScript 代码了。</p>
+
+<p><em>这篇文章在<a href="http://ajaxian.com/archives/a-deep-dive-and-analysis-of-the-javascript-module-pattern">Ajaxian.com</a> 上被加精了，在那里的评论区有更多的讨论，那些评论和本文下面的这些评论都值得一读。</em></p>
+
+<h3 id="section-7">资源</h3>
+<p><a href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">JavaScript Module Pattern: In-Depth</a></p>
+
+<p><a href="http://yuiblog.com/blog/2007/06/12/module-pattern/">JavaScript 模块化的博客</a></p>
+
+<p><a href="http://jquery.com/">jQuery</a></p>
+
+<p><a href="http://yuilibrary.com/">YUI</a></p>
+
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/05/22/javascript-closure-inside-out/" data-toggle="tooltip" data-placement="top" title="JavaScript 闭包详解">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
