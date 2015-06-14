@@ -106,7 +106,7 @@
 <h2 id="javascript--this">为什么要讨论 JavaScript 的 <code>this</code></h2>
 <p>JavaScript 中的 <code>this</code> 是让新手甚至是使用 JavaScript 多年的老手经常感到困惑的地方。有的时候 <code>this</code> 指向的是全局对象，有的时候是当前的调用对象，在很多 JavaScript 类库中，<code>this</code> 经常被绑定到当前所操作的 DOM 对象上，比如 jQuery 对的事件绑定方法，这让 JavaScript 中的 <code>this</code> 显得很神秘，这篇博客的目的就是解开 <code>this</code> 那神秘的面纱。后面我们会一一讲述以上这几种情况，在讲解之前，我们先理解 JavaScript 代码的调用点(Call-site)和调用栈(Call-stack)。</p>
 
-<h3 id="javascript-call-site">JavaScript 函数的调用点(Call-site)</h3>
+<h2 id="javascript-call-site">JavaScript 函数的调用点(Call-site)</h2>
 <p>顾名思义，函数的调用点就是函数被调用的地方，请注意，并不是被函数被声明的地方。来看这一段代码（来自<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">You Don’t Know JS</a>）：</p>
 
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">baz</span><span class="p">()</span> <span class="p">{</span>
@@ -268,7 +268,7 @@
 
 <p><code>bind()</code>返回了一个新的函数，这个函数的 <code>this</code> 被强制绑定到我们指定的任意对象上，这里是 <code>obj</code>。</p>
 
-<h3 id="new-">通过 <code>new</code> 关键字绑定</h3>
+<h3 id="new-">规则4：通过 <code>new</code> 关键字绑定</h3>
 <p>JavaScript 中的任意函数，如果在调用的时候，前面 <code>new</code> 关键字，那么如下的几件事情会依次发生：</p>
 
 <ol>
@@ -323,7 +323,7 @@
 <h3 id="section-1">例外</h3>
 <p>在上述的四个规则之外，还有几种情况可以作为例外来处理，比如在显式绑定的时候，传入 <code>null</code> 或者 <code>undefined</code>，这时候传入参数会被忽略，而默认绑定会生效。其他的少数情况可以参见<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">这里</a>，限于篇幅，我就不一一列举了。</p>
 
-<h3 id="section-2">资源</h3>
+<h2 id="section-2">资源</h2>
 <p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes">You Don’t Know JS: this &amp; Object Prototypes</a></p>
 
 
