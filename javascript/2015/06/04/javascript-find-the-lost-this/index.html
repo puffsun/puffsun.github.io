@@ -292,7 +292,7 @@
 <h2 id="this">确定 <code>this</code></h2>
 <p>在这里，对于如何给确定 <code>this</code> 的指向，我直接给出结论，感兴趣的可以到<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">这里</a>查看详细的分析。</p>
 
-<p>首先找出函数的调用点，据此分析上述四个规则哪一种被首先应用了，如果同时存在两种以上的规则，那么优先级高的首先被应用。</p>
+<p>首先找出函数的调用点，据此分析上述四个规则哪一种被首先应用了，如果同时存在两种以上的规则，那么会应用优先级高的规则。</p>
 
 <ul>
   <li>函数被 <code>new</code> 关键字调用了吗？如果是，那么 <code>this</code> 就是新创建的对象。</li>
