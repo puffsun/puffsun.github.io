@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>寻找 JavaScript 的 this - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>寻找 JavaScript 的 this</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on June 4, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h2 id="section">为什么写这篇文章</h2>
+<p>最近在看 <a href="https://github.com/getify/You-Dont-Know-JS">You Don’t Know JS</a> 系列一共6本书，说是我读过最好的 JavaScript 书籍不为过，<a href="http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&amp;field-keywords=you+don%27t+know+js">Amazon.com</a> 上对6本几乎全五星的评价让所有的赞美都黯然失色，最关键的是，这几套书籍居然有免费、开源的版本！</p>
+
+<p>这本书的第三本主要讲述了 JavaScript 中的 <a href="https://github.com/getify/You-Dont-Know-JS/tree/master/this%20%26%20object%20prototypes">this 和 Prototype</a>，也是在这本书中，我第一次看到了如何用4个规则来断定 JavaScript 代码中当前的 <code>this</code> 对象到底指向谁。在这篇博客中，我想对原文进行一些归纳总结，既作为学习笔记，又可以帮助对 JavaScript 有兴趣的同行。</p>
+
+<h2 id="javascript--this">为什么要讨论 JavaScript 的 <code>this</code></h2>
+<p>JavaScript 中的 <code>this</code> 是让新手甚至是使用 JavaScript 多年的老手经常感到困惑的地方。有的时候 <code>this</code> 指向的是全局对象，有的时候是当前的调用对象，在很多 JavaScript 类库中，<code>this</code> 经常被绑定到当前所操作的 DOM 对象上，比如 jQuery 对的事件绑定方法，这让 JavaScript 中的 <code>this</code> 显得很神秘，这篇博客的目的就是解开 <code>this</code> 那神秘的面纱。后面我们会一一讲述以上这几种情况，在讲解之前，我们先理解 JavaScript 代码的调用点(Call-site)和调用栈(Call-stack)。</p>
+
+<h3 id="javascript-call-site">JavaScript 函数的调用点(Call-site)</h3>
+<p>顾名思义，函数的调用点就是函数被调用的地方，请注意，并不是被函数被声明的地方。来看这一段代码（来自<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">You Don’t Know JS</a>）：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">baz</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 调用栈是 `baz`</span>
+    <span class="c1">// 调用点是全局作用域</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s2">&quot;baz&quot;</span> <span class="p">);</span>
+    <span class="nx">bar</span><span class="p">();</span> <span class="c1">// &lt;--bar 的调用点</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 调用栈是: `baz` -&gt; `bar`</span>
+    <span class="c1">// 调用点是在 `baz` 内</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s2">&quot;bar&quot;</span> <span class="p">);</span>
+    <span class="nx">foo</span><span class="p">();</span> <span class="c1">// &lt;-- `foo` 的调用点</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 调用栈是 `baz` -&gt; `bar` -&gt; `foo`</span>
+    <span class="c1">// 调用点在 `bar` 内</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s2">&quot;foo&quot;</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">baz</span><span class="p">();</span> <span class="c1">// &lt;-- `baz` 的调用点</span></code></pre></div>
+
+<p>上面的代码注释分别标出了三个函数的调用点和调用栈，如果你在函数 foo 里面打了断点，那么程序在断点暂停的时候可以清楚的看到调用栈。在理解 <code>this</code> 之前，先搞清楚 JavaScript 函数的调用栈很重要。</p>
+
+<h2 id="this-4">关于 <code>this</code> 的4个游戏规则</h2>
+<p>在 JavaScript 函数执行期间，<code>this</code> 指向的对象可以通过函数的调用点来确定。另外需要注意的是，这4个规则的优先级各不相同。接下来我们先看看这4个规则分别是什么，再确定它们的优先级。</p>
+
+<h3 id="default-binding">规则1：默认绑定(Default Binding)</h3>
+<p>如果其他三个规则都不合适，那么就一定是默认绑定这种情况，在 JavaScript 代码中，单独的函数调用一定是这种情况。比如来看下面的代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="nx">foo</span><span class="p">();</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>在上面这段代码中，函数的调用点是全局作用域，那么默认绑定会生效，<code>this</code> 指向全局对象。如果函数运行在<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Strict_mode">strict mode</a>下，情况会有不同吗？我们来看代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="nx">foo</span><span class="p">();</span> <span class="c1">// TypeError: `this` is `undefined`</span></code></pre></div>
+
+<p>可以看到，在<code>strict mode</code>下，依然是默认绑定生效了，可是这时候 <code>this</code> 指向的不再是全局对象了，而是 <code>undefined</code>。</p>
+
+<h3 id="implicit-binding">规则2：隐式绑定(Implicit Binding)</h3>
+<p>这个规则需要检查的是，当前函数的调用点是不是有上下文对象，或者被包含在某个对象之内，来看这段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nx">foo</span><span class="o">:</span> <span class="nx">foo</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>这里我们可以看到，函数 <code>foo</code> 是在对象外部声明，然后被对象内的属性引用，其实这和在对象内部声明函数一样，不会对函数的调用点产生影响。因为函数 <code>foo</code> 被包含在对象 <code>obj</code> 内部，那么通过 <code>obj</code> 对象调用的时候，<code>foo</code> 函数的上下文对象就是 <code>obj</code>，在函数内部，<code>this</code> 也就被绑定到 <code>obj</code> 对象。</p>
+
+<h3 id="explicit-binding">规则3：显式绑定(Explicit Binding)</h3>
+<p>在 JavaScript 中，所有的函数都可以调用 <code>call</code> 和 <code>apply</code> 来显式的绑定 <code>this</code>，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="nx">foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nx">obj</span> <span class="p">);</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>上面这段代码显式的把 <code>foo</code> 函数的 <code>this</code> 绑定到 <code>obj</code> 对象上。但是在实际场景中，仍然有一种情况，显式的绑定 <code>this</code> 仍然不能解决问题，比如看这段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">doFoo</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// `fn` 仅仅是对 `foo` 的另外一个引用</span>
+
+    <span class="nx">fn</span><span class="p">();</span> <span class="c1">// &lt;-- 调用点!</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nx">foo</span><span class="o">:</span> <span class="nx">foo</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="s2">&quot;oops, global&quot;</span><span class="p">;</span> <span class="c1">// `a` 存在于全局范围</span>
+
+<span class="nx">doFoo</span><span class="p">(</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span> <span class="p">);</span> <span class="c1">// &quot;oops, global&quot;</span></code></pre></div>
+
+<p>虽然这里我们<code>隐式</code>的把 <code>this</code> 绑定到 <code>obj</code> 对象上，但是很不幸，在函数作为参数传递的过程中，<code>this</code> 丢失了。在上面这段代码里，<code>obj.foo</code> 仅仅是对函数 <code>foo</code> 的一个引用，在 <code>obj.foo</code> 作为参数传递的时候，默认绑定会生效，<code>this</code> 也指向了 <code>window</code> 全局变量。为了解决这个问题，我们需要对显式绑定做一点改进。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">something</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">,</span> <span class="nx">something</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">something</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">arguments</span> <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">bar</span><span class="p">(</span> <span class="mi">3</span> <span class="p">);</span> <span class="c1">// 2 3</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">b</span> <span class="p">);</span> <span class="c1">// 5</span></code></pre></div>
+
+<p>事实上，你也经常会在实际代码中见到这样的一个工具方法：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">something</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">,</span> <span class="nx">something</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">something</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// simple `bind` helper</span>
+<span class="kd">function</span> <span class="nx">bind</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">arguments</span> <span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">bind</span><span class="p">(</span> <span class="nx">foo</span><span class="p">,</span> <span class="nx">obj</span> <span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">bar</span><span class="p">(</span> <span class="mi">3</span> <span class="p">);</span> <span class="c1">// 2 3</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">b</span> <span class="p">);</span> <span class="c1">// 5</span></code></pre></div>
+
+<p>这个模式很常见，所以 JavaScript 自己也提供了同样的方法，可以通过 <code>Function.prototype.bind</code> 来调用：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">something</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">,</span> <span class="nx">something</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">something</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span> <span class="nx">obj</span> <span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">bar</span><span class="p">(</span> <span class="mi">3</span> <span class="p">);</span> <span class="c1">// 2 3</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">b</span> <span class="p">);</span> <span class="c1">// 5</span></code></pre></div>
+
+<p><code>bind()</code>返回了一个新的函数，这个函数的 <code>this</code> 被强制绑定到我们指定的任意对象上，这里是 <code>obj</code>。</p>
+
+<h3 id="new-">通过 <code>new</code> 关键字绑定</h3>
+<p>JavaScript 中的任意函数，如果在调用的时候，前面 <code>new</code> 关键字，那么如下的几件事情会依次发生：</p>
+
+<ol>
+  <li>新对象被创建；</li>
+  <li>新创建的对象被加入到 <code>prototype</code> 链中；</li>
+  <li>新创建的对象被设为该函数调用的 <code>this</code>；</li>
+  <li>除非该函数指定返回其他对象，否则新创建的对象将会成为返回值</li>
+</ol>
+
+<p>来看下面这段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">foo</span><span class="p">(</span> <span class="mi">2</span> <span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">bar</span><span class="p">.</span><span class="nx">a</span> <span class="p">);</span> <span class="c1">// 2</span></code></pre></div>
+
+<p><code>new foo(...)</code> 把新创建的对象绑定为 <code>this</code>，这也就是 <code>new</code> 绑定。</p>
+
+<h3 id="this">确定 <code>this</code></h3>
+<p>在这里，对于如何给确定 <code>this</code> 的指向，我直接给出结论，感兴趣的可以到<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">这里</a>查看详细的分析。</p>
+
+<p>首先找出函数的调用点，据此分析上述四个规则哪一种被首先应用了，如果同时存在两种以上的规则，那么优先级高的首先被应用。</p>
+
+<ul>
+  <li>函数被 <code>new</code> 关键字调用了吗？如果是，那么 <code>this</code> 就是新创建的对象。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">foo</span><span class="p">()</span></code></pre></div>
+
+<ul>
+  <li>函数通过 <code>apply</code> 或 <code>call</code> 或 <code>bind</code> 显式绑定了吗？如果是，<code>this</code> 指向显式指定的对象。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nx">obj2</span> <span class="p">)</span></code></pre></div>
+
+<ul>
+  <li>函数通过隐式绑定调用了吗？如果是那么就是隐式调用的对象。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">obj1</span><span class="p">.</span><span class="nx">foo</span><span class="p">()</span></code></pre></div>
+
+<ul>
+  <li>如果以上都不是，那么就是默认绑定，<code>this</code> 指向全局变量或者 <code>undefined</code> (strict mode 下)。</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">()</span></code></pre></div>
+
+<p><code>this</code> 被应用的优先级按照这里对4条规则的检查顺序由高到低排列。</p>
+
+<h3 id="section-1">例外</h3>
+<p>在上述的四个规则之外，还有几种情况可以作为例外来处理，比如在显式绑定的时候，传入 <code>null</code> 或者 <code>undefined</code>，这时候传入参数会被忽略，而默认绑定会生效。其他的少数情况可以参见<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">这里</a>，限于篇幅，我就不一一列举了。</p>
+
+<h3 id="section-2">资源</h3>
+<p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes">You Don’t Know JS: this &amp; Object Prototypes</a></p>
+
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/06/01/javascript-module-pattern-in-depth/" data-toggle="tooltip" data-placement="top" title="深入 JavaScript 模块化模式">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
