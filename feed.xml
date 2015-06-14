@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 14 Jun 2015 12:37:32 +0800</pubDate>
-    <lastBuildDate>Sun, 14 Jun 2015 12:37:32 +0800</lastBuildDate>
+    <pubDate>Sun, 14 Jun 2015 12:39:18 +0800</pubDate>
+    <lastBuildDate>Sun, 14 Jun 2015 12:39:18 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -14,7 +14,7 @@
         <description>&lt;h2 id=&quot;section&quot;&gt;为什么写这篇文章&lt;/h2&gt;
 &lt;p&gt;最近在看 &lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS&quot;&gt;You Don’t Know JS&lt;/a&gt; 系列一共6本书，说是我读过最好的 JavaScript 书籍不为过，&lt;a href=&quot;http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&amp;amp;field-keywords=you+don%27t+know+js&quot;&gt;Amazon.com&lt;/a&gt; 上对6本几乎全五星的评价让所有的赞美都黯然失色，最关键的是，这一套书居然有免费、开源的版本！&lt;/p&gt;
 
-&lt;p&gt;这本书的第三本主要讲述了 JavaScript 中的 &lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/tree/master/this%20%26%20object%20prototypes&quot;&gt;this 和 Prototype&lt;/a&gt;，也是在这本书中，我第一次看到了如何用4个规则来断定 JavaScript 代码中当前的 &lt;code&gt;this&lt;/code&gt; 对象到底指向谁。在这篇博客中，我想对原文进行一些归纳总结，既作为学习笔记，又可以帮助对 JavaScript 有兴趣的同行。&lt;/p&gt;
+&lt;p&gt;这套书的第三本主要讲述了 JavaScript 中的 &lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/tree/master/this%20%26%20object%20prototypes&quot;&gt;this 和 Prototype&lt;/a&gt;，也是在这本书中，我第一次看到了如何用4个规则来断定 JavaScript 代码中当前的 &lt;code&gt;this&lt;/code&gt; 对象到底指向谁。在这篇博客中，我想对原文进行一些归纳总结，既作为学习笔记，又可以帮助对 JavaScript 有兴趣的同行。&lt;/p&gt;
 
 &lt;h2 id=&quot;javascript--this&quot;&gt;为什么要讨论 JavaScript 的 &lt;code&gt;this&lt;/code&gt;&lt;/h2&gt;
 &lt;p&gt;JavaScript 中的 &lt;code&gt;this&lt;/code&gt; 是让新手甚至是使用 JavaScript 多年的老手经常感到困惑的地方。有的时候 &lt;code&gt;this&lt;/code&gt; 指向的是全局对象，有的时候是当前的调用对象，在很多 JavaScript 类库中，&lt;code&gt;this&lt;/code&gt; 经常被绑定到当前所操作的 DOM 对象上，比如 jQuery 对的事件绑定方法，这让 JavaScript 中的 &lt;code&gt;this&lt;/code&gt; 显得很神秘，这篇博客的目的就是解开 &lt;code&gt;this&lt;/code&gt; 那神秘的面纱。后面我们会一一讲述以上这几种情况，在讲解之前，我们先理解 JavaScript 代码的调用点(Call-site)和调用栈(Call-stack)。&lt;/p&gt;
