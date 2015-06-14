@@ -289,7 +289,7 @@
 
 <p><code>new foo(...)</code> 把新创建的对象绑定为 <code>this</code>，这也就是 <code>new</code> 绑定。</p>
 
-<h3 id="this">确定 <code>this</code></h3>
+<h2 id="this">确定 <code>this</code></h2>
 <p>在这里，对于如何给确定 <code>this</code> 的指向，我直接给出结论，感兴趣的可以到<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">这里</a>查看详细的分析。</p>
 
 <p>首先找出函数的调用点，据此分析上述四个规则哪一种被首先应用了，如果同时存在两种以上的规则，那么优先级高的首先被应用。</p>
@@ -320,7 +320,7 @@
 
 <p><code>this</code> 被应用的优先级按照这里对4条规则的检查顺序由高到低排列。</p>
 
-<h3 id="section-1">例外</h3>
+<h2 id="section-1">例外</h2>
 <p>在上述的四个规则之外，还有几种情况可以作为例外来处理，比如在显式绑定的时候，传入 <code>null</code> 或者 <code>undefined</code>，这时候传入参数会被忽略，而默认绑定会生效。其他的少数情况可以参见<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md">这里</a>，限于篇幅，我就不一一列举了。</p>
 
 <h2 id="section-2">资源</h2>

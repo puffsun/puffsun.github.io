@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 14 Jun 2015 13:46:24 +0800</pubDate>
-    <lastBuildDate>Sun, 14 Jun 2015 13:46:24 +0800</lastBuildDate>
+    <pubDate>Sun, 14 Jun 2015 13:57:54 +0800</pubDate>
+    <lastBuildDate>Sun, 14 Jun 2015 13:57:54 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -202,7 +202,7 @@
 
 &lt;p&gt;&lt;code&gt;new foo(...)&lt;/code&gt; 把新创建的对象绑定为 &lt;code&gt;this&lt;/code&gt;，这也就是 &lt;code&gt;new&lt;/code&gt; 绑定。&lt;/p&gt;
 
-&lt;h3 id=&quot;this&quot;&gt;确定 &lt;code&gt;this&lt;/code&gt;&lt;/h3&gt;
+&lt;h2 id=&quot;this&quot;&gt;确定 &lt;code&gt;this&lt;/code&gt;&lt;/h2&gt;
 &lt;p&gt;在这里，对于如何给确定 &lt;code&gt;this&lt;/code&gt; 的指向，我直接给出结论，感兴趣的可以到&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md&quot;&gt;这里&lt;/a&gt;查看详细的分析。&lt;/p&gt;
 
 &lt;p&gt;首先找出函数的调用点，据此分析上述四个规则哪一种被首先应用了，如果同时存在两种以上的规则，那么优先级高的首先被应用。&lt;/p&gt;
@@ -233,7 +233,7 @@
 
 &lt;p&gt;&lt;code&gt;this&lt;/code&gt; 被应用的优先级按照这里对4条规则的检查顺序由高到低排列。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-1&quot;&gt;例外&lt;/h3&gt;
+&lt;h2 id=&quot;section-1&quot;&gt;例外&lt;/h2&gt;
 &lt;p&gt;在上述的四个规则之外，还有几种情况可以作为例外来处理，比如在显式绑定的时候，传入 &lt;code&gt;null&lt;/code&gt; 或者 &lt;code&gt;undefined&lt;/code&gt;，这时候传入参数会被忽略，而默认绑定会生效。其他的少数情况可以参见&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch2.md&quot;&gt;这里&lt;/a&gt;，限于篇幅，我就不一一列举了。&lt;/p&gt;
 
 &lt;h2 id=&quot;section-2&quot;&gt;资源&lt;/h2&gt;
