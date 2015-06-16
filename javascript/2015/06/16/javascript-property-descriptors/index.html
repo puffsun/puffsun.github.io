@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>JavaScript 属性描述符 - George's Dream Port</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Dream Port</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JavaScript 属性描述符</h1>
+                    
+                    <span class="meta">Posted by George's Dream Port on June 16, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h2 id="section">什么是属性描述符</h2>
+<p>在<a href="https://es5.github.io/">ES5</a>之前，JavaScript 没有内置的机制来指定或者检查对象某个属性(property)的特性(characteristics)，比如某个属性是只读(readonly)的或者不能被枚举(enumerable)的。但是在 ES5之后，JavaScript 被赋予了这个能力，所有的对象属性都可以通过属性描述符(Property Descriptor)来指定。</p>
+
+<p>先来感受一下属性描述符：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyDescriptor</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span> <span class="p">);</span>
+<span class="c1">// { value: 2, writable: true, enumerable: true, configurable: true }</span></code></pre></div>
+
+<p>这里可以看到，除了 <code>value</code> 之外，JavaScript 属性描述符有 <code>writable</code>, <code>enumerable</code>, 和 <code>configurable</code> 这三个特性。如果不指定的话，这三个特性都是 <code>true</code>。但我们也可以通过 <code>Object.defineProperty(...)</code> 函数来指定它们为我们想要的值。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span> <span class="p">);</span>
+<span class="c1">// 上面的定义等同于 myObject.a = 2; </span>
+<span class="c1">// 所以如果不需要修改这三个特性，我们不会用 `Object.defineProperty`</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>下面让我们来看看属性描述符到底能为 JavaScript 带来哪些不一样的东西。</p>
+
+<h3 id="writable">是否可写 (Writable)</h3>
+<p>首先，属性描述符可以用来控制对象的某个属性是否可写：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// &quot;use strict&quot;;</span>
+<span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// 不可写!</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span> <span class="p">);</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">// 写入的值将会被忽略</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>如果应用了 <code>strict mode</code> 的话，那么 <code>myObject.a</code> 将会抛出 <code>TypeError</code>，而不是仅仅忽略写入的值。ES5 还引入了对象属性的 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get">Getter</a> 和 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">Setter</a>，这里的 <code>writable: false</code>可以认为是和没有定义或者定义了没有任何操作的 <code>setters</code> 的情况大致等同。当然了，如果是 <code>strict mode</code> 下，需要在 <code>setters</code> 里面抛出 <code>TypeError</code> 来完全模拟 <code>writable: false</code> 的情形。</p>
+
+<h3 id="configurable">是否可配置 (Configurable)</h3>
+<p>这个特性用来描述对象的某个属性是否可以用 <code>Object.defineProperty(...)</code> 来重新配置：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>                 <span class="c1">// 3</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>    <span class="c1">// 不可配置!</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span> <span class="p">);</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>                 <span class="c1">// 4</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>                 <span class="c1">// 5</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span> <span class="p">);</span> <span class="c1">// TypeError</span></code></pre></div>
+
+<p>注意，一旦某个属性被指定为 <code>configurable: false</code>，那么就不能从新指定为 <code>configurable: true</code> 了，这个操作是单向，不可逆的。另外，这个特性还会影响 <code>delete</code> 操作的行为，来看一段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>             <span class="c1">// 2</span>
+<span class="k">delete</span> <span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>             <span class="c1">// undefined</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span> <span class="p">);</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>             <span class="c1">// 2</span>
+<span class="k">delete</span> <span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>             <span class="c1">// 2</span></code></pre></div>
+
+<p>这里可以看到，一旦指定某个属性为 <code>configurable: false</code>，那么 <code>delete</code> 操作会被忽略。</p>
+
+<h3 id="enumerable">是否可枚举 (Enumerable)</h3>
+<p>这个特性用来描述对象的某个属性是否在对象属性的枚举中出现，比如 <code>for..in</code> 循环中。来看这段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span> <span class="p">};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span>
+    <span class="nx">myObject</span><span class="p">,</span>
+    <span class="s2">&quot;a&quot;</span><span class="p">,</span>
+    <span class="c1">// make `a` enumerable, as normal</span>
+    <span class="p">{</span> <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="mi">2</span> <span class="p">}</span>
+<span class="p">);</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span>
+    <span class="nx">myObject</span><span class="p">,</span>
+    <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+    <span class="c1">// make `b` NON-enumerable</span>
+    <span class="p">{</span> <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="mi">3</span> <span class="p">}</span>
+<span class="p">);</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">b</span><span class="p">;</span> <span class="c1">// 3</span>
+<span class="p">(</span><span class="s2">&quot;b&quot;</span> <span class="k">in</span> <span class="nx">myObject</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span> <span class="s2">&quot;b&quot;</span> <span class="p">);</span> <span class="c1">// true</span>
+
+<span class="c1">// .......</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">myObject</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">myObject</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// &quot;a&quot; 2</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">propertyIsEnumerable</span><span class="p">(</span> <span class="s2">&quot;a&quot;</span> <span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">propertyIsEnumerable</span><span class="p">(</span> <span class="s2">&quot;b&quot;</span> <span class="p">);</span> <span class="c1">// false</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span> <span class="nx">myObject</span> <span class="p">);</span> <span class="c1">// [&quot;a&quot;]</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyNames</span><span class="p">(</span> <span class="nx">myObject</span> <span class="p">);</span> <span class="c1">// [&quot;a&quot;, &quot;b&quot;]</span></code></pre></div>
+
+<p>这里可以看到，<code>enumerable: false</code> 使得该属性从对象属性枚举操作中被隐藏，但 <code>Object.hasOwnProperty(...)</code> 仍然可以检测到属性的存在。另外，<code>Object.propertyIsEnumerable(..)</code> 可以用来检测某个属性是否可枚举, <code>Object.keys(...)</code> 仅仅返回可枚举的属性，而 <code>Object.getOwnPropertyNames(...)</code> 则返回该对象上的所有属性，包括不可枚举的。</p>
+
+<h2 id="section-1">和属性描述符相关的操作</h2>
+
+<p>除了可以直接用 <code>Object.defineProperty(...)</code> 来指定属性描述符之外，JavaScript <a href="https://es5.github.io/">ES5</a> 还提供了几个操作可以用来配置属性描述符。</p>
+
+<h3 id="object-constant">对象常量 (Object Constant)</h3>
+<p>通过组合 <code>writable: false</code> 和 <code>configurable: false</code>，我们可以创建一个不能修改、重新定义或删除其属性的对象常量，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span> <span class="nx">myObject</span><span class="p">,</span> <span class="s2">&quot;FAVORITE_NUMBER&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="mi">42</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">false</span>
+<span class="p">}</span> <span class="p">);</span></code></pre></div>
+
+<p>这里对该对象属性的删除，修改操作会被忽略，你也不能再用 <code>Object.defineProperty(...)</code> 来重新配置该属性的特性。</p>
+
+<h3 id="prevent-extensions">禁止扩展 (Prevent Extensions)</h3>
+<p>如果希望阻止新的属性被加入到对象，可以通过调用 <code>Object.preventExtensions(...)</code> 来做到这一点：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">preventExtensions</span><span class="p">(</span> <span class="nx">myObject</span> <span class="p">);</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">b</span><span class="p">;</span> <span class="c1">// undefined</span></code></pre></div>
+
+<p>在 <code>strict mode</code> 下，行为稍有不同，对属性的赋值会抛出 <code>TypeError</code>, 而不是仅仅忽略赋值操作。</p>
+
+<h3 id="seal">封装 (Seal)</h3>
+<p>可以通过 <code>Object.seal(...)</code> 来封装一个对象。在调用这个操作之后，对象上不能再添加新的属性，也不能重新定义属性描述符或者删除某个属性：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">seal</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="s1">&#39;b&#39;</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span> <span class="c1">// {a: 2}</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span> <span class="c1">// {a: 6}</span></code></pre></div>
+
+<p>事实上，<code>Object.seal(...)</code> 相当于调用了 <code>Object.preventExtensions(..)</code>，并设置现有的所有属性为 <code>configurable:false</code>。</p>
+
+<h3 id="freeze">冻结 (Freeze)</h3>
+<p>调用 <code>Object.freeze(...)</code> 可以创建一个被冻结的对象，这个对象拥有不能再被做任何修改或者删除属性的操作，效果相当于调用了 <code>Object.seal(...)</code> 并设置所有属性为 <code>writable: false</code>。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">seal</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="s1">&#39;b&#39;</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span> <span class="c1">// {a: 2}</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span> <span class="c1">// {a: 2}</span></code></pre></div>
+
+<p>需要注意的细节是，上述操作仅仅会设置对象的直接属性，而不会影响作为 <code>myObject</code> 对象的属性的对象的特性，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">innerObj</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+    <span class="p">},</span>
+    <span class="nx">b</span><span class="o">:</span> <span class="mi">3</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">)</span> <span class="c1">// { innerObj: { a: 2 }, b: 3 }</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">freeze</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span> <span class="c1">// { innerObj: { a: 2 }, b: 3 }</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">innerObj</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObject</span><span class="p">)</span> <span class="c1">// { innerObj: { a: 6 }, b: 3 }</span></code></pre></div>
+
+<p>这里可以看到，即使调用了 <code>Object.freeze(...)</code>, 对 <code>innerObj</code> 属性的修改仍然成功了，对其他几个方法，比如 <code>Object.seal(...)</code> 或者 <code>Object.preventExtensions(...)</code> 也存在类似的情况，如果需要的话，可以对对象的属性递归调用上述方法。</p>
+
+<h2 id="section-2">资源</h2>
+
+<p><a href="https://github.com/getify/You-Dont-Know-JS/tree/master/this%20%26%20object%20prototypes">You-Dont-Know-JS - this &amp; object prototypes</a></p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects">Working with objects</a></p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">Mozilla MDN</a></p>
+
+<p><a href="https://es5.github.io/">Annotated ECMAScript 5.1 Last updated: 2013-09-01</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/06/04/javascript-find-the-lost-this/" data-toggle="tooltip" data-placement="top" title="寻找 JavaScript 的 this">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Dream Port 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

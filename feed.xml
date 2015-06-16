@@ -5,9 +5,244 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 14 Jun 2015 15:34:47 +0800</pubDate>
-    <lastBuildDate>Sun, 14 Jun 2015 15:34:47 +0800</lastBuildDate>
+    <pubDate>Tue, 16 Jun 2015 20:11:09 +0800</pubDate>
+    <lastBuildDate>Tue, 16 Jun 2015 20:11:09 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>JavaScript 属性描述符</title>
+        <description>&lt;h2 id=&quot;section&quot;&gt;什么是属性描述符&lt;/h2&gt;
+&lt;p&gt;在&lt;a href=&quot;https://es5.github.io/&quot;&gt;ES5&lt;/a&gt;之前，JavaScript 没有内置的机制来指定或者检查对象某个属性(property)的特性(characteristics)，比如某个属性是只读(readonly)的或者不能被枚举(enumerable)的。但是在 ES5之后，JavaScript 被赋予了这个能力，所有的对象属性都可以通过属性描述符(Property Descriptor)来指定。&lt;/p&gt;
+
+&lt;p&gt;先来感受一下属性描述符：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getOwnPropertyDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// { value: 2, writable: true, enumerable: true, configurable: true }&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里可以看到，除了 &lt;code&gt;value&lt;/code&gt; 之外，JavaScript 属性描述符有 &lt;code&gt;writable&lt;/code&gt;, &lt;code&gt;enumerable&lt;/code&gt;, 和 &lt;code&gt;configurable&lt;/code&gt; 这三个特性。如果不指定的话，这三个特性都是 &lt;code&gt;true&lt;/code&gt;。但我们也可以通过 &lt;code&gt;Object.defineProperty(...)&lt;/code&gt; 函数来指定它们为我们想要的值。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;writable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 上面的定义等同于 myObject.a = 2; &lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 所以如果不需要修改这三个特性，我们不会用 `Object.defineProperty`&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;下面让我们来看看属性描述符到底能为 JavaScript 带来哪些不一样的东西。&lt;/p&gt;
+
+&lt;h3 id=&quot;writable&quot;&gt;是否可写 (Writable)&lt;/h3&gt;
+&lt;p&gt;首先，属性描述符可以用来控制对象的某个属性是否可写：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// &amp;quot;use strict&amp;quot;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;writable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 不可写!&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 写入的值将会被忽略&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果应用了 &lt;code&gt;strict mode&lt;/code&gt; 的话，那么 &lt;code&gt;myObject.a&lt;/code&gt; 将会抛出 &lt;code&gt;TypeError&lt;/code&gt;，而不是仅仅忽略写入的值。ES5 还引入了对象属性的 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get&quot;&gt;Getter&lt;/a&gt; 和 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set&quot;&gt;Setter&lt;/a&gt;，这里的 &lt;code&gt;writable: false&lt;/code&gt;可以认为是和没有定义或者定义了没有任何操作的 &lt;code&gt;setters&lt;/code&gt; 的情况大致等同。当然了，如果是 &lt;code&gt;strict mode&lt;/code&gt; 下，需要在 &lt;code&gt;setters&lt;/code&gt; 里面抛出 &lt;code&gt;TypeError&lt;/code&gt; 来完全模拟 &lt;code&gt;writable: false&lt;/code&gt; 的情形。&lt;/p&gt;
+
+&lt;h3 id=&quot;configurable&quot;&gt;是否可配置 (Configurable)&lt;/h3&gt;
+&lt;p&gt;这个特性用来描述对象的某个属性是否可以用 &lt;code&gt;Object.defineProperty(...)&lt;/code&gt; 来重新配置：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;                 &lt;span class=&quot;c1&quot;&gt;// 3&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;writable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// 不可配置!&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;                 &lt;span class=&quot;c1&quot;&gt;// 4&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;                 &lt;span class=&quot;c1&quot;&gt;// 5&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;writable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// TypeError&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;注意，一旦某个属性被指定为 &lt;code&gt;configurable: false&lt;/code&gt;，那么就不能从新指定为 &lt;code&gt;configurable: true&lt;/code&gt; 了，这个操作是单向，不可逆的。另外，这个特性还会影响 &lt;code&gt;delete&lt;/code&gt; 操作的行为，来看一段代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;             &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;             &lt;span class=&quot;c1&quot;&gt;// undefined&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;writable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;             &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;             &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里可以看到，一旦指定某个属性为 &lt;code&gt;configurable: false&lt;/code&gt;，那么 &lt;code&gt;delete&lt;/code&gt; 操作会被忽略。&lt;/p&gt;
+
+&lt;h3 id=&quot;enumerable&quot;&gt;是否可枚举 (Enumerable)&lt;/h3&gt;
+&lt;p&gt;这个特性用来描述对象的某个属性是否在对象属性的枚举中出现，比如 &lt;code&gt;for..in&lt;/code&gt; 循环中。来看这段代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// make `a` enumerable, as normal&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// make `b` NON-enumerable&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;enumerable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 3&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hasOwnProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// .......&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// &amp;quot;a&amp;quot; 2&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;propertyIsEnumerable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;propertyIsEnumerable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// false&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// [&amp;quot;a&amp;quot;]&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getOwnPropertyNames&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// [&amp;quot;a&amp;quot;, &amp;quot;b&amp;quot;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里可以看到，&lt;code&gt;enumerable: false&lt;/code&gt; 使得该属性从对象属性枚举操作中被隐藏，但 &lt;code&gt;Object.hasOwnProperty(...)&lt;/code&gt; 仍然可以检测到属性的存在。另外，&lt;code&gt;Object.propertyIsEnumerable(..)&lt;/code&gt; 可以用来检测某个属性是否可枚举, &lt;code&gt;Object.keys(...)&lt;/code&gt; 仅仅返回可枚举的属性，而 &lt;code&gt;Object.getOwnPropertyNames(...)&lt;/code&gt; 则返回该对象上的所有属性，包括不可枚举的。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;和属性描述符相关的操作&lt;/h2&gt;
+
+&lt;p&gt;除了可以直接用 &lt;code&gt;Object.defineProperty(...)&lt;/code&gt; 来指定属性描述符之外，JavaScript &lt;a href=&quot;https://es5.github.io/&quot;&gt;ES5&lt;/a&gt; 还提供了几个操作可以用来配置属性描述符。&lt;/p&gt;
+
+&lt;h3 id=&quot;object-constant&quot;&gt;对象常量 (Object Constant)&lt;/h3&gt;
+&lt;p&gt;通过组合 &lt;code&gt;writable: false&lt;/code&gt; 和 &lt;code&gt;configurable: false&lt;/code&gt;，我们可以创建一个不能修改、重新定义或删除其属性的对象常量，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defineProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;FAVORITE_NUMBER&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;writable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里对该对象属性的删除，修改操作会被忽略，你也不能再用 &lt;code&gt;Object.defineProperty(...)&lt;/code&gt; 来重新配置该属性的特性。&lt;/p&gt;
+
+&lt;h3 id=&quot;prevent-extensions&quot;&gt;禁止扩展 (Prevent Extensions)&lt;/h3&gt;
+&lt;p&gt;如果希望阻止新的属性被加入到对象，可以通过调用 &lt;code&gt;Object.preventExtensions(...)&lt;/code&gt; 来做到这一点：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;preventExtensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// undefined&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在 &lt;code&gt;strict mode&lt;/code&gt; 下，行为稍有不同，对属性的赋值会抛出 &lt;code&gt;TypeError&lt;/code&gt;, 而不是仅仅忽略赋值操作。&lt;/p&gt;
+
+&lt;h3 id=&quot;seal&quot;&gt;封装 (Seal)&lt;/h3&gt;
+&lt;p&gt;可以通过 &lt;code&gt;Object.seal(...)&lt;/code&gt; 来封装一个对象。在调用这个操作之后，对象上不能再添加新的属性，也不能重新定义属性描述符或者删除某个属性：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;seal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;b&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// {a: 2}&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// {a: 6}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;事实上，&lt;code&gt;Object.seal(...)&lt;/code&gt; 相当于调用了 &lt;code&gt;Object.preventExtensions(..)&lt;/code&gt;，并设置现有的所有属性为 &lt;code&gt;configurable:false&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;freeze&quot;&gt;冻结 (Freeze)&lt;/h3&gt;
+&lt;p&gt;调用 &lt;code&gt;Object.freeze(...)&lt;/code&gt; 可以创建一个被冻结的对象，这个对象拥有不能再被做任何修改或者删除属性的操作，效果相当于调用了 &lt;code&gt;Object.seal(...)&lt;/code&gt; 并设置所有属性为 &lt;code&gt;writable: false&lt;/code&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;seal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;b&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// {a: 2}&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// {a: 2}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;需要注意的细节是，上述操作仅仅会设置对象的直接属性，而不会影响作为 &lt;code&gt;myObject&lt;/code&gt; 对象的属性的对象的特性，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;innerObj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// { innerObj: { a: 2 }, b: 3 }&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;freeze&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// { innerObj: { a: 2 }, b: 3 }&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;innerObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// { innerObj: { a: 6 }, b: 3 }&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里可以看到，即使调用了 &lt;code&gt;Object.freeze(...)&lt;/code&gt;, 对 &lt;code&gt;innerObj&lt;/code&gt; 属性的修改仍然成功了，对其他几个方法，比如 &lt;code&gt;Object.seal(...)&lt;/code&gt; 或者 &lt;code&gt;Object.preventExtensions(...)&lt;/code&gt; 也存在类似的情况，如果需要的话，可以对对象的属性递归调用上述方法。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;资源&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/tree/master/this%20%26%20object%20prototypes&quot;&gt;You-Dont-Know-JS - this &amp;amp; object prototypes&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects&quot;&gt;Working with objects&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript&quot;&gt;Mozilla MDN&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://es5.github.io/&quot;&gt;Annotated ECMAScript 5.1 Last updated: 2013-09-01&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Tue, 16 Jun 2015 07:33:45 +0800</pubDate>
+        <link>http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/</link>
+        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/</guid>
+        
+        
+        <category>javascript</category>
+        
+      </item>
     
       <item>
         <title>寻找 JavaScript 的 this</title>
@@ -2203,154 +2438,6 @@ This is a sample page.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
         
         
         <category>go</category>
-        
-      </item>
-    
-      <item>
-        <title>快速学习新技能</title>
-        <description>&lt;h3 id=&quot;section&quot;&gt;为什么要写这篇文章&lt;/h3&gt;
-&lt;p&gt;一个月前刚读过一本好书，叫做&lt;a href=&quot;http://www.amazon.com/Soft-Skills-software-developers-manual/dp/1617292397/ref=sr_1_1?ie=UTF8&amp;amp;qid=1427023448&amp;amp;sr=8-1&amp;amp;keywords=soft+skills&quot;&gt;《Soft skills, the software developer’s life manual》&lt;/a&gt;。这本书改变了我作为一个码农对于很多事情的看法，比如说理财，对于自身品牌的宣传(Marketing yourself)，效率，健康等等。正如书的副标题所言，这本书帮助程序员梳理了除了编码以外的很多事情，堪称程序员生活手册。本书的作者工作和生活经历很丰富，几乎覆盖了一个程序员在职业生涯大部分的发展道路。这本书也在 Amazon 上得到了几乎全五星的评价，值得所有人，包括程序员一读。这篇博客里，我想介绍的就是这本书里面所提到的10步学习法。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-1&quot;&gt;为什么要用10步学习法&lt;/h3&gt;
-&lt;p&gt;一个程序员，随着年岁的增长和工作经历的增加，一定会接触越来越多的编程技术，包括编程语言，框架，类库等等；另一方面，随着年岁的增长，需要自己分心去做的事情也越来越多，比如说父母年岁大了，身体容易不好，孩子需要花时间去陪，朋友偶尔小聚。导致的结果就是程序员必须用更少的时间去掌握更多的技术，同时还必须在较短的时间内达到较高的水平，这对我们提出的要求必然是改进自己的学习方法，10步学习法就是在这种需求下诞生了。&lt;/p&gt;
-
-&lt;p&gt;大部分人，包括我自己，在需要学习一个新技术的时候，总是先去找几本书，到 Amazon 或者豆瓣查看一下相关的书评和目录，大致评判一下书的质量；然后就通读全书，跟着作者跑一遍设计好的样例程序。这种学习方法的问题在于：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;你在学习这一门新技术之前根本不知道你将要学习什么；&lt;/li&gt;
-  &lt;li&gt;需要比较长的时间，如果需要在极短的时间内掌握一门新技术，这种方法根本不适用；&lt;/li&gt;
-  &lt;li&gt;这是一种没有目的性的学习，效率比较低，如果你知道你需要学什么，那么效率会高出不少。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;在学习一门新的技术之前，一般来说你需要知道3件事情：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;如何开始： 包括设置环境，写出基本的程序实例等；&lt;/li&gt;
-  &lt;li&gt;需要掌握的技术的全貌：在刚起步的时候，你不需要知道非常细节的知识，但是要知道的这门技术的全景图；&lt;/li&gt;
-  &lt;li&gt;基础知识：按照2/8法则，一门语言20%左右的知识可以用来完成这门语言可以完成的80%的事情，那么我们要知道这20%到底是什么。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;section-2&quot;&gt;10步学习法到底是什么&lt;/h3&gt;
-&lt;p&gt;10步学习法最关键的地方在于，如何找出要学的20%，可以用于完成80%的事情。通常你需要通读一本或者几本书才能得出这一结论，所以在最短的时间里找到它并不是个简单的任务。所以，在真正学习一门新技术之前，我们必须花时间搜索、查看大量的资源，并把这些资源组织成利于我们学习的方式。&lt;/p&gt;
-
-&lt;p&gt;10步学习法的基本思想是：首先对所学技术要&lt;em&gt;大致的了解&lt;/em&gt;，了解的程度是知道你对这门新技术有哪些不懂的地方，也就是需要学习的地方；然后，利用这些信息去定义学习的&lt;em&gt;范围&lt;/em&gt;和&lt;em&gt;目标&lt;/em&gt;。范围和目标有了以后，我们就可以去搜索所有能搜索到的资料和资源，比如：书籍，博客，podcasts，公开课，StackOverflow，等等一切可以帮助学习的东西。有了资源以后，我们就可以去制定学习计划，过滤这些资源，选出我们认为可以帮助我们学习这门技术某个&lt;em&gt;范围&lt;/em&gt;的最佳学习资源。以上都完成之后就是不断重复的学习的过程了，当然重复的是步骤，在我们设定的真对这个新技术的每个学习目标上都重复运用。&lt;/p&gt;
-
-&lt;p&gt;10步学习法步骤：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;了解要学习技术的大致全景；&lt;/li&gt;
-  &lt;li&gt;确定学习范围；&lt;/li&gt;
-  &lt;li&gt;确定成功的目标；&lt;/li&gt;
-  &lt;li&gt;搜索一些可以得到的资源；&lt;/li&gt;
-  &lt;li&gt;制定学习计划；&lt;/li&gt;
-  &lt;li&gt;过滤找到的资源；&lt;/li&gt;
-  &lt;li&gt;学习一些必要知识，这是为下一步运用技术做准备；&lt;/li&gt;
-  &lt;li&gt;运用这门新技术来做一些有用或者没用的东西，总而言之，用自己最适应的方式就好（原文是 play around）；&lt;/li&gt;
-  &lt;li&gt;学到了足够多的知识，并用这些知识做一些有用的东西；&lt;/li&gt;
-  &lt;li&gt;把所学知识传授给别人&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;section-3&quot;&gt;如何运用10步学习法高效的学习新技术&lt;/h3&gt;
-&lt;p&gt;对于10步学习法的前1-6步，我们的精力主要集中在研究这门技术对我们来说要学些什么，并且定义学好的标准，另外要完成学习资源的过滤和遴选，从而最大化学习的效率。这6步，我们只需要做一次，不像7-10步，在整个学习的过程中要针对要学习的内容不断的重复。这6步的重要性在于虽然它们只会被执行一次，但我们通过这几部定义了学习范围和目标，是后面几步的准备工作，如果准备工作没做好，那学习效果也会大打折扣。&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;全景图&lt;/p&gt;
-
-    &lt;p&gt;一开始学习一门新技术的时候，你对它一无所知，所以也没法知道你具体需要学什么。所以大部分人的做法是打开一本书并顺序阅读，让书的作者告诉自己关于这门新技术有多少是自己目前还未知的。这种方法的问题在于你很可能走错路，或者学了很多自己一辈子都用不上的知识。最佳的做法是先大致了解需要学什么，并根据已知的部分确定学习的最佳方案。&lt;/p&gt;
-
-    &lt;p&gt;以学习 &lt;a href=&quot;http://golang.org/&quot;&gt;Go 语言&lt;/a&gt;为例，顺便讲一句，我是用 Go 语言来实践10步学习法的。在这个阶段，你可以利用 Google 或者其他可用的搜索引擎，社区，博客，StackOverflow 等等来查找关于 Go 语言的一切知识。一般来说，经过一两个小时的搜索，你将会对 Go 语言大致包含的内容和要学习的内容有了一定的了解。如果你手边刚好有关于 Go 语言的书籍，可以读一下书的目录和前言，引言，或者大致介绍的章节。要注意的是这个阶段不用过于关注某个点，了解大致的轮廓就好。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;确定学习范围&lt;/p&gt;
-
-    &lt;p&gt;在这个阶段，我们会尝试去了解所学的技术到底包含多少内容，如何将这个比较大的主题分割成单个的学习任务。这个阶段要注意的问题是分割的任务不能过于模糊和庞大，以至于变成不可能的任务。以 Go 语言为例，你不能在学习 Go 语言的时候，发现自己需要了解计算机的工作原理，从而将学习计算机的工作原理划作一个学习任务，这根本就不是用以快速学习的10步学习法要解决的问题。&lt;/p&gt;
-
-    &lt;p&gt;举一个比较合理的划分方法，仍然以 Go 语言为例：学习基本的 Go 语法，从而可以编写 Hello World 就是一个合理的划分；其他的比如说了解 Go 语言项目代码的组织方式，学习 Go 语言的集合类库并可以编写较为完整的应用，等等。这个阶段需要用第1阶段的知识，并划分出多个较为集中的知识块，并根据你预备给学习这门技术的时间来确定到底要学习多少个知识块。每个分块最好更为集中，比如上面的集合类库可以细化到学习数组、Slice，Hash，等等。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;确定成功目标&lt;/p&gt;
-
-    &lt;p&gt;在学习新的知识之前，在我们的大脑里面应该有清晰的关于学习成功的场景，这样我们才能根据成功的目标，确定到达目的的步骤。以 学习Go 语言为例，在这个阶段，我们可能定义的目标可能是熟练运用集合类库、并发类库、Channel、Go Filesystem API、Go Web 编程、综合运用以上知识编写完整的应用等等，这一步的关键在于定义了&lt;em&gt;简明&lt;/em&gt;，&lt;em&gt;清晰&lt;/em&gt;，&lt;em&gt;可衡量&lt;/em&gt;的学习成功的目标，从而可以衡量学习进度。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;查找学习资源&lt;/p&gt;
-
-    &lt;p&gt;通过可用的搜索引擎、论坛、社区、 YouTube、StackOverflow、问答社区、出版社网站、Amazon 等电子商务网站，豆瓣等等所有可用的资源，来查找所有可用的博客、文档、书籍、视频、Podcasts，当然如果你像我一样，在自己的电脑上有上百GB的电子书存货会大有帮助。在这个阶段，我们要做的是尽可能多的搜索资源，并记录下来，Evernote 会很有帮助，在后续的步骤我们会根据资源的质量过滤，保留质量最高的那一部分。可以参考如下的资源的类型：&lt;/p&gt;
-
-    &lt;ul&gt;
-      &lt;li&gt;书籍&lt;/li&gt;
-      &lt;li&gt;博客&lt;/li&gt;
-      &lt;li&gt;视频&lt;/li&gt;
-      &lt;li&gt;身边或者可以接触到的朋友或专业人士&lt;/li&gt;
-      &lt;li&gt;Podcasts&lt;/li&gt;
-      &lt;li&gt;源代码&lt;/li&gt;
-      &lt;li&gt;示例项目&lt;/li&gt;
-      &lt;li&gt;在线文档&lt;/li&gt;
-      &lt;li&gt;…&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;制定学习计划&lt;/p&gt;
-
-    &lt;p&gt;到这个阶段，你已经拥有了大量的学习资源。我们可以根据这些资源来大致得出我们应该学习的知识，应该按照什么顺序学习它。这时候可以浏览已有的学习资源，并且可以把一些大的学习主题切分成小块便于在既定的时间完成。&lt;/p&gt;
-
-    &lt;p&gt;在制定学习计划的过程中，可以参考一些书的目录，看看作者们一般是如何组织内容，从而可以循序渐进的学习。事实上，你制定的学习计划，应该和很多书的目录比较相似，如果根本不同，那比必须有足够的理由证明这样组织可以有利于快速学习这门新知识。如果你看到关于这个技术，有多本书籍的作者都按照相同的方式组织书籍，那稳妥的办法就是直接采用相同的组织方式和学习计划就可以了。当然了，很多书籍会覆盖这个知识的方方面面，有很多知识可能你一辈子也用不上，那么根据你的时间和兴趣，你可以参考或者直接忽略这部分知识。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;过滤学习资源&lt;/p&gt;
-
-    &lt;p&gt;在这一阶段，你已经拥有的足够多的书籍，博客，视频，文档等等，问题是，你不可能把它们都看完，而且这些资源里面一定有大量的重复内容，所以必须对它们去粗取精。你可以大致过一遍这些资源，提取出那些和上一步制定出的学习计划最贴切的资源。这里，Amazon，豆瓣和博客的评论可以对我们有很大的帮助。一般来说我会很仔细的阅读 Amazon 上面一本或者好几本书籍的评论，并选出较好的，并且贴合我自己需求的书籍，下单购买。比较好的博文和视频资源也会有大量的评论和引用资源，也可以对我们确定资源质量很有帮助。&lt;/p&gt;
-
-    &lt;p&gt;接下来的第7到10步，我们将会针对在第5步中制定的学习计划重复运用，大致的模式就是学、做、再学、教。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;学习一些该技术的基本的知识&lt;/p&gt;
-
-    &lt;p&gt;在这一步一般来说会犯两种错误：一是学得太少，不足以用这个新技术做任何事情；二是在动手做东西之前准备工作做得太多。所以这一步的度很重要。对编程语言或者框架来说，这一步一般来说是建立开发环境，并成功跑一些 Hello World。在这个阶段，很多人很难抗拒面前的一堆资料，这个时候就一头扎进这些资源里面学起来，这种诱惑是要克服的。打个比方，你新买了一个游戏机，一般人都不会在打开游戏机玩游戏之前先一个字一个字的把说明书读完并弄明白所有原理，而是参照手册来知道怎么接线，接下来就是游戏时间了，我们在这个阶段的也正是如此，你不需要在玩游戏之前先把说明书倒背如流。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;游戏时间&lt;/p&gt;
-
-    &lt;p&gt;在这一步你可以做任何你想用这个技术来做的东西，没有任何规则，这也是这一步有趣的地方。你可能会认为这一步不重要，事实上正好相反。大部分人在学习的时候都会通读一本书或者跟着别人发布的视频教程按部就班的走，他们会尝试在这些教程里学到尽可能多的知识，然后在运用这些知识做一些东西。问题是在通读一本书或者看视频的时候，你无从知道那一部分知识是最重要的，你仅仅是踩着别人的脚印走而已。如果你先运用这门技术随便玩（探索），在探索的过程中你会有许多问题需要解答，而这些需要解决的问题就形成了一条通往最重要的知识点/面的路径。在你解答自己提出的问题的同时，你会得到很多正向激励，也会把知识点/面记得更牢，而且一般而言，这些需要解答的问题同时也是最为重要的知识。&lt;/p&gt;
-
-    &lt;p&gt;以学习 Go 语言为例，你可以运用上一步学到的知识，创建一个小项目，并测试任何你关于这个新技术的知识，比如搭建一个测试框架（比如：&lt;a href=&quot;http://onsi.github.io/ginkgo/&quot;&gt;Ginkgo&lt;/a&gt;），然后和Array, Slice, map, struct 等等一起愉快得玩耍。与此同时，记录你遇到的任何问题，这些问题你可以在下一步尝试得到答案。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;完成一些有用的项目&lt;/p&gt;
-
-    &lt;p&gt;在学习任何知识的时候，特别是自学，像儿童一样的好奇心很重要。在小时候我们对任何事物都很好奇，并且不惜一切手段来弄懂事物运行的原理。但是随着年岁的增长，这种好奇心慢慢丢失了，所以我们学习能力也大幅退步了，学习的过程对我们来说也变得枯燥起来。而在这一步，我们的目的就是重拾对学习的好奇心，具体做法就是来解答我们自己在上一步所提出的一系列问题，在这里，我们要参考我们搜集到的所有资源，并从中或者在新的资源中找到答案，这个过程也是深入新技术的好时机。在解答的过程中，你可能再次回到你发现问题的地方，并尝试更多的东西，从而发现更多的问题。&lt;/p&gt;
-
-    &lt;p&gt;在这个阶段，你仍然没有必要使用你搜集到的所有资源，仅仅需要阅读或观看和你提出的问题相关的那一部分资源就足够了。你提出的问题就是你学习方向最好的灯塔。与此同时，也别忘了你在第5步定下的学习目标，你学习的范围和目标应该尽量的贴合你之前定下的最终目标，每个你掌握的知识点或者模块应该是通往这个最终目标的。&lt;/p&gt;
-
-    &lt;p&gt;我在学习 Go 语言的过程中，在这一步的做法是用 Go 语言实现了常见的数据结构和算法，这些程序还在不断更新中，&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;Go algorithms and data structures&lt;/a&gt;。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;教会他人&lt;/p&gt;
-
-    &lt;p&gt;几乎所有人对教别人有一种本能的恐惧，会本能的怀疑自己是否有足够的能力去教别人。但是如果你想深入学习或完全理解一门学科的话，你一定要学习如何教会他人这项技能。这一步的初衷是让你走出自己的舒适区，让这种为人师的恐惧驱使你完全得理解们学科或者技术，同时你也必须把自己大脑中零散的知识点组织起来，便于他人理解。另一方面，这个过程也可以帮助自己对新学习的技术进行查漏补缺，在组织知识的过程中，你一定会发现很多你原以为理解了，但其实没有深入理解的地方。&lt;/p&gt;
-
-    &lt;p&gt;教学的方式有多种，你可以录制视频，写博客，做演讲，在论坛或邮件组中回答问题，甚至是让你的枕边人做你的学生。无论哪一种方式，你一定都会从教学的过程中学到很多知识和技能。很多人会因为过于恐惧而放弃这一步骤，我的建议是一定要走出自己的舒适区，一旦迈出去一步，你或许会发现这个过程其实没那么难，而教学和讨论带来的正向激励也会促使你学习更多的东西。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;section-4&quot;&gt;后记&lt;/h3&gt;
-&lt;p&gt;自学是需要自律的，但是它的回报也是丰厚的，作为程序员，我们的行业知识更新换代的频率非常快，也要求我们必须有强大的自学能力。上面介绍的10步学习法并不是什么灵丹妙药，它只是帮助你组织学习过程，帮助你在自学的道路上少走弯路。其中的任何一步，只要你有足够的理由，或者认为不适合你的学习习惯，那么你可以放弃或者修改这一步的做法。步骤本身并不重要，重要的是这些步骤背后的思想，最重要的事情是你也许可以直接利用这个方法，或者通过这一系列方法的启发，找到适合你自己的自学方法。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-5&quot;&gt;资源&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.manning.com/sonmez/&quot;&gt;Soft Skills: The software developer’s life manual&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://simpleprogrammer.com/&quot;&gt;Simple Programmer - the book author’s homepage&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;Go Algorithms and Data Structures - implemented by George&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 22 Mar 2015 19:01:43 +0800</pubDate>
-        <link>http://codethoughts.info/learn/2015/03/22/10-step-learning-process/</link>
-        <guid isPermaLink="true">http://codethoughts.info/learn/2015/03/22/10-step-learning-process/</guid>
-        
-        
-        <category>learn</category>
         
       </item>
     
