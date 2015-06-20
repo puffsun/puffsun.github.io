@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/</loc>
+    <lastmod>2015-06-18T07:57:52+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/</loc>
     <lastmod>2015-06-16T07:33:45+08:00</lastmod>
   </url>
@@ -104,11 +108,5 @@
   </url>
   <url>
     <loc>http://codethoughts.info/</loc>
-  </url>
-  <url>
-    <loc>http://codethoughts.info/page2/</loc>
-  </url>
-  <url>
-    <loc>http://codethoughts.info/page3/</loc>
   </url>
 </urlset>
