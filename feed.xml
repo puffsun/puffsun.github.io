@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 20 Jun 2015 18:18:34 +0800</pubDate>
-    <lastBuildDate>Sat, 20 Jun 2015 18:18:34 +0800</lastBuildDate>
+    <pubDate>Sat, 20 Jun 2015 18:40:37 +0800</pubDate>
+    <lastBuildDate>Sat, 20 Jun 2015 18:40:37 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -15,7 +15,7 @@
 
 &lt;h2 id=&quot;getters--setters&quot;&gt;如何定义 Getters 和 Setters&lt;/h2&gt;
 
-&lt;p&gt;我们可以用几种方式来定义 Getter 和 Setter，先看第一种：&lt;/p&gt;
+&lt;p&gt;我们可以用几种方式来定义 Getters 和 Setters，先看第一种：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;o&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
