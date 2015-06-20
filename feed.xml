@@ -5,12 +5,12 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 20 Jun 2015 18:17:45 +0800</pubDate>
-    <lastBuildDate>Sat, 20 Jun 2015 18:17:45 +0800</lastBuildDate>
+    <pubDate>Sat, 20 Jun 2015 18:18:34 +0800</pubDate>
+    <lastBuildDate>Sat, 20 Jun 2015 18:18:34 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>JavaScript Getters and Setters</title>
+        <title>JavaScript Getters 和 Setters</title>
         <description>&lt;p&gt;在上一篇文章 &lt;a href=&quot;http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/&quot;&gt;JavaScript 属性描述符&lt;/a&gt; 中，我提到JavaScript 在 &lt;a href=&quot;https://es5.github.io/&quot;&gt;ES5&lt;/a&gt; 中引入了对象属性的 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get&quot;&gt;Getter&lt;/a&gt; 和 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set&quot;&gt;Setter&lt;/a&gt;，这篇文章就来详细介绍它们。&lt;/p&gt;
 
 &lt;h2 id=&quot;getters--setters&quot;&gt;如何定义 Getters 和 Setters&lt;/h2&gt;
