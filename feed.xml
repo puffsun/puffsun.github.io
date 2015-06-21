@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 21 Jun 2015 16:35:46 +0800</pubDate>
-    <lastBuildDate>Sun, 21 Jun 2015 16:35:46 +0800</lastBuildDate>
+    <pubDate>Sun, 21 Jun 2015 16:37:27 +0800</pubDate>
+    <lastBuildDate>Sun, 21 Jun 2015 16:37:27 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -106,7 +106,7 @@
 &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;a&amp;quot;&lt;/span&gt;
 &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myLabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;obj a&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;这段代码模拟了传统的面向对象编程，在这里 &lt;code&gt;Foo&lt;/code&gt; 作为父类，而 &lt;code&gt;Bar&lt;/code&gt; 作为子类。在这段代码里我们需要注意如下的几点：&lt;/p&gt;
+&lt;p&gt;这段代码模拟了传统的面向对象编程，在这里 &lt;code&gt;Foo&lt;/code&gt; 作为父类，而 &lt;code&gt;Bar&lt;/code&gt; 作为子类，&lt;code&gt;Foo&lt;/code&gt; 和 &lt;code&gt;Bar&lt;/code&gt;之间通过 &lt;code&gt;Prototype&lt;/code&gt; 链来建立了继承关系。在这段代码里我们需要注意如下的几点：&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;&lt;code&gt;Bar.prototype = Object.create( Foo.prototype );&lt;/code&gt; 创建了 &lt;code&gt;Bar&lt;/code&gt; 和 &lt;code&gt;Foo&lt;/code&gt; 的父子关系，在这行代码运行之前，&lt;code&gt;Bar.prototype&lt;/code&gt; 指向 &lt;code&gt;Object.prototype&lt;/code&gt;，这之后则指向了 &lt;code&gt;Foo.prototype&lt;/code&gt;；&lt;/li&gt;

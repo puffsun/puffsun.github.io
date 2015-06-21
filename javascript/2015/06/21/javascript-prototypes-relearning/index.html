@@ -193,7 +193,7 @@
 <span class="nx">b</span><span class="p">.</span><span class="nx">myName</span><span class="p">();</span> <span class="c1">// &quot;a&quot;</span>
 <span class="nx">b</span><span class="p">.</span><span class="nx">myLabel</span><span class="p">();</span> <span class="c1">// &quot;obj a&quot;</span></code></pre></div>
 
-<p>这段代码模拟了传统的面向对象编程，在这里 <code>Foo</code> 作为父类，而 <code>Bar</code> 作为子类。在这段代码里我们需要注意如下的几点：</p>
+<p>这段代码模拟了传统的面向对象编程，在这里 <code>Foo</code> 作为父类，而 <code>Bar</code> 作为子类，<code>Foo</code> 和 <code>Bar</code>之间通过 <code>Prototype</code> 链来建立了继承关系。在这段代码里我们需要注意如下的几点：</p>
 
 <ol>
   <li><code>Bar.prototype = Object.create( Foo.prototype );</code> 创建了 <code>Bar</code> 和 <code>Foo</code> 的父子关系，在这行代码运行之前，<code>Bar.prototype</code> 指向 <code>Object.prototype</code>，这之后则指向了 <code>Foo.prototype</code>；</li>
