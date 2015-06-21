@@ -5,9 +5,260 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 21 Jun 2015 08:44:29 +0800</pubDate>
-    <lastBuildDate>Sun, 21 Jun 2015 08:44:29 +0800</lastBuildDate>
+    <pubDate>Sun, 21 Jun 2015 16:29:18 +0800</pubDate>
+    <lastBuildDate>Sun, 21 Jun 2015 16:29:18 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>重新认识 JavaScript Prototypes</title>
+        <description>&lt;h2 id=&quot;section&quot;&gt;为什么要写这篇文章&lt;/h2&gt;
+
+&lt;p&gt;前面的&lt;a href=&quot;http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/&quot;&gt;一篇文章&lt;/a&gt;，我讲过希望写JavaScript 语言的几个方面，其中一个知识点就包括 Prototype。另外，在这里我列一下我已经写过或者翻译过的 JavaScript 的文章便于检索。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/&quot;&gt;关于 Angular.js 你需要知道的知识&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/&quot;&gt;JavaScript 闭包详解&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/&quot;&gt;深入 JavaScript 模块化模式&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/&quot;&gt;寻找 JavaScript 的 this&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/&quot;&gt;JavaScript 属性描述符&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/&quot;&gt;JavaScript Getters 和 Setters&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Prototype 是 JavaScript 中很重要的一个知识点，是学习 JavaScript 要清楚理解的一个概念。比如 &lt;a href=&quot;https://en.wikipedia.org/wiki/JavaScript&quot;&gt;Wikipedia 的 JavaScript 条目&lt;/a&gt; 是这样来解释 JavaScript 语言的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;JavaScript is classified as a &lt;a href=&quot;https://en.wikipedia.org/wiki/Prototype-based_programming&quot;&gt;prototype-based&lt;/a&gt; &lt;a href=&quot;https://en.wikipedia.org/wiki/Scripting_language&quot;&gt;scripting language&lt;/a&gt; with &lt;a href=&quot;https://en.wikipedia.org/wiki/Dynamic_language&quot;&gt;dynamic typing&lt;/a&gt; and &lt;a href=&quot;https://en.wikipedia.org/wiki/First-class_functions&quot;&gt;first-class functions&lt;/a&gt;. This mix of features makes it a &lt;a href=&quot;https://en.wikipedia.org/wiki/Multi-paradigm&quot;&gt;multi-paradigm language&lt;/a&gt;, supporting &lt;a href=&quot;https://en.wikipedia.org/wiki/Object-oriented_programming&quot;&gt;object-oriented&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Imperative_programming&quot;&gt;imperative&lt;/a&gt;, and &lt;a href=&quot;https://en.wikipedia.org/wiki/Functional_programming&quot;&gt;functional&lt;/a&gt; programming styles.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;翻译一下：JavaScript 是基于 Prototype 的脚本语言，它是动态类型的，并且在 JavaScript 里函数是一等公民。这些混合的特性使得 JavaScript 成为了支持面向对象、命令式和函数式的多范型语言。&lt;/p&gt;
+
+&lt;p&gt;短短两句话，包含了很多内容。我们这里对多范型、动态类型等暂且按下不表，以后的文章可能会陆续涉及，因为它们都是比较大的主题。在这篇文章里我先跟大家大致的聊聊 Prototype，以及为什么 JavaScript 被称为是基于 &lt;code&gt;Prorotype&lt;/code&gt; 的语言，另外看看目前对于 Prototype 的使用一个比较大误区，也就是很多人和很多现存的类库利用 Prototype 来为 JavaScript 语言构建面向对象的继承和多态特性，当然了，这也可能是本文比较有争议的地方。&lt;/p&gt;
+
+&lt;h2 id=&quot;prototype-&quot;&gt;Prototype 是什么&lt;/h2&gt;
+&lt;p&gt;所有的 JavaScript 对象都有一个隐含的属性来指向另外一个对象，我们称这个隐含的属性为 &lt;code&gt;Prototype&lt;/code&gt;。当然了这个属性有可能是 &lt;code&gt;null&lt;/code&gt;，比如用这种方式创建的对象：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;但无论如何，除了特别指定的情况之外，JavaScript 的对象都有一个非空的 &lt;code&gt;Prototype&lt;/code&gt; 来指向另外一个对象。关于 &lt;code&gt;Object.create(...)&lt;/code&gt;，可以参考 &lt;a href=&quot;https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/create&quot;&gt;Mozilla MDN&lt;/a&gt; 的解释，你也可以简单理解为它创建了一个新的 JavaScript 对象，并为新创建的对象和原对象之间建立了 &lt;code&gt;Prototype&lt;/code&gt; 连接。接下来让我们看看常规的，也就是 Prototype 非空的情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;anotherObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// create an object linked to `anotherObject`&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;anotherObject&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;found: &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// found: a&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hasOwnProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// false&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这段代码有几点需要注意的地方：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;在 &lt;a href=&quot;http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/&quot;&gt;JavaScript Getters 和 Setters&lt;/a&gt; 这篇文章中，我提到 JavaScript 的[[Get]]和[[Put]]操作。&lt;code&gt;myObject.a;&lt;/code&gt; 就触发了[[Get]]操作，它首先在对象 &lt;code&gt;myObject&lt;/code&gt; 上搜索，如果没有发现需要的属性，就会沿着 &lt;code&gt;Prototype&lt;/code&gt; 链继续向上搜索，并在 &lt;code&gt;anotherObject&lt;/code&gt; 上发现了需要的属性；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;for...in&lt;/code&gt; 和 &lt;code&gt;in&lt;/code&gt; 都会检查对象的 &lt;code&gt;Prototype&lt;/code&gt; 链，而 &lt;code&gt;Object.hasOwnProperty(...)&lt;/code&gt; 不会；&lt;/li&gt;
+  &lt;li&gt;对 &lt;code&gt;Prototype&lt;/code&gt; 链的搜索到 &lt;code&gt;Object.prototype&lt;/code&gt; 终止，在这个对象上定义了很多工具方法，比如 &lt;code&gt;toString()&lt;/code&gt;, &lt;code&gt;valueOf()&lt;/code&gt;, 上面提到的 &lt;code&gt;hasOwnProperty()&lt;/code&gt; 等等。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;javascript--prototype-&quot;&gt;为什么说 JavaScript 是基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言&lt;/h2&gt;
+
+&lt;p&gt;根据 &lt;a href=&quot;https://en.wikipedia.org/wiki/Prototype-based_programming&quot;&gt;Wikipedia 的解释&lt;/a&gt;，基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言是面向对象编程得一种风格。和传统的面向对象语言不同，基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言借助于 &lt;code&gt;Prototype&lt;/code&gt; 来进行代码复用。这里我们暂时抛开抽象的概念，先通过一段代码来描述 JavaScript 如何进行面向对象编程：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fooA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fooB&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;fooA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;a&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;fooB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;b&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// here, we make a new `Bar.prototype`&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// linked to `Foo.prototype`&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Beware! Now `Bar.prototype.constructor` is gone,&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// and might need to be manually &amp;quot;fixed&amp;quot; if you&amp;#39;re&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// in the habit of relying on such properties!&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myLabel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;obj a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;a&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myLabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;obj a&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这段代码模拟了传统的面向对象编程，在这里 &lt;code&gt;Foo&lt;/code&gt; 作为父类，而 &lt;code&gt;Bar&lt;/code&gt; 作为子类。在这段代码里我们需要注意如下的几点：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;Bar.prototype = Object.create( Foo.prototype );&lt;/code&gt; 创建了 &lt;code&gt;Bar&lt;/code&gt; 和 &lt;code&gt;Foo&lt;/code&gt; 的父子关系，在这行代码运行之前，&lt;code&gt;Bar.prototype&lt;/code&gt; 指向 &lt;code&gt;Object.prototype&lt;/code&gt;，这之后则指向了 &lt;code&gt;Foo.prototype&lt;/code&gt;；&lt;/li&gt;
+  &lt;li&gt;JavaScript ES6 引入了设置对象 &lt;code&gt;Prototype&lt;/code&gt; 链的标准做法，它通过修改现有的 &lt;code&gt;Prototype&lt;/code&gt; 来实现，而不是通过像 &lt;code&gt;Object.prototype&lt;/code&gt;一样通过新创建一个对象来替换原有的对象来实现，同时它也保证了 &lt;code&gt;constructor&lt;/code&gt; 的一致性，虽然在实际中 &lt;code&gt;constructor&lt;/code&gt; 基本上没有什么用处；&lt;/li&gt;
+  &lt;li&gt;在每个 &lt;code&gt;Prototype&lt;/code&gt; 链上都有一个 &lt;code&gt;constructor&lt;/code&gt; 属性。这里我们不想花很多篇幅来讲述 &lt;code&gt;constructor&lt;/code&gt;，如果你有兴趣可以参考一下 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/constructor&quot;&gt;Mozilla MDN 的一篇文档&lt;/a&gt;，以后我也可能会用一片博客来讲述。这里我想说的是，&lt;code&gt;Bar.prototype = Object.create( Foo.prototype );&lt;/code&gt; 会改变 &lt;code&gt;Bar.prototype&lt;/code&gt; 的 &lt;code&gt;constructor&lt;/code&gt;，如果你想保持一致性，可以用 &lt;code&gt;Bar.prototype.constructor = Bar&lt;/code&gt; 来修正它；&lt;/li&gt;
+  &lt;li&gt;传统的面向对象语言，继承隐含的意义是拷贝，而 JavaScript 的继承隐含的意义是引用关系。比如 &lt;code&gt;var fooA = new Foo( &quot;a&quot; );&lt;/code&gt;，如果在传统的面向对象则意味着类 &lt;code&gt;Foo&lt;/code&gt; 中定义的方法和属性会被拷贝到对象 &lt;code&gt;fooA&lt;/code&gt; 上，而在 JavaScript 中仅仅是把 &lt;code&gt;fooA&lt;/code&gt; 的 &lt;code&gt;Prototype&lt;/code&gt; 链指向了 &lt;code&gt;Foo&lt;/code&gt;，没有任何拷贝发生，也就是说有部分函数(不是方法)是这个继承链上所有的实例共享的，一旦被修改了，会影响到所有的现有实例；&lt;/li&gt;
+  &lt;li&gt;在上面的 &lt;code&gt;Foo&lt;/code&gt; 函数和 &lt;code&gt;Bar&lt;/code&gt; 函数里出现了 &lt;code&gt;this&lt;/code&gt;，如果你不理解，可以参考我之前的一篇文章：&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/&quot;&gt;寻找 JavaScript 的 this&lt;/a&gt;；&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;javascript-&quot;&gt;JavaScript 不是“传统”的面向对象语言&lt;/h2&gt;
+
+&lt;p&gt;这一节我们我们来讨论一下用 JavaScript 来模拟传统面向对象编程的弊端在哪里。&lt;/p&gt;
+
+&lt;p&gt;首先，JavaScript 没有真正意义上“类”的概念，即使看起来像，比如上面的代码片段里的 &lt;code&gt;function Foo(...)&lt;/code&gt;，它仅仅是看起来像类，而事实上只不过是 JavaScript 中的一个对象而已，和传统的面向对象语言中的类完成的功能大相径庭。在传统的面向对象语言中，类定义了实例的模板和继承关系，在创建实例的时候把属性深度克隆到对象实例上；而 JavaScript 中的“类”仅仅是作为 &lt;code&gt;Prototype&lt;/code&gt; 链的一环，并被该链上的“下游类”共享，它仅仅是一个对象，并不是真真意义上的类。比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getPrototypeOf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里，&lt;code&gt;new Foo()&lt;/code&gt; 会创建一个新的对象叫做 &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;a&lt;/code&gt; 被链接到 &lt;code&gt;Foo.prototype&lt;/code&gt; 上。这段代码里，没有实例化任何类，也没有任何拷贝行为发生，仅仅是两个对象通过 &lt;code&gt;Prototype&lt;/code&gt; 链被连接到了一起。事实上，我们通过 &lt;code&gt;Object.create(...)&lt;/code&gt; 可以得到更直观的结果，关于 &lt;code&gt;Object.create()&lt;/code&gt;，请参见 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create&quot;&gt;Mozilla MDN 文档&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;在 JavaScript 程序中很多误解的根源在于 &lt;code&gt;基于 Prototype 的继承&lt;/code&gt; 这一术语。由于面向对象编程在现代程序设计中的巨大影响力，很多人一见到这一术语，就自然而然的把 &lt;code&gt;类&lt;/code&gt;、&lt;code&gt;构造函数&lt;/code&gt;、&lt;code&gt;实例&lt;/code&gt;、&lt;code&gt;多态&lt;/code&gt;等术语一个萝卜一个坑的往 JavaScript 代码里靠，这通常会得到令人沮丧的结果，也是很多人对于 JavaScript 这门语言怨声载道的根源。正如我们上面提到的，继承隐含的意义是拷贝，而 JavaScript 的 &lt;code&gt;基于原型的继承&lt;/code&gt; 没有任何拷贝发生，它实际上上对象通过 &lt;code&gt;Prototype&lt;/code&gt; 来作为另外一个对象的代理(Delegation)，这也是我们下一节要讲述的内容。&lt;/p&gt;
+
+&lt;p&gt;说到这里，可能有人会问，那我通过自己实现拷贝，不就可以解决这一问题了吗？比如很多 JavaScript 类库会提供的 &lt;code&gt;mixin&lt;/code&gt; 方法，会手工的把父类的属性和方法拷贝到子类上：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// vastly simplified `mixin(..)` example:&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sourceObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sourceObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// only copy if not already present&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sourceObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Vehicle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;engines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;ignition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Turning on my engine.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;drive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ignition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Steering and moving forward!&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Car&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Vehicle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;wheels&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;drive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;Vehicle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;drive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Rolling on all &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;wheels&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; wheels!&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码解决了部分问题，但是仍然存在和传统的面向对象集成较大的差异：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;JavaScript 的函数没有真真意义上的拷贝，虽然在“子类”和“父类”上都存在一个叫做 &lt;code&gt;drive&lt;/code&gt; 的方法，它不是真正的深度克隆，仅仅是两个变量同时引用到了同一个函数，也就是说一旦通过一个实例修改了该函数，其他现有的实例都收影响；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Vehicle.drive.call( this );&lt;/code&gt; 这行代码是非常丑陋的多态；&lt;/li&gt;
+  &lt;li&gt;通过 &lt;code&gt;Prototype&lt;/code&gt; 实现的多态会导致&lt;code&gt;变量隐藏 (Variable Shadowing)&lt;/code&gt;，它会导致很多难以发现的问题，需要尽量避免。关于变量隐藏，可以参考我的上一篇博客的最后一节：&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/&quot;&gt;JavaScript Getters 和 Setters&lt;/a&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;应该使用代理，而不是继承&lt;/h2&gt;
+
+&lt;p&gt;很多人，在学习和使用 JavaScript 语言的时候，都会觉得它非常棘手。比如，在传统的面向对象语言中，几行代码就可以实现的继承、封装和多态，为什么到了 JavaScript 代码里需要这么多复杂的机制，为什么会有这么多“坑”？于是很多人在接触 JavaScript 语言后，迅速转向了某个 JavaScript 框架，期望利用框架这个黑盒子能够解决用 JavaScript 来进行自己所熟悉的面向对象编程的问题。但事实上，框架面临一样的问题，它只不过是把问题掩盖了，日后还会在某个地方浮现出来。&lt;/p&gt;
+
+&lt;p&gt;事实上，导致这些混淆的根源是 JavaScript 不应该被当做一门传统的面向对象编程语言。在 JavaScript 中，对象之间通过 &lt;code&gt;Prototype&lt;/code&gt; 链来代理，其实在脑海中想象的 JavaScript 运行时内存应该是数不清的对象通过多个 &lt;code&gt;Prototype&lt;/code&gt; 链被相互链接在一起。&lt;/p&gt;
+
+&lt;p&gt;下面我们通过两段代码来展示 JavaScript 中模拟传统的面向对象和对象代理之间的区别，这样你可以更好的体会对象代理的优势所在。&lt;/p&gt;
+
+&lt;p&gt;首先来看一段模拟传统面向对象的代码，我们成为 OO(Object Oriented)：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I am &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello, &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b1&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b2&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这段代码应该不需要多余的解释了，下面是通过对象之间的代理实现同样的功能，我们称之为OLOO (Object Linked to Other Objects)：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I am &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello, &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b1&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b2&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我们这里没有 &lt;code&gt;New&lt;/code&gt;，没有类似 &lt;code&gt;类&lt;/code&gt; 的结构，也没有类似 &lt;code&gt;继承&lt;/code&gt; 的结构，仅仅是三个对象通过 &lt;code&gt;Prototype&lt;/code&gt; 链通过&lt;em&gt;代理 (Delegation)&lt;/em&gt;来实现类似的功能。相比上面一段代码在概念上要易于理解得多，并且，需要维护的代码也变少了，虽然在这里体现不明显。关于 &lt;code&gt;OLOO&lt;/code&gt; 设计模式我可能会在以后的博客中详述，这里限于篇幅就不多谈了。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;面向对象仅仅是一种设计模式，虽然目前它仍然是主流，但是并不是编程语言与生俱来的东西；更重要的是，面向对象设计(OOP)和 JavaScript 语言存在很大的阻抗，并不是一种适合应用在 JavaScript 程序设计中的模式，在 JavaScript 程序中，运用OLOO (Object Linked to Other Objects) 模式可以设计出更简单，也更易于维护的代码，并且应该成为主流，关于 OLOO，可以参考 &lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch6.md&quot;&gt;You Don’t Know JS 系列的这一章&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;资源&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes&quot;&gt;You Don’t Know JS: this &amp;amp; Object Prototypes&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create&quot;&gt;Mozilla MDN - Object.create()&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Prototype-based_programming&quot;&gt;Wikipedia - Prototype-based programming&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/JavaScript&quot;&gt;Wikipedia - JavaScript&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 21 Jun 2015 09:13:17 +0800</pubDate>
+        <link>http://codethoughts.info/javascript/2015/06/21/javascript-prototypes-relearning/</link>
+        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/06/21/javascript-prototypes-relearning/</guid>
+        
+        
+        <category>javascript</category>
+        
+      </item>
     
       <item>
         <title>JavaScript Getters 和 Setters</title>
@@ -1833,239 +2084,6 @@ ok      github.com/golang/example/stringutil    0.008s&lt;/code&gt;&lt;/pre&gt;&
         <pubDate>Sun, 05 Apr 2015 15:15:51 +0800</pubDate>
         <link>http://codethoughts.info/go/2015/04/05/how-to-test-go-code/</link>
         <guid isPermaLink="true">http://codethoughts.info/go/2015/04/05/how-to-test-go-code/</guid>
-        
-        
-        <category>go</category>
-        
-      </item>
-    
-      <item>
-        <title>用 Docker 部署 Go Web 应用</title>
-        <description>&lt;h3 id=&quot;section&quot;&gt;几句废话&lt;/h3&gt;
-&lt;p&gt;按照惯例，先废话几句，再切入正题。学习 Go 语言快一个月了，期间用 Go 语言实现了&lt;a href=&quot;https://github.com/puffsun/go_algorithms_data_structures&quot;&gt;常见的数据结构和算法(持续更新中)&lt;/a&gt;，也用 Go 和 AngularJS 创建了一个&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;迷你 Todo List 项目&lt;/a&gt;，回头我会大致介绍一下这个 Todo List 项目的大致结构，现在先聊聊我到目前为止对 Go 语言的观感。因为水平问题，我不可能聊得深入，只是我的个人感受。Go 语言在我看来有如下的优势：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Go 编译器把代码和依赖直接编译成机器码，所以部署极其简单，一个二进制文件就可以任意部署。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;语言层面的并发支持，可以充分支持多核。多核已经成为我们这个时代的常态，Go 代码不需要额外的努力就可以做到充分利用多核。Go 语言的并发范式是&lt;a href=&quot;http://en.wikipedia.org/wiki/Communicating_sequential_processes&quot;&gt;CSP(Communicating Sequential Processes)&lt;/a&gt;，它的好处之一在于并发程序之间的解耦，从而也有利于并发代码的维护和扩展，在软件领域，解耦永远是一个褒义词。拿 Java 和 Ruby 来比较：&lt;/p&gt;
-
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;p&gt;Java 的内置并发支持来自于 &lt;code&gt;Thread&lt;/code&gt; 和 &lt;code&gt;Lock&lt;/code&gt;，我们这里没有足够篇幅讨论 Java 内置库 &lt;code&gt;java.util.concurrent&lt;/code&gt; 或者 第三方库 &lt;a href=&quot;http://akka.io/&quot;&gt;AKKA&lt;/a&gt;。Thread 是比较底层的解决方案，类似于给了你锤子和钉子，你可以用它来做足够多的事情，但是经常，你也会不小心把锤子砸到自己手掌上。&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;Ruby 的并发由于&lt;a href=&quot;http://en.wikipedia.org/wiki/Ruby_MRI&quot;&gt;MRI&lt;/a&gt; 虚拟机中&lt;a href=&quot;http://en.wikipedia.org/wiki/Global_Interpreter_Lock&quot;&gt;GIL&lt;/a&gt;的存在，变成了伪并发。而如果你把 MRI 上运行的程序直接放到 &lt;a href=&quot;http://jruby.org/&quot;&gt;JRuby&lt;/a&gt; 或者 &lt;a href=&quot;http://rubini.us/&quot;&gt;Rubinius&lt;/a&gt; 这些支持真正并发的虚拟机上，多半会有严重的并发问题。&lt;/p&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Go 的工具链非常强大，比如 &lt;code&gt;gofmt&lt;/code&gt;, &lt;code&gt;godef&lt;/code&gt;, &lt;code&gt;goimports&lt;/code&gt;, &lt;code&gt;golint&lt;/code&gt;, &lt;code&gt;godoc&lt;/code&gt;, 等等，Go 核心开发者还特意为 Vim, Emacs 和常见 IDE 用户配备了 &lt;a href=&quot;https://github.com/nsf/gocode&quot;&gt;Gocode&lt;/a&gt;，在 Gocode 里面，日常编程所需的工具，应有尽有。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;语法简单，代码简洁。这一条因人而异，对我来说，相对于我以前初学 &lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala&lt;/a&gt; 的时候，被 Scala 的类型推导搞得七荤八素。而在 Go 语言的学习过程中从没遇到难以理解的概念，一切都顺其自然。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;函数是 Go 语言的一等公民，这意味着函数可以接收函数作为参数，可以返回函数，带来了无穷的想象力。这一点 Java 和 Ruby 都做不到。Java 刚刚在 Java8 里面支持了闭包；而 Ruby 只能够用代码块来模拟这一功能，而且 Ruby 代码块的限制是最多只能有一个代码块作为参数，即使有这样的限制，Ruby 代码块已经成为 Ruby 的标志性构件之一，那么你想想 Go 里面作为一等公民的函数带来的威力吧。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;基于以上的理由，Go 语言已经在我的最喜爱编程语言排行榜上位居第三，前两个分别是 &lt;code&gt;Java&lt;/code&gt; 和 &lt;code&gt;JavaScript&lt;/code&gt;, 不服莫辩，个人喜好。&lt;/p&gt;
-
-&lt;h3 id=&quot;dockerhttpswwwdockercom--go-&quot;&gt;为什么用 &lt;a href=&quot;https://www.docker.com/&quot;&gt;Docker&lt;/a&gt; 来部署 Go 项目&lt;/h3&gt;
-&lt;p&gt;Go 目前多应用于 Web 项目中，而 Web 项目一直以来的其中一个让人头疼的地方就是部署，也就是在开发和到产品上线这个跨度里，有很多的不确定因素，比如宿主语言版本、依赖库版本、操作系统版本及补丁、配置文件差异、以及服务器数量等等。而 Docker 从诞生的第一天起就在尝试解决这些问题，而且给出了很好的解决方案。如果你对 Docker 完全不懂，可以参考这篇扫盲文章：&lt;a href=&quot;http://readwrite.com/2014/12/23/docker-to-dominate-in-2015&quot;&gt;Why Docker Is Going To Dominate Your 2015&lt;/a&gt;. 另外顺便提一下，如果你身处 Web 开发领域而你在2014年没有听说或者摆弄一下 Docker，那么你一定要反思一下到底发生了什么！&lt;/p&gt;
-
-&lt;h3 id=&quot;section-1&quot;&gt;阅读本文的前置条件&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Docker - 你得知道什么是 Docker client/daemon, Docker Image, Docker Container, Docker file, 会运行基本的 Docker 命令。&lt;/li&gt;
-  &lt;li&gt;Go 语言 - 能读懂 Go 代码，知道如何获取 Go 语言依赖的第三方库，有 Web 开发的基本知识。&lt;/li&gt;
-  &lt;li&gt;最好懂点 &lt;a href=&quot;https://angularjs.org/&quot;&gt;AngularJS&lt;/a&gt;，因为我们要部署的项目前端用 AngularJS 实现。&lt;/li&gt;
-  &lt;li&gt;知道如何用 Go 语言开发 Web 项目。不过不知道也没关系，你只需要把现有的项目用&lt;code&gt;git clone&lt;/code&gt; 拷贝到本地，运行 Docker 命令就可以了。至于这个 Todo List 项目，以后有时间我会写一到两篇博客分别介绍如何用 Go 语言第三方库开发 Web 项目，如何用 AngularJS 开发单页面 Web 应用（Single Page Web Application）。&lt;/li&gt;
-  &lt;li&gt;熟悉命令行，另外有一台 Linux 或者 Mac 的机器，这里的所有操作都在命令行完成。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;section-2&quot;&gt;我们开始吧&lt;/h3&gt;
-&lt;p&gt;首先从 Github 获取我们要部署的代码，这里我们要部署的代码是我用 Go 语言和 JavaScript MVC 框架 AngularJS 开发的一个 &lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;Todo List&lt;/a&gt; 项目。有人会问，我们为什么不部署一个 Hello World呢？我的理由是 Hello World 和实际项目相差太远，它既不需要第三方依赖库管理，也不需要前端和后端分离。我们这里部署的就是一个比较接近于实际产品的 Go Web 应用，如果你跟着做可以遇到更多挑战。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;mkdir ~/workspace &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;
-git clone https://github.com/puffsun/todos.git
-&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;todos&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;看一下项目目录结构：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls
-Dockerfile     README.md      main.go        run.sh
-Godeps/        app/           public/        tmp/
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;tree app
-app
-├── add_new_todo_test.go
-├── app_suite_test.go
-├── handlers.go
-├── logger.go
-├── repo.go
-├── router.go
-├── routes.go
-├── todo.go
-└── todos.sqlite3
-
-&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; directories, &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt; files
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls public
-css/          favicon.ico   index.html    js/           node_modules/ package.json  readme.md     &lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt;/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这里有几处需要留意的：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Dockerfile，这就是我们接下来的主角，关于 Dockerfile 的详细知识，参见&lt;a href=&quot;https://docs.docker.com/reference/builder/&quot;&gt;Dockerfile Official Reference&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;app 目录，这里就是我们的后台 Go 代码&lt;/li&gt;
-  &lt;li&gt;public目录， 这里就是我们的前端代码，AngularJS 框架实现的 Single Page Web App. 我们这里采用 &lt;code&gt;npm&lt;/code&gt; 来获取 AngularJS 和这里要用到的 AngularJS 插件 &lt;code&gt;angular-mock&lt;/code&gt;, &lt;code&gt;angular-route&lt;/code&gt;，但是为了方便运行这个项目，我把AngularJS 和插件的源码直接放进版本管理系统，省去了安装 NodeJS 的麻烦(其实也不麻烦)。&lt;/li&gt;
-  &lt;li&gt;Godeps 目录，这是 Go 的第三方依赖管理工具 &lt;code&gt;godeps&lt;/code&gt; 创建的，这个工具类似 Ruby bundler，详见&lt;a href=&quot;https://github.com/tools/godep&quot;&gt;这里&lt;/a&gt;。另外它也省去了我们要在 Dockerfile 里详细指定每个 Go 第三方依赖的麻烦，我们只需要在 Dockerfile 中运行 &lt;code&gt;godep restore&lt;/code&gt; 就可以自动安装所有依赖，当然，前提是你要安装了 godep: &lt;code&gt;go get github.com/tools/godep&lt;/code&gt;。&lt;/li&gt;
-  &lt;li&gt;run.sh，启动脚本，内容如下：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -z &lt;span class=&quot;s2&quot;&gt;&amp;quot;$GOPATH&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Need to set GOPATH&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -x &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;GOPATH&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin/fresh &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;GOPATH&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin/fresh
-&lt;span class=&quot;lineno&quot;&gt;7&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;8&lt;/span&gt;     go run ./main.go
-&lt;span class=&quot;lineno&quot;&gt;9&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;fresh 是 Go 第三方命令行工具，用于监视指定目录下文件，并根据文件变化自动重启正在开发的 Go 应用，省去每次改文件都要手工重启的麻烦，它可以通过 &lt;code&gt;go get github.com/pilu/fresh&lt;/code&gt; 来安装。&lt;/p&gt;
-
-&lt;h3 id=&quot;dockerfile&quot;&gt;Dockerfile&lt;/h3&gt;
-&lt;p&gt;在这个项目中我已经创建好 Dockerfile：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Start from a Debian image with the latest version of Go installed&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# and a workspace (GOPATH) configured at /go.&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; FROM golang:latest
-&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; MAINTAINER George Sun &amp;lt;http://codethoughts.info&amp;gt;
-&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# For convenience, set an env variable with the path of the code&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt; ENV APP_DIR  &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
-&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Copy the local package files to the container&amp;#39;s workspace.&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; ADD . &lt;span class=&quot;nv&quot;&gt;$APP_DIR&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt; WORKDIR &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
-&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Install dependencies&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt; RUN go get github.com/tools/godep
-&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; RUN go get github.com/pilu/fresh
-&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt; RUN &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/godep restore
-&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Build the project inside the container.&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# (You may fetch or manage dependencies here,&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# either manually or with a tool like &amp;quot;godep&amp;quot;.)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt; RUN go install github.com/puffsun/todos
-&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Run the web application by default when the container starts.&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt; ENTRYPOINT &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/todos
-&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt; 
-&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Document that the service listens on port 8000.&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt; EXPOSE 8000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;关于如何创建并且优化 Dockerfile，可以参考 &lt;a href=&quot;http://blog.tutum.co/2014/10/22/how-to-optimize-your-dockerfile/&quot;&gt;How to Optimise Your Dockerfile&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;docker-image&quot;&gt;创建 Docker Image&lt;/h3&gt;
-&lt;p&gt;运行 &lt;code&gt;docker build&lt;/code&gt;命令：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;docker build -t todos .&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;接下来你可以看到这么一堆不知所云的输出：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker build -t todos .
-Sending build context to Docker daemon 18.62 MB
-Sending build context to Docker daemon
-Step &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; : FROM golang:latest
- ---&amp;gt; 121a93c90463
-Step &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; : MAINTAINER George Sun &amp;lt;http://codethoughts.info&amp;gt;
- ---&amp;gt; Running in 4e30237b7525
- ---&amp;gt; 0a7f367d6b6e
-Removing intermediate container 4e30237b7525
-Step &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; : ENV APP_DIR &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
- ---&amp;gt; Running in 42520a221616
- ---&amp;gt; eef290758d42
-Removing intermediate container 42520a221616
-Step &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt; : ADD . &lt;span class=&quot;nv&quot;&gt;$APP_DIR&lt;/span&gt;
- ---&amp;gt; bfed922de2bd
-Removing intermediate container 03e6230e53d1
-Step &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; : WORKDIR &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/src/github.com/puffsun/todos
- ---&amp;gt; Running in 089533c75557
- ---&amp;gt; f546cb0fab81
-Removing intermediate container 089533c75557
-Step &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt; : RUN go get github.com/tools/godep
- ---&amp;gt; Running in 1b40d8c6dbe1
- ---&amp;gt; a1862a87f057
-Removing intermediate container 1b40d8c6dbe1
-Step &lt;span class=&quot;m&quot;&gt;6&lt;/span&gt; : RUN go get github.com/pilu/fresh
- ---&amp;gt; Running in a9a5737c303e
- ---&amp;gt; 20d05bd603f4
-Removing intermediate container a9a5737c303e
-Step &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt; : RUN &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/godep restore
- ---&amp;gt; Running in 561760e02e0b
- ---&amp;gt; d501ad34d6fe
-Removing intermediate container 561760e02e0b
-Step &lt;span class=&quot;m&quot;&gt;8&lt;/span&gt; : RUN go install github.com/puffsun/todos
- ---&amp;gt; Running in 0a6b748c582c
- ---&amp;gt; 2319a916598e
-Removing intermediate container 0a6b748c582c
-Step &lt;span class=&quot;m&quot;&gt;9&lt;/span&gt; : ENTRYPOINT &lt;span class=&quot;nv&quot;&gt;$GOPATH&lt;/span&gt;/bin/todos
- ---&amp;gt; Running in 06164fcdd94a
- ---&amp;gt; fb7b8e0bce57
-Removing intermediate container 06164fcdd94a
-Step &lt;span class=&quot;m&quot;&gt;10&lt;/span&gt; : EXPOSE 8000
- ---&amp;gt; Running in b18d74e3a627
- ---&amp;gt; ff944097e3f6
-Removing intermediate container b18d74e3a627
-Successfully built ff944097e3f6&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;大概的意思就是 docker 运行了 Dockerfile 里的命令，并且它会不断创建临时的 Image，并基于临时 Image 创建下一步需要的 Image，完成之后 docker 会删除上一步创建的 Image。最终，我们得到了一个名为 todos 的 Image：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-todos               latest              ff944097e3f6        &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt; minutes ago       &lt;span class=&quot;m&quot;&gt;587&lt;/span&gt; MB
-golang              latest              121a93c90463        &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; days ago          514.9 MB&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;如果期间有什么错误，请自行 Google，或者联系我。&lt;/p&gt;
-
-&lt;h3 id=&quot;docker-container&quot;&gt;运行 Docker container&lt;/h3&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker run -p 8000:8000 -ti todos /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code&gt;-p 8000：8000&lt;/code&gt; 表示把 Docker container 的8000端口映射到宿主机的8000端口。
-&lt;code&gt;-ti&lt;/code&gt; 表示交互式运行，并且直接把 Docker container 标准输出重定向到宿主机的标准输出。&lt;/p&gt;
-
-&lt;p&gt;如果一切顺利，你应该看到如下输出：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;docker run -p 8000:8000 -ti todos /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这时候启动浏览器，并访问 &lt;code&gt;http://localhost:8000&lt;/code&gt;，你就应该看到一个美轮美奂的 Todo List 应用，并且它是可以工作的。如果想停止这个 Docker container，只需要Ctrl + C 即可，因为我们是用交互方式运行Docker container 的，否则要用 &lt;code&gt;docker stop&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h3 id=&quot;docker-hub&quot;&gt;Docker Hub&lt;/h3&gt;
-&lt;p&gt;为了方便更多人尝试 Docker 和 Go 语言，我把刚才构建的 Docker Image 放到了 Docker 官方提供的平台 - &lt;a href=&quot;https://registry.hub.docker.com/&quot;&gt;Docker Hub&lt;/a&gt;。如果你不想经过上面的步骤，可以通过 &lt;code&gt;docker pull puffsun/todos&lt;/code&gt; 来直接获取已经构建好的 Docker Image, happy hacking。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-3&quot;&gt;资源&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/puffsun/todos&quot;&gt;todos 项目源代码&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://todomvc.com/&quot;&gt;TodoMVC&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/reference/builder/&quot;&gt;Dockerfile Reference&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://blog.tutum.co/2015/01/27/getting-started-with-golang-on-docker/&quot;&gt;Getting Started with Golang on Docker&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.zhihu.com/question/21409296&quot;&gt;为什么要使用 Go 语言，Go 语言的优势在哪里？&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sat, 04 Apr 2015 07:20:57 +0800</pubDate>
-        <link>http://codethoughts.info/go/2015/04/04/deploy-go-web-app-with-docker/</link>
-        <guid isPermaLink="true">http://codethoughts.info/go/2015/04/04/deploy-go-web-app-with-docker/</guid>
         
         
         <category>go</category>

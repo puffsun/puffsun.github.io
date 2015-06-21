@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>重新认识 JavaScript Prototypes - George's Code Thoughts</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/06/21/javascript-prototypes-relearning/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Code Thoughts</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>重新认识 JavaScript Prototypes</h1>
+                    
+                    <span class="meta">Posted by George Sun on June 21, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h2 id="section">为什么要写这篇文章</h2>
+
+<p>前面的<a href="http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/">一篇文章</a>，我讲过希望写JavaScript 语言的几个方面，其中一个知识点就包括 Prototype。另外，在这里我列一下我已经写过或者翻译过的 JavaScript 的文章便于检索。</p>
+
+<ul>
+  <li><a href="http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/">关于 Angular.js 你需要知道的知识</a></li>
+  <li><a href="http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/">JavaScript 闭包详解</a></li>
+  <li><a href="http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/">深入 JavaScript 模块化模式</a></li>
+  <li><a href="http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/">寻找 JavaScript 的 this</a></li>
+  <li><a href="http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/">JavaScript 属性描述符</a></li>
+  <li><a href="http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/">JavaScript Getters 和 Setters</a></li>
+</ul>
+
+<p>Prototype 是 JavaScript 中很重要的一个知识点，是学习 JavaScript 要清楚理解的一个概念。比如 <a href="https://en.wikipedia.org/wiki/JavaScript">Wikipedia 的 JavaScript 条目</a> 是这样来解释 JavaScript 语言的：</p>
+
+<blockquote>
+  <p>JavaScript is classified as a <a href="https://en.wikipedia.org/wiki/Prototype-based_programming">prototype-based</a> <a href="https://en.wikipedia.org/wiki/Scripting_language">scripting language</a> with <a href="https://en.wikipedia.org/wiki/Dynamic_language">dynamic typing</a> and <a href="https://en.wikipedia.org/wiki/First-class_functions">first-class functions</a>. This mix of features makes it a <a href="https://en.wikipedia.org/wiki/Multi-paradigm">multi-paradigm language</a>, supporting <a href="https://en.wikipedia.org/wiki/Object-oriented_programming">object-oriented</a>, <a href="https://en.wikipedia.org/wiki/Imperative_programming">imperative</a>, and <a href="https://en.wikipedia.org/wiki/Functional_programming">functional</a> programming styles.</p>
+</blockquote>
+
+<p>翻译一下：JavaScript 是基于 Prototype 的脚本语言，它是动态类型的，并且在 JavaScript 里函数是一等公民。这些混合的特性使得 JavaScript 成为了支持面向对象、命令式和函数式的多范型语言。</p>
+
+<p>短短两句话，包含了很多内容。我们这里对多范型、动态类型等暂且按下不表，以后的文章可能会陆续涉及，因为它们都是比较大的主题。在这篇文章里我先跟大家大致的聊聊 Prototype，以及为什么 JavaScript 被称为是基于 <code>Prorotype</code> 的语言，另外看看目前对于 Prototype 的使用一个比较大误区，也就是很多人和很多现存的类库利用 Prototype 来为 JavaScript 语言构建面向对象的继承和多态特性，当然了，这也可能是本文比较有争议的地方。</p>
+
+<h2 id="prototype-">Prototype 是什么</h2>
+<p>所有的 JavaScript 对象都有一个隐含的属性来指向另外一个对象，我们称这个隐含的属性为 <code>Prototype</code>。当然了这个属性有可能是 <code>null</code>，比如用这种方式创建的对象：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span></code></pre></div>
+
+<p>但无论如何，除了特别指定的情况之外，JavaScript 的对象都有一个非空的 <code>Prototype</code> 来指向另外一个对象。关于 <code>Object.create(...)</code>，可以参考 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/create">Mozilla MDN</a> 的解释，你也可以简单理解为它创建了一个新的 JavaScript 对象，并为新创建的对象和原对象之间建立了 <code>Prototype</code> 连接。接下来让我们看看常规的，也就是 Prototype 非空的情况：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">anotherObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="o">:</span> <span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="c1">// create an object linked to `anotherObject`</span>
+<span class="kd">var</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span> <span class="nx">anotherObject</span> <span class="p">);</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span> <span class="c1">// 2</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">myObject</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;found: &quot;</span> <span class="o">+</span> <span class="nx">k</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// found: a</span>
+
+<span class="p">(</span><span class="s2">&quot;a&quot;</span> <span class="k">in</span> <span class="nx">myObject</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span> <span class="c1">// false</span></code></pre></div>
+
+<p>这段代码有几点需要注意的地方：</p>
+
+<ol>
+  <li>在 <a href="http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/">JavaScript Getters 和 Setters</a> 这篇文章中，我提到 JavaScript 的[[Get]]和[[Put]]操作。<code>myObject.a;</code> 就触发了[[Get]]操作，它首先在对象 <code>myObject</code> 上搜索，如果没有发现需要的属性，就会沿着 <code>Prototype</code> 链继续向上搜索，并在 <code>anotherObject</code> 上发现了需要的属性；</li>
+  <li><code>for...in</code> 和 <code>in</code> 都会检查对象的 <code>Prototype</code> 链，而 <code>Object.hasOwnProperty(...)</code> 不会；</li>
+  <li>对 <code>Prototype</code> 链的搜索到 <code>Object.prototype</code> 终止，在这个对象上定义了很多工具方法，比如 <code>toString()</code>, <code>valueOf()</code>, 上面提到的 <code>hasOwnProperty()</code> 等等。</li>
+</ol>
+
+<h2 id="javascript--prototype-">为什么说 JavaScript 是基于 <code>Prototype</code> 的语言</h2>
+
+<p>根据 <a href="https://en.wikipedia.org/wiki/Prototype-based_programming">Wikipedia 的解释</a>，基于 <code>Prototype</code> 的语言是面向对象编程得一种风格。和传统的面向对象语言不同，基于 <code>Prototype</code> 的语言借助于 <code>Prototype</code> 来进行代码复用。这里我们暂时抛开抽象的概念，先通过一段代码来描述 JavaScript 如何进行面向对象编程：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">Foo</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">myName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">fooA</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Foo</span><span class="p">(</span> <span class="s2">&quot;a&quot;</span> <span class="p">);</span>
+<span class="kd">var</span> <span class="nx">fooB</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Foo</span><span class="p">(</span> <span class="s2">&quot;b&quot;</span> <span class="p">);</span>
+
+<span class="nx">fooA</span><span class="p">.</span><span class="nx">myName</span><span class="p">();</span> <span class="c1">// &quot;a&quot;</span>
+<span class="nx">fooB</span><span class="p">.</span><span class="nx">myName</span><span class="p">();</span> <span class="c1">// &quot;b&quot;</span>
+
+<span class="kd">function</span> <span class="nx">Bar</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span><span class="nx">label</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="k">this</span><span class="p">,</span> <span class="nx">name</span> <span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">label</span> <span class="o">=</span> <span class="nx">label</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// here, we make a new `Bar.prototype`</span>
+<span class="c1">// linked to `Foo.prototype`</span>
+<span class="nx">Bar</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span> <span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span> <span class="p">);</span>
+
+<span class="c1">// Beware! Now `Bar.prototype.constructor` is gone,</span>
+<span class="c1">// and might need to be manually &quot;fixed&quot; if you&#39;re</span>
+<span class="c1">// in the habit of relying on such properties!</span>
+
+<span class="nx">Bar</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">myLabel</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">label</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bar</span><span class="p">(</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;obj a&quot;</span> <span class="p">);</span>
+
+<span class="nx">b</span><span class="p">.</span><span class="nx">myName</span><span class="p">();</span> <span class="c1">// &quot;a&quot;</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">myLabel</span><span class="p">();</span> <span class="c1">// &quot;obj a&quot;</span></code></pre></div>
+
+<p>这段代码模拟了传统的面向对象编程，在这里 <code>Foo</code> 作为父类，而 <code>Bar</code> 作为子类。在这段代码里我们需要注意如下的几点：</p>
+
+<ol>
+  <li><code>Bar.prototype = Object.create( Foo.prototype );</code> 创建了 <code>Bar</code> 和 <code>Foo</code> 的父子关系，在这行代码运行之前，<code>Bar.prototype</code> 指向 <code>Object.prototype</code>，这之后则指向了 <code>Foo.prototype</code>；</li>
+  <li>JavaScript ES6 引入了设置对象 <code>Prototype</code> 链的标准做法，它通过修改现有的 <code>Prototype</code> 来实现，而不是通过像 <code>Object.prototype</code>一样通过新创建一个对象来替换原有的对象来实现，同时它也保证了 <code>constructor</code> 的一致性，虽然在实际中 <code>constructor</code> 基本上没有什么用处；</li>
+  <li>在每个 <code>Prototype</code> 链上都有一个 <code>constructor</code> 属性。这里我们不想花很多篇幅来讲述 <code>constructor</code>，如果你有兴趣可以参考一下 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/constructor">Mozilla MDN 的一篇文档</a>，以后我也可能会用一片博客来讲述。这里我想说的是，<code>Bar.prototype = Object.create( Foo.prototype );</code> 会改变 <code>Bar.prototype</code> 的 <code>constructor</code>，如果你想保持一致性，可以用 <code>Bar.prototype.constructor = Bar</code> 来修正它；</li>
+  <li>传统的面向对象语言，继承隐含的意义是拷贝，而 JavaScript 的继承隐含的意义是引用关系。比如 <code>var fooA = new Foo( "a" );</code>，如果在传统的面向对象则意味着类 <code>Foo</code> 中定义的方法和属性会被拷贝到对象 <code>fooA</code> 上，而在 JavaScript 中仅仅是把 <code>fooA</code> 的 <code>Prototype</code> 链指向了 <code>Foo</code>，没有任何拷贝发生，也就是说有部分函数(不是方法)是这个继承链上所有的实例共享的，一旦被修改了，会影响到所有的现有实例；</li>
+  <li>在上面的 <code>Foo</code> 函数和 <code>Bar</code> 函数里出现了 <code>this</code>，如果你不理解，可以参考我之前的一篇文章：<a href="http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/">寻找 JavaScript 的 this</a>；</li>
+</ol>
+
+<h2 id="javascript-">JavaScript 不是“传统”的面向对象语言</h2>
+
+<p>这一节我们我们来讨论一下用 JavaScript 来模拟传统面向对象编程的弊端在哪里。</p>
+
+<p>首先，JavaScript 没有真正意义上“类”的概念，即使看起来像，比如上面的代码片段里的 <code>function Foo(...)</code>，它仅仅是看起来像类，而事实上只不过是 JavaScript 中的一个对象而已，和传统的面向对象语言中的类完成的功能大相径庭。在传统的面向对象语言中，类定义了实例的模板和继承关系，在创建实例的时候把属性深度克隆到对象实例上；而 JavaScript 中的“类”仅仅是作为 <code>Prototype</code> 链的一环，并被该链上的“下游类”共享，它仅仅是一个对象，并不是真真意义上的类。比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">Foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Foo</span><span class="p">();</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">getPrototypeOf</span><span class="p">(</span> <span class="nx">a</span> <span class="p">)</span> <span class="o">===</span> <span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span> <span class="c1">// true</span></code></pre></div>
+
+<p>这里，<code>new Foo()</code> 会创建一个新的对象叫做 <code>a</code>, <code>a</code> 被链接到 <code>Foo.prototype</code> 上。这段代码里，没有实例化任何类，也没有任何拷贝行为发生，仅仅是两个对象通过 <code>Prototype</code> 链被连接到了一起。事实上，我们通过 <code>Object.create(...)</code> 可以得到更直观的结果，关于 <code>Object.create()</code>，请参见 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create">Mozilla MDN 文档</a>。</p>
+
+<p>在 JavaScript 程序中很多误解的根源在于 <code>基于 Prototype 的继承</code> 这一术语。由于面向对象编程在现代程序设计中的巨大影响力，很多人一见到这一术语，就自然而然的把 <code>类</code>、<code>构造函数</code>、<code>实例</code>、<code>多态</code>等术语一个萝卜一个坑的往 JavaScript 代码里靠，这通常会得到令人沮丧的结果，也是很多人对于 JavaScript 这门语言怨声载道的根源。正如我们上面提到的，继承隐含的意义是拷贝，而 JavaScript 的 <code>基于原型的继承</code> 没有任何拷贝发生，它实际上上对象通过 <code>Prototype</code> 来作为另外一个对象的代理(Delegation)，这也是我们下一节要讲述的内容。</p>
+
+<p>说到这里，可能有人会问，那我通过自己实现拷贝，不就可以解决这一问题了吗？比如很多 JavaScript 类库会提供的 <code>mixin</code> 方法，会手工的把父类的属性和方法拷贝到子类上：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// vastly simplified `mixin(..)` example:</span>
+<span class="kd">function</span> <span class="nx">mixin</span><span class="p">(</span> <span class="nx">sourceObj</span><span class="p">,</span> <span class="nx">targetObj</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">sourceObj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// only copy if not already present</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">targetObj</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">targetObj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">sourceObj</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">targetObj</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">Vehicle</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">engines</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+
+    <span class="nx">ignition</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s2">&quot;Turning on my engine.&quot;</span> <span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">drive</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">ignition</span><span class="p">();</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s2">&quot;Steering and moving forward!&quot;</span> <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Car</span> <span class="o">=</span> <span class="nx">mixin</span><span class="p">(</span> <span class="nx">Vehicle</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">wheels</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
+
+    <span class="nx">drive</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">Vehicle</span><span class="p">.</span><span class="nx">drive</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="k">this</span> <span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s2">&quot;Rolling on all &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">wheels</span> <span class="o">+</span> <span class="s2">&quot; wheels!&quot;</span> <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">);</span></code></pre></div>
+
+<p>上面的代码解决了部分问题，但是仍然存在和传统的面向对象集成较大的差异：</p>
+
+<ol>
+  <li>JavaScript 的函数没有真真意义上的拷贝，虽然在“子类”和“父类”上都存在一个叫做 <code>drive</code> 的方法，它不是真正的深度克隆，仅仅是两个变量同时引用到了同一个函数，也就是说一旦通过一个实例修改了该函数，其他现有的实例都收影响；</li>
+  <li><code>Vehicle.drive.call( this );</code> 这行代码是非常丑陋的多态；</li>
+  <li>通过 <code>Prototype</code> 实现的多态会导致<code>变量隐藏 (Variable Shadowing)</code>，它会导致很多难以发现的问题，需要尽量避免。关于变量隐藏，可以参考我的上一篇博客的最后一节：<a href="http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/">JavaScript Getters 和 Setters</a>。</li>
+</ol>
+
+<h2 id="section-1">应该使用代理，而不是继承</h2>
+
+<p>很多人，在学习和使用 JavaScript 语言的时候，都会觉得它非常棘手。比如，在传统的面向对象语言中，几行代码就可以实现的继承、封装和多态，为什么到了 JavaScript 代码里需要这么多复杂的机制，为什么会有这么多“坑”？于是很多人在接触 JavaScript 语言后，迅速转向了某个 JavaScript 框架，期望利用框架这个黑盒子能够解决用 JavaScript 来进行自己所熟悉的面向对象编程的问题。但事实上，框架面临一样的问题，它只不过是把问题掩盖了，日后还会在某个地方浮现出来。</p>
+
+<p>事实上，导致这些混淆的根源是 JavaScript 不应该被当做一门传统的面向对象编程语言。在 JavaScript 中，对象之间通过 <code>Prototype</code> 链来代理，其实在脑海中想象的 JavaScript 运行时内存应该是数不清的对象通过多个 <code>Prototype</code> 链被相互链接在一起。</p>
+
+<p>下面我们通过两段代码来展示 JavaScript 中模拟传统的面向对象和对象代理之间的区别，这样你可以更好的体会对象代理的优势所在。</p>
+
+<p>首先来看一段模拟传统面向对象的代码，我们成为 OO(Object Oriented)：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">Foo</span><span class="p">(</span><span class="nx">who</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">me</span> <span class="o">=</span> <span class="nx">who</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">identify</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">&quot;I am &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">me</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">Bar</span><span class="p">(</span><span class="nx">who</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="k">this</span><span class="p">,</span> <span class="nx">who</span> <span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">Bar</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span> <span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span> <span class="p">);</span>
+
+<span class="nx">Bar</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">speak</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span> <span class="s2">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">b1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bar</span><span class="p">(</span> <span class="s2">&quot;b1&quot;</span> <span class="p">);</span>
+<span class="kd">var</span> <span class="nx">b2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bar</span><span class="p">(</span> <span class="s2">&quot;b2&quot;</span> <span class="p">);</span>
+
+<span class="nx">b1</span><span class="p">.</span><span class="nx">speak</span><span class="p">();</span>
+<span class="nx">b2</span><span class="p">.</span><span class="nx">speak</span><span class="p">();</span></code></pre></div>
+
+<p>这段代码应该不需要多余的解释了，下面是通过对象之间的代理实现同样的功能，我们称之为OLOO (Object Linked to Other Objects)：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">Foo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">who</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">me</span> <span class="o">=</span> <span class="nx">who</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">identify</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s2">&quot;I am &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">me</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">Bar</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span> <span class="nx">Foo</span> <span class="p">);</span>
+
+<span class="nx">Bar</span><span class="p">.</span><span class="nx">speak</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span> <span class="s2">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">b1</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span> <span class="nx">Bar</span> <span class="p">);</span>
+<span class="nx">b1</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span> <span class="s2">&quot;b1&quot;</span> <span class="p">);</span>
+<span class="kd">var</span> <span class="nx">b2</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span> <span class="nx">Bar</span> <span class="p">);</span>
+<span class="nx">b2</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span> <span class="s2">&quot;b2&quot;</span> <span class="p">);</span>
+
+<span class="nx">b1</span><span class="p">.</span><span class="nx">speak</span><span class="p">();</span>
+<span class="nx">b2</span><span class="p">.</span><span class="nx">speak</span><span class="p">();</span></code></pre></div>
+
+<p>我们这里没有 <code>New</code>，没有类似 <code>类</code> 的结构，也没有类似 <code>继承</code> 的结构，仅仅是三个对象通过 <code>Prototype</code> 链通过<em>代理 (Delegation)</em>来实现类似的功能。相比上面一段代码在概念上要易于理解得多，并且，需要维护的代码也变少了，虽然在这里体现不明显。关于 <code>OLOO</code> 设计模式我可能会在以后的博客中详述，这里限于篇幅就不多谈了。</p>
+
+<h2 id="section-2">总结</h2>
+
+<p>面向对象仅仅是一种设计模式，虽然目前它仍然是主流，但是并不是编程语言与生俱来的东西；更重要的是，面向对象设计(OOP)和 JavaScript 语言存在很大的阻抗，并不是一种适合应用在 JavaScript 程序设计中的模式，在 JavaScript 程序中，运用OLOO (Object Linked to Other Objects) 模式可以设计出更简单，也更易于维护的代码，并且应该成为主流，关于 OLOO，可以参考 <a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch6.md">You Don’t Know JS 系列的这一章</a>。</p>
+
+<h2 id="section-3">资源</h2>
+
+<p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes">You Don’t Know JS: this &amp; Object Prototypes</a></p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create">Mozilla MDN - Object.create()</a></p>
+
+<p><a href="https://en.wikipedia.org/wiki/Prototype-based_programming">Wikipedia - Prototype-based programming</a></p>
+
+<p><a href="https://en.wikipedia.org/wiki/JavaScript">Wikipedia - JavaScript</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/06/18/javascript-getters-and-setters/" data-toggle="tooltip" data-placement="top" title="JavaScript Getters 和 Setters">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Code Thoughts 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
