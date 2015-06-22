@@ -5,13 +5,13 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 22 Jun 2015 21:26:23 +0800</pubDate>
-    <lastBuildDate>Mon, 22 Jun 2015 21:26:23 +0800</lastBuildDate>
+    <pubDate>Mon, 22 Jun 2015 21:30:01 +0800</pubDate>
+    <lastBuildDate>Mon, 22 Jun 2015 21:30:01 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>漫谈 JavaScript 函数</title>
-        <description>&lt;p&gt;函数（Function）在 JavaScript 语言中处于核心地位，基本上你写的任何 JavaScript 代码都由一个或多个函数组成，所以理解函数是使用 JavaScript 编程语言的关键。这篇博客里我们来聊聊 JavaScript 函数的几个特性：高阶函数、Hoisting、原子性和函数作用域特性。&lt;/p&gt;
+        <description>&lt;p&gt;函数（Function）在 JavaScript 语言中处于核心地位，基本上你写的任何 JavaScript 代码都由一个或多个函数组成，所以理解函数是用好 JavaScript 编程语言的关键之一。这篇博客里我们来聊聊 JavaScript 函数的几个特性：高阶函数、Hoisting、原子性和函数作用域特性。&lt;/p&gt;
 
 &lt;h2 id=&quot;javascript-&quot;&gt;函数是 JavaScript 的一等公民&lt;/h2&gt;
 
