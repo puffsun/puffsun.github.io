@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>漫谈 JavaScript 函数 - George's Code Thoughts</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/06/22/javascript-functions/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Code Thoughts</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>漫谈 JavaScript 函数</h1>
+                    
+                    <span class="meta">Posted by George Sun on June 22, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>函数（Function）在 JavaScript 语言中处于核心地位，基本上你写的任何 JavaScript 代码都由一个或多个函数组成，所以理解函数是使用 JavaScript 编程语言的关键。</p>
+
+<h2 id="javascript-">函数是 JavaScript 的一等公民</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Functional_programming">函数式编程（Functional Programming）</a> 正在成为主流，一些原来不支持函数式编程的语言最近也开始支持这种风格，比如说 Java8 引入的<a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">闭包（Closure）</a>支持使得 Java 语言在某种程度上可以支持函数式风格编程。这篇文章不会详细的讲述函数式编程，如果对使用 JavaScript 来进行函数式编程，可以参考<a href="http://shop.oreilly.com/product/0636920028857.do">Functional JavaScript</a>。我想说的是函数式编程的一个重要特性就是函数作为一等公民，简单的说，函数可以被当做另外的函数参数（高阶函数），也可以作为返回值。JavaScript 从诞生的第一天起就支持高阶函数，也支持闭包。
+JavaScript 中最常见的高阶函数是方法的回调，比如我们用 jQuery 来为一个 HTML 元素增加点击事件回调：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#btn_1&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Btn 1 Clicked&quot;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
+
+<p>而函数作为返回值的经典示例就是闭包了：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">multiplier</span><span class="p">(</span><span class="nx">factor</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">number</span> <span class="o">*</span> <span class="nx">factor</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">twice</span> <span class="o">=</span> <span class="nx">multiplier</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">twice</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span> <span class="c1">// 10</span></code></pre></div>
+
+<p>闭包是 JavaScript 的一个重要特性，我之前写过一篇关于它的文章，可以参考：<a href="http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/">JavaScript 闭包详解</a>。</p>
+
+<h2 id="hoisting">函数声明提升（Hoisting）</h2>
+
+<p>JavaScript 的变量声明会被提升（Hoisting），JavaScript 引擎在执行的时候，会把变量的声明都提升到当前作用域的最前面，这个特性其实是由于 JavaScript 引擎在运行代码的时候，会先扫描一遍代码，实例化变量并赋值为初始值，第二遍才会真正去执行代码。关于细节，可以参考<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20%26%20closures/ch4.md">You Don’t Know JS: Scope &amp; Closures - Hoisting</a>，这也是一个需要很多篇幅的主题，本文不涉及详细内容，以后我可能会写相关的内容。</p>
+
+<p>我们只是看看和函数相关的作用域提升，先看两段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">foo</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="mi">2</span> <span class="p">);</span> <span class="c1">// undefined</span>
+<span class="p">}</span></code></pre></div>
+
+<p>这里我们可以看到函数声明被提升了，那么函数表达式呢？</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">foo</span><span class="p">();</span> <span class="c1">// 抛出 TypeError 异常！</span>
+
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">};</span></code></pre></div>
+
+<p>这里可以看到两个现象，一是变量 <code>foo</code> 被提升了，二是抛出了 <code>TypeError</code>异常，说明 <code>foo</code> 变量已经存在了，但是它的值是 <code>undefined</code>。如果变量 <code>foo</code> 根本不存在，那么应该抛出 <code>ReferenceError</code>。 我们来验证一下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">foo</span><span class="p">;</span>
+
+<span class="nx">foo</span><span class="p">();</span> <span class="c1">// TypeError</span>
+<span class="nx">bar</span><span class="p">();</span> <span class="c1">// ReferenceError</span>
+
+<span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="p">...</span><span class="nx">self</span><span class="p">...</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></div>
+
+<p>这段程序验证了函数表达式的变量被提升了，而且值会被初始化为 <code>undefined</code>，和普通变量的提升行为一致。</p>
+
+<h2 id="javascript-atomic">JavaScript 函数是原子的（Atomic）</h2>
+
+<p>JavaScript 运行时是单线程执行的，它带来了一个有利的副作用是函数一旦开始执行，它的所有代码就一定会完整的运行，直至函数结束。在此期间，它不会被其他函数中断，所以 JavaScript 里也没有并发问题，也不需要类似 Java 那样复杂得内存模型（Memory Model）来定义一些列的前置和后置条件，因为一个语句执行的时候，不会有其他语句来修改内存中变量的值。</p>
+
+<p>但是凡事都有例外，JavaScript 是单线程的这个表述也不例外。HTML5引入了Web Worker，用于处理一些耗时的后台任务，Web Worker 的实现一般是操作系统级别的独立线程。我们先来看一个例子：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">myWorker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;my_task.js&quot;</span><span class="p">);</span>
+
+<span class="nx">myWorker</span><span class="p">.</span><span class="nx">onmessage</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">oEvent</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Worker said : &quot;</span> <span class="o">+</span> <span class="nx">oEvent</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">myWorker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="s2">&quot;ali&quot;</span><span class="p">);</span></code></pre></div>
+
+<p><code>my_task.js</code> 里的代码将会独立运行在一个线程里，并通过发送消息和启动 Web Worker 的代码通讯。<code>my_task.js</code> 代码如下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">postMessage</span><span class="p">(</span><span class="s2">&quot;I\&#39;m working before postMessage(\&#39;ali\&#39;).&quot;</span><span class="p">);</span>
+
+<span class="nx">onmessage</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">oEvent</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">postMessage</span><span class="p">(</span><span class="s2">&quot;Hi &quot;</span> <span class="o">+</span> <span class="nx">oEvent</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">};</span></code></pre></div>
+
+<p>如果你写过诸如 Java 的多线程代码，你一定会有疑问 Web Worker 会不会引入多线程问题？答案是不会。因为 Web Worker 仅仅能通过消息来和宿主环境相互通信。它没有任何途径访问 DOM 或者非线程安全的变量。并且发送的消息中的对象会被序列化来得到一份拷贝，所以它并不会导致一般多线程的竞争问题。关于 Web Worker 可以参考 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Mozilla MDN 文档</a>。</p>
+
+<p>另一个例外是 ES6 引入的 Generator。一般认为，Generator 可以解决 JavaScript 代码的<a href="http://callbackhell.com/">回调金字塔问题</a>，比如下面这样的Node.js代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">fs</span><span class="p">.</span><span class="nx">readdir</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Error finding files: &#39;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">files</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">fileIndex</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">filename</span><span class="p">)</span>
+      <span class="nx">gm</span><span class="p">(</span><span class="nx">source</span> <span class="o">+</span> <span class="nx">filename</span><span class="p">).</span><span class="nx">size</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Error identifying file size: &#39;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">filename</span> <span class="o">+</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="nx">values</span><span class="p">)</span>
+          <span class="nx">aspect</span> <span class="o">=</span> <span class="p">(</span><span class="nx">values</span><span class="p">.</span><span class="nx">width</span> <span class="o">/</span> <span class="nx">values</span><span class="p">.</span><span class="nx">height</span><span class="p">)</span>
+          <span class="nx">widths</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">width</span><span class="p">,</span> <span class="nx">widthIndex</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">height</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">width</span> <span class="o">/</span> <span class="nx">aspect</span><span class="p">)</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;resizing &#39;</span> <span class="o">+</span> <span class="nx">filename</span> <span class="o">+</span> <span class="s1">&#39;to &#39;</span> <span class="o">+</span> <span class="nx">height</span> <span class="o">+</span> <span class="s1">&#39;x&#39;</span> <span class="o">+</span> <span class="nx">height</span><span class="p">)</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">resize</span><span class="p">(</span><span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">).</span><span class="nx">write</span><span class="p">(</span><span class="nx">destination</span> <span class="o">+</span> <span class="s1">&#39;w&#39;</span> <span class="o">+</span> <span class="nx">width</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nx">filename</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+              <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Error writing file: &#39;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">)</span>
+            <span class="p">})</span>
+          <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
+        <span class="p">}</span>
+      <span class="p">})</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span></code></pre></div>
+
+<p>代码的逻辑被层层覆盖，非常晦涩难懂。Generator 引入了 <code>yield</code> 关键字，可以在调用 <code>yield</code> 的地方暂停函数执行，并在 <code>yield</code> 的代码执行完成后重新回到原始的函数调用，另外原始的函数还可以通过 <code>yield</code> 来交换数据，来看一个例子：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span><span class="o">*</span> <span class="nx">idMaker</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span><span class="p">(</span><span class="nx">index</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="nx">index</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">gen</span> <span class="o">=</span> <span class="nx">idMaker</span><span class="p">();</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">gen</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 0</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">gen</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 1</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">gen</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 2</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">gen</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// undefined</span></code></pre></div>
+
+<p>可以看到，Generator 通过 <code>function*</code> 来定义。这里我们不对 Generator 过多的解释，它也是一个很大的话题，如果有兴趣的话可以参考<a href="https://github.com/getify/You-Dont-Know-JS/blob/master/async%20&amp;%20performance/ch4.md">You Don’t Know JS: Async &amp; Performance - Chapter 4: Generators</a>。这里我想说的是，Generator 会导致 JavaScript 函数的原子性受到影响，这是在实际代码中需要注意的地方。</p>
+
+<h2 id="javascript--1">JavaScript 函数是变量作用域的边界</h2>
+
+<p>JavaScript 是没有块作用域的，只有函数才可以引入新的作用域，我们先来看一段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">i</span> <span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;i = &quot;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">);</span> <span class="c1">// i = 10</span></code></pre></div>
+
+<p>我们在 <code>for</code> 循环里面定义的变量 <code>i</code> 在村换外部仍然是可见的，也就是说，在 JavaScript 里，代码块 <code>{}</code> 不是作用域的边界，这一点困惑了很多 JavScript 新手。如果你希望引入新的作用域，那么必须求助于函数：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// &lt;-- insert this</span>
+
+    <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">a</span> <span class="p">);</span> <span class="c1">// 3</span>
+
+<span class="p">}</span> <span class="c1">// &lt;-- and this</span>
+<span class="nx">foo</span><span class="p">();</span> <span class="c1">// &lt;-- and this</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">a</span> <span class="p">);</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>这里可以看到函数 <code>foo</code> 内部的变量 <code>a</code> 和外部定义的同名变量是完全不同的两个变量。上面代码的问题在于，它解决了作用域问题的同时，也引入了一个多余的新函数，并且函数需要一次额外的调用。解决这个问题需要借助于 <code>自调用匿名函数（Immediately Invoked Function Expression）</code>，也可以简称为 IIFE。上面的代码被改写如下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="p">(</span><span class="kd">function</span> <span class="nx">foo</span><span class="p">(){</span>
+
+    <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">a</span> <span class="p">);</span> <span class="c1">// 3</span>
+
+<span class="p">})();</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">a</span> <span class="p">);</span> <span class="c1">// 2</span></code></pre></div>
+
+<p>IIFE 在 JavaScript 代码中有很多非常有用的应用，比如说 jQuery 为了避免命名冲突，通常会这么写：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">jQuery</span><span class="p">.</span><span class="nx">noConflict</span><span class="p">();</span>
+ 
+<span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="nx">$</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 可以安全的使用 $ 了</span>
+<span class="p">})(</span> <span class="nx">jQuery</span> <span class="p">);</span></code></pre></div>
+
+<p>通过 IIFE，也可以轻松在 JavaScript中引入代码模块管理：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">counter</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">return</span> <span class="p">{</span>
+		<span class="nx">get</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+			<span class="k">return</span> <span class="nx">i</span><span class="p">;</span>
+		<span class="p">},</span>
+
+		<span class="nx">set</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">val</span> <span class="p">){</span>
+			<span class="nx">i</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+		<span class="p">},</span>
+
+		<span class="nx">increment</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="o">++</span><span class="nx">i</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+<span class="p">}());</span></code></pre></div>
+
+<p>这里也应用了闭包，关于闭包可以参考我的一篇博客：<a href="http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/">JavaScript 闭包详解</a>；关于 JavaScript 模块化，可以参考我的另一篇博客：<a href="http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/">深入 JavaScript 模块化模式</a>。</p>
+
+<h2 id="section">资源</h2>
+
+<p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20&amp;%20closures">You Don’t Know JS: Scope &amp; Closures</a></p>
+
+<p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/async%20&amp;%20performance/ch4.md">You Don’t Know JS: Async &amp; Performance - Chapter 4: Generators</a></p>
+
+<p><a href="http://callbackhell.com/">Callback Hell</a></p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function\*">Mozilla MDN - function*</a></p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Mozilla MDN - Using Web Workers</a></p>
+
+<p><a href="https://en.wikipedia.org/wiki/Functional_programming">Wikipedia - Functional Programming</a></p>
+
+<p><a href="http://eloquentjavascript.net/03_functions.html">Eloquent JavaScript - Functions</a></p>
+
+<p><a href="http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/">JavaScript 闭包详解</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/06/21/javascript-prototypes-relearning/" data-toggle="tooltip" data-placement="top" title="重新认识 JavaScript Prototypes">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Code Thoughts 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
