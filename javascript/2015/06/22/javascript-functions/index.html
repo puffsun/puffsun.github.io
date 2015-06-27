@@ -233,7 +233,7 @@ JavaScript 中最常见的高阶函数是方法的回调，比如我们用 jQuer
 <span class="p">}</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;i = &quot;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">);</span> <span class="c1">// i = 10</span></code></pre></div>
 
-<p>我们在 <code>for</code> 循环里面定义的变量 <code>i</code> 在村换外部仍然是可见的，也就是说，在 JavaScript 里，代码块 <code>{}</code> 不是作用域的边界，这一点困惑了很多 JavScript 新手。如果你希望引入新的作用域，那么必须求助于函数：</p>
+<p>我们在 <code>for</code> 循环里面定义的变量 <code>i</code> 在循环外部仍然是可见的，也就是说，在 JavaScript 里，代码块 <code>{}</code> 不是作用域的边界，这一点困惑了很多 JavScript 新手。如果你希望引入新的作用域，那么必须求助于函数：</p>
 
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
 
