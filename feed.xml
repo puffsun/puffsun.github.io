@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 07 Jul 2015 20:07:58 +0800</pubDate>
-    <lastBuildDate>Tue, 07 Jul 2015 20:07:58 +0800</lastBuildDate>
+    <pubDate>Tue, 07 Jul 2015 20:08:46 +0800</pubDate>
+    <lastBuildDate>Tue, 07 Jul 2015 20:08:46 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -150,7 +150,7 @@
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;看起来解决了多次调用问题。新的问题来了，加入第三方代码因为新的 bug，从来没有调用我们的回调函数，我们该怎么应付？事实上，异步回调函数带来潜在的问题可能有很多：&lt;/p&gt;
+&lt;p&gt;看起来解决了多次调用问题。新的问题来了，假如第三方代码因为新的 bug，从来没有调用我们的回调函数，我们该怎么应付？事实上，异步回调函数带来潜在的问题可能有很多：&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;过早调用了回调，在订单没有被追踪之前；&lt;/li&gt;
