@@ -5,9 +5,179 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 27 Jun 2015 14:12:51 +0800</pubDate>
-    <lastBuildDate>Sat, 27 Jun 2015 14:12:51 +0800</lastBuildDate>
+    <pubDate>Tue, 07 Jul 2015 08:17:05 +0800</pubDate>
+    <lastBuildDate>Tue, 07 Jul 2015 08:17:05 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>JavaScript 回调函数</title>
+        <description>&lt;h2 id=&quot;section&quot;&gt;为什么要异步&lt;/h2&gt;
+
+&lt;p&gt;JavaScript 引擎是单线程运行的，它一次只能完成一个任务，如果有同时存在更多的任务必须排队等待前一个任务完成以后才可以分配到 CPU 时间。如果前一个任务占用了太多的 CPU 时间那么程序会出现无响应的状态，并阻塞后面的任务正常执行。针对这个问题，JavaScript 的解决方案是异步编程，而异步回调（async callback）则是 JavaScript 异步编程目前最为常用的模式。其他的异步编程模式有：事件监听，发布/订阅模式，Promise 等。本文不涉及异步回调之外的方式，以后的文章会相应的展开叙述，这篇文章会围绕 JavaScript 异步回调的特点，优点以及缺点展开。&lt;/p&gt;
+
+&lt;h2 id=&quot;event-loop&quot;&gt;事件循环（Event Loop）&lt;/h2&gt;
+
+&lt;p&gt;如上所述，JavaScript 引擎是单线程运行的，它的任务很简单，在接收到执行命令的请求以后，每次运行一段 JavaScript 代码，请求执行JavaScript 代码的对象就是事件循环。&lt;/p&gt;
+
+&lt;p&gt;那么什么是事件循环呢？可以用如下伪码来帮助我们理解这个概念：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// 事件循环是一个先进先出的队列，我们这里用数组来模拟它&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;eventLoop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 无限循环&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eventLoop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// 取出下一个事件&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;eventLoop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;shift&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// 执行下一个事件&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;reportError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码仅仅用来表示事件循环的概念，并不是真正的实现。我们可以看到，每次循环结束，JavaScript 引擎都会检查事件队列中是否还有未执行的事件，如果有那么从队列中取出并执行，这些事件事实上就是 JavaScript 的函数回调。&lt;/p&gt;
+
+&lt;p&gt;在 JavaScript 中有个很重要的细节需要注意，那就是 setTimeout() 函数。setTimeout() 函数并不会立即把函数回调加入到事件队列中，在运行到 setTimeout() 的时候，它会设置一个定时器，当定时器结束以后，JavaScript 宿主环境会把函数回调加入事件队列，随后JavaScript 引擎才有机会来调度 setTimeout() 的回调函数。&lt;/p&gt;
+
+&lt;p&gt;那加入此时有多个事件在队列中等待调度呢？此时，除了正在被调度的那个事件回调，其他的都必须等待，因为 JavaScript 是单线程的。这也是为什么 JavaScript 的 setTimeout 所设置的时间并不精确，总会根据当前事件队列的事件数量或多或少有延时。可以确定的一点是它绝对不会在定时器超时以前调用回调函数。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;函数回调的执行&lt;/h2&gt;
+
+&lt;p&gt;我们来通过一个例子解释一下函数回调的代码的执行顺序，仍然是 setTimeout()，如果换成 AJAX 请求也是一样的：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// A&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// C&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// B&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面这段代码的执行顺序，用自然语言可以这样来描述：先执行 A，随后设置一个1000毫秒的定时器，然后执行 B，1000毫秒定时器超时以后，执行 C。请注意这里的细节，很多人在这里犯错。&lt;/p&gt;
+
+&lt;p&gt;另外，我们在这里可以看到 JavaScript 事件回调的一个缺点，它和我们人脑的思维方式相悖。当我们读代码的时候，是从上往下顺序捕捉代码，而事件回调则是先执行回调之后的代码，一段时间以后再去执行回调函数中的代码。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;回调嵌套&lt;/h2&gt;
+
+&lt;p&gt;我们来看一段在 JavaScript 中很常见的嵌套回调，也可以被称为回调金字塔：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;listen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;click&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;evt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;ajax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;http://some.url.1&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;world&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;500&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这段代码首先设置了点击事件回调，在这个回调中设置了定时器回调，随后在定时器回调函数中发出了一个 AJAX 请求，并为 AJAX 请求设置了相应回调函数。理解这段代码不算难，但是你可以想象一下如果有更多的回调代码会很难理解。&lt;/p&gt;
+
+&lt;p&gt;如果你不喜欢上面代码层层缩进，那么可以把它改写如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;listen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;click&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;500&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;ajax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;http://some.url.1&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;world&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;现在缩进问题解决了，但上面的代码也仅仅解决了缩进问题。事实上，导致回调金字塔难以理解最大的原因并不是犹如千层饼似的一层一层的缩进，而是所设置的回调违背的人脑的直觉。上面的代码可以简化为如下模型：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;doA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;doB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;doC&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;doD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;nx&quot;&gt;doE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;doF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;它的正确执行顺序是： doA() -&amp;gt; doF() -&amp;gt; doB() -&amp;gt; doC() -&amp;gt; doE() -&amp;gt; doD()，我想，很多人需要非常仔细才能正确的理解上面代码的执行顺序，代码的层层缩进只是回调金字塔的的现象，它本质上的问题是与人脑的直觉相悖。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;回调的信任问题&lt;/h2&gt;
+
+&lt;p&gt;除了上面的问题以外，回调还有更严重的问题需要解决，那就是信任问题。我们再来看一段代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// A&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;ajax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;..&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(..){&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// C&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// B&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里，A 和 B 都会立即执行，而 C 则会在 AJAX 响应返回以后执行。在这里我们把执行回调函数的主动权交给第三方，也就是 AJAX，我们失去了对它的控制权，这也会导致一系列的问题，事实上这也是 JavaScript 中基于回调驱动设计（Callback-Driven Design）的主要问题。&lt;/p&gt;
+
+&lt;p&gt;我们可以把上面的代码称作“控制反转（Inversion of Control）”，也就是我们把代码控制权交由第三方，基于此，我们和第三方代码之间达成了一个协定，我们期望代码可以根据这个协定来执行，但是由于我们失去了对代码的控制权，很多情况下代码并不完全根据这个既定的协定来执行。&lt;/p&gt;
+
+&lt;p&gt;我们通过另一个示例来进一步阐述，假设我们正在开发一个电子商务系统的结账功能模块，最终的付款功能我们一般是交由第三方系统来完成，比如支付宝，Aria 或者 Cybersource 等，通过它们，我们可以实现收费和订单追踪功能。假定他们提供了支付的回调接口，那么代码可能像下面这样：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;analytics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;trackPurchase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;purchaseData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;chargeCreditCard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;displayThankyouPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我们把回调代码交由第三方的接口来完成，系统经过测试，看起来一切都很完美。但是实现支付的第三方代码在将来随时可能被改动，因为他们是第三方代码，而且控制被反转了，我们对它失去了控制权。假如由于第三方的代码在将来的代码中引入了 bug，他们多次调用了我们设置的回调函数，那么用户可能会被多次收费，也会导致出现完全相同的多个订单，这可是个大问题。那么你可能会把上面的代码稍微改动一下，变成这样：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tracked&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;analytics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;trackPurchase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;purchaseData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tracked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;tracked&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;chargeCreditCard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;displayThankyouPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;看起来解决了多次调用问题。新的问题来了，加入第三方代码因为新的 bug，从来没有调用我们的回调函数，我们该怎么应付？事实上，异步回调函数带来潜在的问题可能有很多：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;过早调用了回调，在订单没有被追踪之前；&lt;/li&gt;
+  &lt;li&gt;过晚或者压根没有调用回调函数；&lt;/li&gt;
+  &lt;li&gt;过多或者过少的调用了回调函数；&lt;/li&gt;
+  &lt;li&gt;没有传入回调函数所必须的参数；&lt;/li&gt;
+  &lt;li&gt;吞掉了回调函数中的异常或者错误&lt;/li&gt;
+  &lt;li&gt;…&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;到这里，你对控制被反转的回调函数带来的潜在问题可能有了新的认识，想解决这个问题，我们需要引入新的元素。下一篇文章，我们讨论一下我们如何用 JavaScript ES6（正式的名称是 ES2015）引入的 Promise 解决我们所面临的问题。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-4&quot;&gt;资源&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/async%20%26%20performance/&quot;&gt;You Don’t Know JS&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.hello-code.com/blog/javascript/201409/4015.html&quot;&gt;详解JavaScript异步编程的模式&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 06 Jul 2015 21:10:08 +0800</pubDate>
+        <link>http://codethoughts.info/javascript/2015/07/06/javascript-callbacks/</link>
+        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/07/06/javascript-callbacks/</guid>
+        
+        
+        <category>javascript</category>
+        
+      </item>
     
       <item>
         <title>漫谈 JavaScript 函数</title>
@@ -1879,223 +2049,6 @@ JavaScript 中最常见的高阶函数是方法的回调，比如我们用 jQuer
         
         
         <category>bootstrap</category>
-        
-      </item>
-    
-      <item>
-        <title>Play! Framework 大致观感</title>
-        <description>&lt;h3 id=&quot;section&quot;&gt;为什么写这篇文章&lt;/h3&gt;
-&lt;p&gt;前段时间花时间比较了几个 Web 框架，考量的对象来自于 Golang 社区和 Java 社区：&lt;a href=&quot;http://beego.me/&quot;&gt;Beego&lt;/a&gt;, &lt;a href=&quot;http://martini.codegangsta.io/&quot;&gt;Martini&lt;/a&gt;, &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2&lt;/a&gt;, &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot;&gt;Spring MVC&lt;/a&gt;。在选择的过程中并没有多少客观的统计数据，全凭我的个人理解和不同社区的开发者在选型时候的分析，在这篇文章里面我想聊聊为什么会最终选择 &lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! 2 Framework&lt;/a&gt;，以及对 Play! 2 Framework 的大致观感，最后就是用最少的步骤搭建一个基于 Play! 的项目。&lt;/p&gt;
-
-&lt;h3 id=&quot;web-&quot;&gt;Web 框架选型的依据&lt;/h3&gt;
-&lt;p&gt;通常来说，你需要考量以下方面：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;数据库/NoSQL 支持&lt;/li&gt;
-  &lt;li&gt;缓存支持&lt;/li&gt;
-  &lt;li&gt;日志管理&lt;/li&gt;
-  &lt;li&gt;开发工具和社区活跃程度&lt;/li&gt;
-  &lt;li&gt;Session 管理&lt;/li&gt;
-  &lt;li&gt;宿主语言&lt;/li&gt;
-  &lt;li&gt;性能&lt;/li&gt;
-  &lt;li&gt;扩展性&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;ruby-on-rails&quot;&gt;为什么没有 Ruby on Rails&lt;/h3&gt;
-&lt;p&gt;Rails 框架完全符合上面的依据，同时也是非常成熟和流行的框架，但是我现在对于动态语言有些不太感冒，更倾向于静态，编译型语言。Ruby 代码的风格过于奔放，读优秀程序员写出的 Ruby 代码固然优美，维护新手程序员写出的 Ruby 代码又恨不得让你把眼珠子都挖出来；另一方面 Ruby 这样的动态语言代码极度依赖于测试，包括但也不限于单元测试和集成测试，没有测试覆盖的 Ruby 代码就是狗屎。而在国内的IT公司，不写或者尽量少写测试代码似乎成了默契，起码我待过的数家公司都是如此，这些地方技术选型上都不应该采用动态语言。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-1&quot;&gt;大致观感&lt;/h3&gt;
-&lt;p&gt;Play! 框架可以说是我用过的最顺手，开发效率最高的Web 开发框架，提供了开发、测试、发布一揽子的工具支持，甚至有插件支持直接打包为各种操作系统的安装包。&lt;/p&gt;
-
-&lt;h3 id=&quot;play-framework-&quot;&gt;Play! framework 的特点&lt;/h3&gt;
-&lt;p&gt;简单讲，Play! 框架是个类Ruby on Rails 风格的全栈(full-stack)开发框架，在设计上内置 RESTful 支持，从 &lt;code&gt;Play! 2&lt;/code&gt; 开始, Play! 全面拥抱了 Scala，采用了 Scala 作为模板语言，事实上，从2.0版本开始，Play! 框架可以说原生支持 Scala。&lt;/p&gt;
-
-&lt;h4 id=&quot;javaee&quot;&gt;抛弃 JavaEE&lt;/h4&gt;
-&lt;p&gt;传统的 Java Web 开发中，程序员一定避不开 Servlet，以往的 Java Web 框架都是基于 Servlet 来构建的，最终开发完成的应用也一定要在Servlet 容器里运行。Java 程序员应该都知道，Servlet API 提供了一套底层的 API 来处理 HTTP 请求和响应，Play! framework 在这里的做法非常大胆，全面抛弃 Servlet另起炉灶，这也带来了新的优势。Play! 采用 Apache Mina 作为底层 HTTP Server，并做了自己的封装，从而实现代码的热替换(hot swapping)，这里的优势是修改了代码，只要刷新浏览器新修改的代码就可以立即生效，这对开发生产力的提升大有好处，具体的代码分析可以参见&lt;a href=&quot;http://androider.iteye.com/blog/710533&quot;&gt;这篇文章&lt;/a&gt;。&lt;/p&gt;
-
-&lt;h4 id=&quot;xml-&quot;&gt;抛弃 XML 配置文件&lt;/h4&gt;
-&lt;p&gt;写过 Java Web 项目的程序员都知道 XML 噩梦是怎么回事，现在又向 元注释(Annotation)噩梦前进了。Play! 给出的回应是它只有一个全局配置文件，绝大部分的配置是自动设置，或者是默认设置，这一点深得 Ruby on Rails CoC(Code on Convension) 的精髓。&lt;/p&gt;
-
-&lt;h4 id=&quot;stateless&quot;&gt;无状态(Stateless)框架&lt;/h4&gt;
-&lt;p&gt;这意味着 Play! 不会把状态保存在 Server 端。Play! 认为数据库可以存储状态，Play! 框架在每次 HTTP Request 之间不会在 Server 端存储状态，所需的状态都需要在 HTTP Request 之间传递。当然在 Play! 里也有 session 的概念，也有一个方法 &lt;code&gt;session()&lt;/code&gt;可以存取 session，但是这里只不过是浏览器端的 cookie，你调用 &lt;code&gt;session()&lt;/code&gt;方法也只能存取 String 类型的值。&lt;/p&gt;
-
-&lt;p&gt;另外，无状态也对应用程序的扩展性很有利，你只需要新增一个节点，重新部署一个 Play! 应用就可以立即增加系统的负载能力。&lt;/p&gt;
-
-&lt;h4 id=&quot;template&quot;&gt;强类型模板(template)&lt;/h4&gt;
-&lt;p&gt;Play! 2 对Play! 框架进行了完全的重写，完全拥抱了 Scala，并用 Scala 替代 Groovy 作为模板语言。事实上，Play! 2的模板就是可编译的 Scala 代码，如果编译通不过，你可以立即从浏览器或者控制台(console)看到错误信息，而不必等到重新部署，调用了相应页面才可以发现错误，这也可以大大提高开发生产力。&lt;/p&gt;
-
-&lt;h4 id=&quot;section-2&quot;&gt;工具支持&lt;/h4&gt;
-&lt;p&gt;Play! 提供了类似 Rails 的命令行工具来生成样板代码(boilerplate code)，而在最新的版本&lt;code&gt;2.3&lt;/code&gt;又和&lt;code&gt;activator&lt;/code&gt;平台集成，提供了浏览器中开发的工具支持。&lt;/p&gt;
-
-&lt;h4 id=&quot;section-3&quot;&gt;社区以及市场占有率&lt;/h4&gt;
-&lt;p&gt;Play! 的市场占有率大约在8%, 虽然不算高，但是考虑到它的推出时间，我觉得已经很不错了，在社区方面做得也还算不错，在 StackOverflow 上提出的问题很多有高质量的解答。&lt;/p&gt;
-
-&lt;h3 id=&quot;play-framework--1&quot;&gt;Play! framework 缺点&lt;/h3&gt;
-&lt;p&gt;不是所有的框架都是十全十美的，Play! 也不例外。我认为 Play! 最主要的问题在于 Scala 语言的复杂性和它的后向兼容性。&lt;/p&gt;
-
-&lt;h4 id=&quot;section-4&quot;&gt;模板引擎&lt;/h4&gt;
-
-&lt;p&gt;Scala 语言本身的学习曲线非常高，我在刚接触 Scala 语言的时候被它的类型推导折腾得七荤八素，我觉得其他人也不例外，相比较学习 Go 语言这样核心精简的语言简直就是手到擒来，拿 Scala 作为模板引擎大大提高了模板的复杂性。&lt;/p&gt;
-
-&lt;h4 id=&quot;section-5&quot;&gt;后向兼容性&lt;/h4&gt;
-
-&lt;p&gt;Play! 2 是对 Play! 1 的完全重写，Play! 2 是和 Scala 无缝集成的，如果想完全发挥 Play! 2 的威力，最好采用 Scala 语言。同时它也不对 Play! 1 后向兼容，如果希望从 Play! 1 升级到 2，那么只有完全重写，这样会导致它失去一批老用户。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-6&quot;&gt;示例&lt;/h3&gt;
-
-&lt;h4 id=&quot;play&quot;&gt;安装 Play!&lt;/h4&gt;
-
-&lt;p&gt;首先到 Play! 框架&lt;a href=&quot;https://www.playframework.com/download&quot;&gt;下载页面&lt;/a&gt;下载安装包并解压到本地目录，最好下载 &lt;a href=&quot;http://downloads.typesafe.com/typesafe-activator/1.3.2/typesafe-activator-1.3.2.zip&quot;&gt;Offline Distribution&lt;/a&gt; 包，否则所有依赖仍然要远程下载，这在我国网络环境下是个巨大的挑战。当然你也可以修改为国内的源来增加下载速度，遗憾的是我目前还没有发现一个稳定并且完整的国内源。可以参考&lt;a href=&quot;https://www.playframework.com/documentation/2.3.x/Installing&quot;&gt;这个页面&lt;/a&gt;来安装 Play!。&lt;/p&gt;
-
-&lt;h4 id=&quot;section-7&quot;&gt;新建项目&lt;/h4&gt;
-&lt;p&gt;首先新建一个目录，并查看一下 Play! 提供的命令行工具：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~/prog/play &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; mkdir demo &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;activator -h
-
-Usage: activator &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;options&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
-
-  Command:
-  ui                 Start the Activator UI
-  new &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;name&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;template-id&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;  Create a new project with &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;name&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; using template &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;template-id&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
-  list-templates     Print all available template names
-  -h &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -help         Print this message
-
-  Options:
-  -v &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -verbose      Make this runner chattier
-  -d &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; -debug        Set sbt log level to debug
-  -mem &amp;lt;integer&amp;gt;     Set memory options &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: , which is -Xms1024m -Xmx1024m -XX:PermSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64m -XX:MaxPermSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;256m&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-  -jvm-debug &amp;lt;port&amp;gt;  Turn on JVM debugging, open at the given port.
-
-  &lt;span class=&quot;c&quot;&gt;# java version (default: java from PATH, currently java version &amp;quot;1.7.0_45&amp;quot;)&lt;/span&gt;
-  -java-home &amp;lt;path&amp;gt;  Alternate JAVA_HOME
-
-  &lt;span class=&quot;c&quot;&gt;# jvm options and output control&lt;/span&gt;
-  -Dkey&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;val          Pass -Dkey&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;val directly to the java runtime
-  -J-X               Pass option -X directly to the java runtime
-                     &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;-J is stripped&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-
-  &lt;span class=&quot;c&quot;&gt;# environment variables (read from context)&lt;/span&gt;
-  JAVA_OPTS          Environment variable, &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;unset &lt;/span&gt;uses &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
-  SBT_OPTS           Environment variable, &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;unset &lt;/span&gt;uses &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
-  ACTIVATOR_OPTS     Environment variable, &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;unset &lt;/span&gt;uses &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
-
-In the &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; of duplicated or conflicting options, the order above
-shows precedence: environment variables lowest, &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line options highest.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这里可以看到，Play! 提供了很多选项，其中 &lt;code&gt;activator ui&lt;/code&gt; 提供了在浏览器中新建、编译、运行、编写 Play! 代码的功能；&lt;code&gt;activator --jvm-debug &amp;lt;port&amp;gt;&lt;/code&gt; 则提供了调试 Play! 项目代码的快捷方式； &lt;code&gt;activator new&lt;/code&gt; 可以新建项目，也就是我们下一步要做的。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;activator new sample
-
-Fetching the latest list of templates...
-
-Browse the list of templates: http://typesafe.com/activator/templates
-Choose from these featured templates or enter a template name:
-  1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-akka-java-seed
-  2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-akka-scala-seed
-  3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-java
-  4&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; minimal-scala
-  5&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; play-java
-  6&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; play-scala
-&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;hit tab to see a list of all templates&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Play! 提供了很多模板，我们可以基于这些模板快速创建项目。目前从命令行可以存取的所有模板众多，这里就不一一列举了，可以用&lt;code&gt;Tab&lt;/code&gt;把它们都调出来。这里假定我们希望基于&lt;code&gt;play-java&lt;/code&gt;模板来创建我们的新项目：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&amp;gt; play-java
-OK, application &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; is being created using the &lt;span class=&quot;s2&quot;&gt;&amp;quot;play-java&amp;quot;&lt;/span&gt; template.
-
-To run &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; from the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd sample&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;:
-/Users/gsun/prog/play/demo/sample/activator run
-
-To run the &lt;span class=&quot;nb&quot;&gt;test &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; from the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd sample&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;:
-/Users/gsun/prog/play/demo/sample/activator &lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt;
-
-To run the Activator UI &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sample&amp;quot;&lt;/span&gt; from the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd sample&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;:
-/Users/gsun/prog/play/demo/sample/activator ui&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;按照 Play!的指示，我们进入项目目录，并且再次运行 &lt;code&gt;activator run&lt;/code&gt;命令：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;activator run
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Loading global plugins from /Users/gsun/.sbt/0.13/plugins
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; downloading file:/Users/gsun/dev/activator-1.3.2/repository/com.typesafe.play/play-java-ws_2.11/2.3.8/jars/play-java-ws_2.11.jar ...
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;SUCCESSFUL &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; com.typesafe.play#play-java-ws_2.11&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;2.3.8!play-java-ws_2.11.jar &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;7ms&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Done updating.
-
---- &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Running the application, auto-reloading is enabled&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; ---
-
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; play - Listening &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; HTTP on /0:0:0:0:0:0:0:0:9000
-
-&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Server started, use Ctrl+D to stop and go back to the console...&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; Compiling &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; Scala sources and &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; Java sources to /Users/gsun/prog/play/demo/sample/target/scala-2.11/classes...
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;compiler-interface&amp;#39;&lt;/span&gt; not yet compiled &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; Scala 2.11.1. Compiling...
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   Compilation completed in 20.839 s
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; play - Application started &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Dev&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这时候打开浏览器，并访问&lt;code&gt;http://localhost:9000&lt;/code&gt;，你会发现一个完整的应用已经运行，你只需要根据需要增加或者修改功能就可以了，可以说搭建一个 Play! 框架的项目需要的时间非常短，效率非常高。&lt;/p&gt;
-
-&lt;p&gt;另外 &lt;code&gt;activator ~run&lt;/code&gt; 可以实现代码的热替换(hot swapping)，修改代码之后，程序员只需要刷新浏览器就可以立即看到修改结果。这里是在项目目录内部运行&lt;code&gt;activator help&lt;/code&gt; 的结果：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;sample&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;help&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;  help                                    &lt;/span&gt;Displays this &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;message or prints detailed &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;on requested commands &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;run &lt;span class=&quot;s1&quot;&gt;&amp;#39;help &amp;lt;command&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
-  completions                             Displays a list of completions &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the given argument string &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;run &lt;span class=&quot;s1&quot;&gt;&amp;#39;completions &amp;lt;string&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
-  about                                   Displays basic information about sbt and the build.
-  tasks                                   Lists the tasks defined &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the current project.
-  settings                                Lists the settings defined &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the current project.
-  reload                                  reload
-
-        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Re&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;loads the project in the current directory.
-
-reload plugins
-
-        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Re&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;loads the plugins project &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;under project directory&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
-
-reload &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-
-        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Re&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;loads the root project &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;and leaves the plugins project&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
-  projects                                Lists the names of available projects or temporarily adds/removes extra builds to the session.
-  project                                 Displays the current project or changes to the provided &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;project&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;.
-  &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;every&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;setting&amp;gt;                   Evaluates a Setting and applies it to the current project.
-  session                                 Manipulates session settings.  For details, run &lt;span class=&quot;s1&quot;&gt;&amp;#39;help session&amp;#39;&lt;/span&gt;.
-  inspect &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;uses&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;tree&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;definitions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;key&amp;gt;   Prints the value &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;key&amp;#39;&lt;/span&gt;, the defining scope, delegates, related definitions, and dependencies.
-  &amp;lt;log-level&amp;gt;                             Sets the logging level to &lt;span class=&quot;s1&quot;&gt;&amp;#39;log-level&amp;#39;&lt;/span&gt;.  Valid levels: debug, info, warn, error
-  plugins                                 Lists currently available plugins.
-  &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;*              Runs the provided semicolon-separated commands.
-  ~ &amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt;                             Executes the specified &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;whenever &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;files change.
-  last                                    Displays output from a previous &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;or the output from a specific task.
-  last-grep                               Shows lines from the last output &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;key&amp;#39;&lt;/span&gt; that match &lt;span class=&quot;s1&quot;&gt;&amp;#39;pattern&amp;#39;&lt;/span&gt;.
-  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; &amp;lt;tasks&amp;gt;+                         Executes tasks and displays the equivalent &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;lines.
-  &lt;span class=&quot;nb&quot;&gt;exit                                    &lt;/span&gt;Terminates the build.
-  --&amp;lt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt;&amp;gt;                             Schedules a &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;to run before other commands on startup.
-  show &amp;lt;key&amp;gt;                              Displays the result of evaluating the setting or task associated with &lt;span class=&quot;s1&quot;&gt;&amp;#39;key&amp;#39;&lt;/span&gt;.
-  all &amp;lt;task&amp;gt;+                             Executes all of the specified tasks concurrently.
-
-More &lt;span class=&quot;nb&quot;&gt;command help &lt;/span&gt;available using &lt;span class=&quot;s1&quot;&gt;&amp;#39;help &amp;lt;command&amp;gt;&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;:
-  !, +, ++, &amp;lt;, &lt;span class=&quot;nb&quot;&gt;alias&lt;/span&gt;, append, apply, &lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;, iflast, onFailure, reboot, shell
-
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;sample&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这里我就不再一一讲解了，如果你有兴趣，那么可以自己去探索。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-8&quot;&gt;结语&lt;/h3&gt;
-&lt;p&gt;如果你喜欢 Ruby on Rails 开发的高效，又喜欢 Java/Scala 静态语言的编译期代码检查以及稳定性，那么 Play! 框架你应该认真考虑一下，它是我至今用过的开发最高效的 Java Web 框架。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-9&quot;&gt;资源&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.playframework.com/&quot;&gt;Play! framework 官网&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://androider.iteye.com/blog/710533&quot;&gt;Play! framework hotswap及源码分析&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.playframework.com/documentation/2.3.x/Home&quot;&gt;Play! framework 官方文档&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala 编程语言官网&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sat, 25 Apr 2015 10:02:59 +0800</pubDate>
-        <link>http://codethoughts.info/java/2015/04/25/play-framework-overview/</link>
-        <guid isPermaLink="true">http://codethoughts.info/java/2015/04/25/play-framework-overview/</guid>
-        
-        
-        <category>java</category>
         
       </item>
     

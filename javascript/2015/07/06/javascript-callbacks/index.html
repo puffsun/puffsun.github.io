@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>JavaScript 回调函数 - George's Code Thoughts</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/07/06/javascript-callbacks/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Code Thoughts</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JavaScript 回调函数</h1>
+                    
+                    <span class="meta">Posted by George Sun on July 6, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h2 id="section">为什么要异步</h2>
+
+<p>JavaScript 引擎是单线程运行的，它一次只能完成一个任务，如果有同时存在更多的任务必须排队等待前一个任务完成以后才可以分配到 CPU 时间。如果前一个任务占用了太多的 CPU 时间那么程序会出现无响应的状态，并阻塞后面的任务正常执行。针对这个问题，JavaScript 的解决方案是异步编程，而异步回调（async callback）则是 JavaScript 异步编程目前最为常用的模式。其他的异步编程模式有：事件监听，发布/订阅模式，Promise 等。本文不涉及异步回调之外的方式，以后的文章会相应的展开叙述，这篇文章会围绕 JavaScript 异步回调的特点，优点以及缺点展开。</p>
+
+<h2 id="event-loop">事件循环（Event Loop）</h2>
+
+<p>如上所述，JavaScript 引擎是单线程运行的，它的任务很简单，在接收到执行命令的请求以后，每次运行一段 JavaScript 代码，请求执行JavaScript 代码的对象就是事件循环。</p>
+
+<p>那么什么是事件循环呢？可以用如下伪码来帮助我们理解这个概念：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// 事件循环是一个先进先出的队列，我们这里用数组来模拟它</span>
+<span class="kd">var</span> <span class="nx">eventLoop</span> <span class="o">=</span> <span class="p">[</span> <span class="p">];</span>
+<span class="kd">var</span> <span class="nx">event</span><span class="p">;</span>
+
+<span class="c1">// 无限循环</span>
+<span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">eventLoop</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 取出下一个事件</span>
+        <span class="nx">event</span> <span class="o">=</span> <span class="nx">eventLoop</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+
+        <span class="c1">// 执行下一个事件</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">event</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">reportError</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>上面的代码仅仅用来表示事件循环的概念，并不是真正的实现。我们可以看到，每次循环结束，JavaScript 引擎都会检查事件队列中是否还有未执行的事件，如果有那么从队列中取出并执行，这些事件事实上就是 JavaScript 的函数回调。</p>
+
+<p>在 JavaScript 中有个很重要的细节需要注意，那就是 setTimeout() 函数。setTimeout() 函数并不会立即把函数回调加入到事件队列中，在运行到 setTimeout() 的时候，它会设置一个定时器，当定时器结束以后，JavaScript 宿主环境会把函数回调加入事件队列，随后JavaScript 引擎才有机会来调度 setTimeout() 的回调函数。</p>
+
+<p>那加入此时有多个事件在队列中等待调度呢？此时，除了正在被调度的那个事件回调，其他的都必须等待，因为 JavaScript 是单线程的。这也是为什么 JavaScript 的 setTimeout 所设置的时间并不精确，总会根据当前事件队列的事件数量或多或少有延时。可以确定的一点是它绝对不会在定时器超时以前调用回调函数。</p>
+
+<h2 id="section-1">函数回调的执行</h2>
+
+<p>我们来通过一个例子解释一下函数回调的代码的执行顺序，仍然是 setTimeout()，如果换成 AJAX 请求也是一样的：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// A</span>
+<span class="nx">setTimeout</span><span class="p">(</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// C</span>
+<span class="p">},</span> <span class="mi">1000</span> <span class="p">);</span>
+<span class="c1">// B</span></code></pre></div>
+
+<p>上面这段代码的执行顺序，用自然语言可以这样来描述：先执行 A，随后设置一个1000毫秒的定时器，然后执行 B，1000毫秒定时器超时以后，执行 C。请注意这里的细节，很多人在这里犯错。</p>
+
+<p>另外，我们在这里可以看到 JavaScript 事件回调的一个缺点，它和我们人脑的思维方式相悖。当我们读代码的时候，是从上往下顺序捕捉代码，而事件回调则是先执行回调之后的代码，一段时间以后再去执行回调函数中的代码。</p>
+
+<h2 id="section-2">回调嵌套</h2>
+
+<p>我们来看一段在 JavaScript 中很常见的嵌套回调，也可以被称为回调金字塔：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">listen</span><span class="p">(</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">handler</span><span class="p">(</span><span class="nx">evt</span><span class="p">){</span>
+    <span class="nx">setTimeout</span><span class="p">(</span> <span class="kd">function</span> <span class="nx">request</span><span class="p">(){</span>
+        <span class="nx">ajax</span><span class="p">(</span> <span class="s2">&quot;http://some.url.1&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">response</span><span class="p">(</span><span class="nx">text</span><span class="p">){</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">text</span> <span class="o">==</span> <span class="s2">&quot;hello&quot;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">handler</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">text</span> <span class="o">==</span> <span class="s2">&quot;world&quot;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">request</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="p">);</span>
+    <span class="p">},</span> <span class="mi">500</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">);</span></code></pre></div>
+
+<p>这段代码首先设置了点击事件回调，在这个回调中设置了定时器回调，随后在定时器回调函数中发出了一个 AJAX 请求，并为 AJAX 请求设置了相应回调函数。理解这段代码不算难，但是你可以想象一下如果有更多的回调代码会很难理解。</p>
+
+<p>如果你不喜欢上面代码层层缩进，那么可以把它改写如下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">listen</span><span class="p">(</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="nx">handler</span> <span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">handler</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span> <span class="nx">request</span><span class="p">,</span> <span class="mi">500</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">request</span><span class="p">(){</span>
+    <span class="nx">ajax</span><span class="p">(</span> <span class="s2">&quot;http://some.url.1&quot;</span><span class="p">,</span> <span class="nx">response</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">response</span><span class="p">(</span><span class="nx">text</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">text</span> <span class="o">==</span> <span class="s2">&quot;hello&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">handler</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">text</span> <span class="o">==</span> <span class="s2">&quot;world&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">request</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>现在缩进问题解决了，但上面的代码也仅仅解决了缩进问题。事实上，导致回调金字塔难以理解最大的原因并不是犹如千层饼似的一层一层的缩进，而是所设置的回调违背的人脑的直觉。上面的代码可以简化为如下模型：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">doA</span><span class="p">(</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">doB</span><span class="p">();</span>
+
+    <span class="nx">doC</span><span class="p">(</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="nx">doD</span><span class="p">();</span>
+    <span class="p">}</span> <span class="p">)</span>
+
+    <span class="nx">doE</span><span class="p">();</span>
+<span class="p">}</span> <span class="p">);</span>
+
+<span class="nx">doF</span><span class="p">();</span></code></pre></div>
+
+<p>它的正确执行顺序是： doA() -&gt; doF() -&gt; doB() -&gt; doC() -&gt; doE() -&gt; doD()，我想，很多人需要非常仔细才能正确的理解上面代码的执行顺序，代码的层层缩进只是回调金字塔的的现象，它本质上的问题是与人脑的直觉相悖。</p>
+
+<h2 id="section-3">回调的信任问题</h2>
+
+<p>除了上面的问题以外，回调还有更严重的问题需要解决，那就是信任问题。我们再来看一段代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// A</span>
+<span class="nx">ajax</span><span class="p">(</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(..){</span>
+    <span class="c1">// C</span>
+<span class="p">}</span> <span class="p">);</span>
+<span class="c1">// B</span></code></pre></div>
+
+<p>这里，A 和 B 都会立即执行，而 C 则会在 AJAX 响应返回以后执行。在这里我们把执行回调函数的主动权交给第三方，也就是 AJAX，我们失去了对它的控制权，这也会导致一系列的问题，事实上这也是 JavaScript 中基于回调驱动设计（Callback-Driven Design）的主要问题。</p>
+
+<p>我们可以把上面的代码称作“控制反转（Inversion of Control）”，也就是我们把代码控制权交由第三方，基于此，我们和第三方代码之间达成了一个协定，我们期望代码可以根据这个协定来执行，但是由于我们失去了对代码的控制权，很多情况下代码并不完全根据这个既定的协定来执行。</p>
+
+<p>我们通过另一个示例来进一步阐述，假设我们正在开发一个电子商务系统的结账功能模块，最终的付款功能我们一般是交由第三方系统来完成，比如支付宝，Aria 或者 Cybersource 等，通过它们，我们可以实现收费和订单追踪功能。假定他们提供了支付的回调接口，那么代码可能像下面这样：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">analytics</span><span class="p">.</span><span class="nx">trackPurchase</span><span class="p">(</span> <span class="nx">purchaseData</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">chargeCreditCard</span><span class="p">();</span>
+    <span class="nx">displayThankyouPage</span><span class="p">();</span>
+<span class="p">}</span> <span class="p">);</span></code></pre></div>
+
+<p>我们把回调代码交由第三方的接口来完成，系统经过测试，看起来一切都很完美。但是实现支付的第三方代码在将来随时可能被改动，因为他们是第三方代码，而且控制被反转了，我们对它失去了控制权。假如由于第三方的代码在将来的代码中引入了 bug，他们多次调用了我们设置的回调函数，那么用户可能会被多次收费，也会导致出现完全相同的多个订单，这可是个大问题。那么你可能会把上面的代码稍微改动一下，变成这样：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">tracked</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="nx">analytics</span><span class="p">.</span><span class="nx">trackPurchase</span><span class="p">(</span> <span class="nx">purchaseData</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">tracked</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">tracked</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="nx">chargeCreditCard</span><span class="p">();</span>
+        <span class="nx">displayThankyouPage</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">);</span></code></pre></div>
+
+<p>看起来解决了多次调用问题。新的问题来了，加入第三方代码因为新的 bug，从来没有调用我们的回调函数，我们该怎么应付？事实上，异步回调函数带来潜在的问题可能有很多：</p>
+
+<ul>
+  <li>过早调用了回调，在订单没有被追踪之前；</li>
+  <li>过晚或者压根没有调用回调函数；</li>
+  <li>过多或者过少的调用了回调函数；</li>
+  <li>没有传入回调函数所必须的参数；</li>
+  <li>吞掉了回调函数中的异常或者错误</li>
+  <li>…</li>
+</ul>
+
+<p>到这里，你对控制被反转的回调函数带来的潜在问题可能有了新的认识，想解决这个问题，我们需要引入新的元素。下一篇文章，我们讨论一下我们如何用 JavaScript ES6（正式的名称是 ES2015）引入的 Promise 解决我们所面临的问题。</p>
+
+<h2 id="section-4">资源</h2>
+
+<p><a href="https://github.com/getify/You-Dont-Know-JS/blob/master/async%20%26%20performance/">You Don’t Know JS</a></p>
+
+<p><a href="http://www.hello-code.com/blog/javascript/201409/4015.html">详解JavaScript异步编程的模式</a></p>
+
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/06/22/javascript-functions/" data-toggle="tooltip" data-placement="top" title="漫谈 JavaScript 函数">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Code Thoughts 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
