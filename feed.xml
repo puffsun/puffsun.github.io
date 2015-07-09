@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 09 Jul 2015 14:14:17 +0800</pubDate>
-    <lastBuildDate>Thu, 09 Jul 2015 14:14:17 +0800</lastBuildDate>
+    <pubDate>Thu, 09 Jul 2015 17:49:57 +0800</pubDate>
+    <lastBuildDate>Thu, 09 Jul 2015 17:49:57 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -14,7 +14,7 @@
         <description>&lt;p&gt;在前一篇博客&lt;a href=&quot;http://codethoughts.info/javascript/2015/07/06/javascript-callbacks/&quot;&gt;JavaScript 回调函数&lt;/a&gt;，我们提出了回调函数带来的潜在问题，在这里再次列举一次：&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;过早调用了回调；&lt;/li&gt;
+  &lt;li&gt;过早调用了回调函数；&lt;/li&gt;
   &lt;li&gt;过晚或者压根没有调用回调函数；&lt;/li&gt;
   &lt;li&gt;过多或者过少的调用了回调函数；&lt;/li&gt;
   &lt;li&gt;没有传入回调函数所必须的参数；&lt;/li&gt;
