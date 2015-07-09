@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 09 Jul 2015 17:53:50 +0800</pubDate>
-    <lastBuildDate>Thu, 09 Jul 2015 17:53:50 +0800</lastBuildDate>
+    <pubDate>Thu, 09 Jul 2015 22:56:01 +0800</pubDate>
+    <lastBuildDate>Thu, 09 Jul 2015 22:56:01 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -61,7 +61,7 @@
 
 &lt;p&gt;这里可以看到，我们可以通过Promise 构造函数来创建一个 Promise 实例，它接受一个带两个参数的函数作为回调。回调函数的两个参数中，第一个表示成功的回调，调用以后表示 Promise 成功取得期望的值；第二个表示失败的回调，调用以后，表示 Promise 没有取得想要的值。&lt;/p&gt;
 
-&lt;p&gt;得到了 &lt;code&gt;promise&lt;/code&gt; 对象以后，我们通过它暴露的 &lt;code&gt;then&lt;/code&gt; 接口来使用它。&lt;code&gt;then&lt;/code&gt; 接受两个参数，第一个是成功的回调函数（被 &lt;code&gt;resolve&lt;/code&gt; 后调用），第二个是失败的回调函数（被 &lt;code&gt;reject&lt;/code&gt; 后调用）。&lt;/p&gt;
+&lt;p&gt;得到了 &lt;code&gt;promise&lt;/code&gt; 对象以后，我们通过它暴露的 &lt;code&gt;then&lt;/code&gt; 接口来使用它。&lt;code&gt;then&lt;/code&gt; 接受两个参数，第一个是成功的回调函数（被 &lt;code&gt;resolve&lt;/code&gt; 后该回调函数将会被自动加入到 JavaScript 引擎的事件队列中），第二个是失败的回调函数（被 &lt;code&gt;reject&lt;/code&gt; 后该回调函数会被自动加入 JavaScript 引擎的事件队列中）。关于事件队列，可以参考我的上一篇博客&lt;a href=&quot;http://codethoughts.info/javascript/2015/07/06/javascript-callbacks/&quot;&gt;JavaScript 回调函数&lt;/a&gt;，需要注意的细节是加入事件队列的回调函数都是异步调用。&lt;/p&gt;
 
 &lt;h2 id=&quot;section&quot;&gt;解决回调函数的信任问题&lt;/h2&gt;
 

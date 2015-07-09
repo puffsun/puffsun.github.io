@@ -148,7 +148,7 @@
 
 <p>这里可以看到，我们可以通过Promise 构造函数来创建一个 Promise 实例，它接受一个带两个参数的函数作为回调。回调函数的两个参数中，第一个表示成功的回调，调用以后表示 Promise 成功取得期望的值；第二个表示失败的回调，调用以后，表示 Promise 没有取得想要的值。</p>
 
-<p>得到了 <code>promise</code> 对象以后，我们通过它暴露的 <code>then</code> 接口来使用它。<code>then</code> 接受两个参数，第一个是成功的回调函数（被 <code>resolve</code> 后调用），第二个是失败的回调函数（被 <code>reject</code> 后调用）。</p>
+<p>得到了 <code>promise</code> 对象以后，我们通过它暴露的 <code>then</code> 接口来使用它。<code>then</code> 接受两个参数，第一个是成功的回调函数（被 <code>resolve</code> 后该回调函数将会被自动加入到 JavaScript 引擎的事件队列中），第二个是失败的回调函数（被 <code>reject</code> 后该回调函数会被自动加入 JavaScript 引擎的事件队列中）。关于事件队列，可以参考我的上一篇博客<a href="http://codethoughts.info/javascript/2015/07/06/javascript-callbacks/">JavaScript 回调函数</a>，需要注意的细节是加入事件队列的回调函数都是异步调用。</p>
 
 <h2 id="section">解决回调函数的信任问题</h2>
 
