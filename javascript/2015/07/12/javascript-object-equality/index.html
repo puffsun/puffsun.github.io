@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>判定 JavaScript 对象是否相等 - George's Code Thoughts</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/07/12/javascript-object-equality/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Code Thoughts</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>判定 JavaScript 对象是否相等</h1>
+                    
+                    <span class="meta">Posted by George Sun on July 12, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>JavaScript 中有多个比较相等性的运算符：<code>==</code>、 <code>===</code> 和 ES2015 引入的 <code>Object.is(...)</code>，它们的行为并不相同，这给初学者带来了很多困惑。不过我们今天的主题并不是讨论这三者的差别，而是另外一个很常用的主题，JavaScript 对象相等性的判别。</p>
+
+<h2 id="javascript-">JavaScript 如何判定对象相等性</h2>
+
+<p>首先来看一个示例：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">foo</span><span class="o">:</span> <span class="s2">&quot;FOO&quot;</span><span class="p">,</span>
+    <span class="nx">bar</span><span class="o">:</span> <span class="s2">&quot;BAR&quot;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">foo</span><span class="o">:</span> <span class="s2">&quot;FOO&quot;</span><span class="p">,</span>
+    <span class="nx">bar</span><span class="o">:</span> <span class="s2">&quot;BAR&quot;</span>
+<span class="p">};</span>
+
+<span class="c1">// Outputs: false</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj1</span> <span class="o">===</span> <span class="nx">obj2</span><span class="p">);</span></code></pre></div>
+
+<p>这里我们使用 <code>===</code> 来判定对象的相等性，<code>===</code> 在判定相等性的时候会考虑对象的类型，而且不会有隐式的类型转换。从输出可以看到，即便两个对象内容完全相同，二者也并不相等。事实上，即便我们用 <code>==</code> 来判定，结果也是一样的：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// Outputs: false</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj1</span> <span class="o">==</span> <span class="nx">obj2</span><span class="p">);</span></code></pre></div>
+
+<p>其中的原因是 JavaScript 在判断相等性的时候对原生类型和对象区别对待。如果是原生类型，比如说字符串和数字，那么 JavaScript 根据值来比较；如果是对象，那么要根据对象的引用来判断，也就是对象在内存中引用的地址，我们来验证一下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">foo</span><span class="o">:</span> <span class="s2">&quot;FOO&quot;</span><span class="p">,</span>
+    <span class="nx">bar</span><span class="o">:</span> <span class="s2">&quot;BAR&quot;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">foo</span><span class="o">:</span> <span class="s2">&quot;FOO&quot;</span><span class="p">,</span>
+    <span class="nx">bar</span><span class="o">:</span> <span class="s2">&quot;BAR&quot;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">obj3</span> <span class="o">=</span> <span class="nx">obj1</span><span class="p">;</span>
+
+<span class="c1">// Outputs: false</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj1</span> <span class="o">===</span> <span class="nx">obj2</span><span class="p">);</span>
+
+<span class="c1">// Outputs: true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj1</span> <span class="o">===</span> <span class="nx">obj3</span><span class="p">);</span></code></pre></div>
+
+<p>这里我们可以看到，对象 <code>obj1</code> 和 <code>obj3</code> 引用了同一个内存地址，他们是相等的，而 <code>obj2</code> 和 <code>obj1</code> 引用了不同的内存地址，他们并不相等。</p>
+
+<h2 id="section">区分对象值相等和引用相等</h2>
+
+<p>基于上面的结论，在 JavaScript 代码中判定对象是否相等之前，必须明确我们需要判断是需要严格的内存引用地址相等还是两个对象的内容相等。两个对象内存引用相等表示两个对象指向的是同一个内存地址，本质上是同一个对象，只是两个引用地址而已，而内容相等则宽松得多，也是我们实际的代码中最常用到的。</p>
+
+<p>但是，很不幸，JavaScript 没有原生的为我们提供判断两个对象内容是否相等的工具，我们需要自己实现它或者使用第三方类库。这和我们写 Java 代码的时候，实现对象的 <code>equals(...)</code> 方法在概念上是一致的，但是做法则完全不同。鉴于 JavaScript 要比 Java 灵活得多，我们也有更多的办法来达到我们的目的。</p>
+
+<h2 id="section-1">判断两个对象内容是否相等</h2>
+
+<p>这里我们来看一个实现判断两个对象内容是否相等的方法：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">isEquivalent</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 获取对象属性的所有的键</span>
+    <span class="kd">var</span> <span class="nx">aProps</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyNames</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">bProps</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyNames</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
+
+    <span class="c1">// 如果键的数量不同，那么两个对象内容也不同</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">aProps</span><span class="p">.</span><span class="nx">length</span> <span class="o">!=</span> <span class="nx">bProps</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">aProps</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">propName</span> <span class="o">=</span> <span class="nx">aProps</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+
+        <span class="c1">// 如果对应的值不同，那么对象内容也不同</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">propName</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">b</span><span class="p">[</span><span class="nx">propName</span><span class="p">])</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Outputs: true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">isEquivalent</span><span class="p">(</span><span class="nx">obj1</span><span class="p">,</span> <span class="nx">obj2</span><span class="p">));</span></code></pre></div>
+
+<p>请注意，我们这里用到了 <code>Object.getOwnPropertyNames(a)</code>，这是由 ES5 引入的，如果你还需要考虑过时的浏览器，比如 IE8 :(，那么你可以考虑使用 <a href="https://github.com/es-shims/es5-shim">es5-shim</a>。如果你想了解更多关于 ES5 浏览器兼容性的问题，可以参考 <a href="http://kangax.github.io/compat-table/es5/">ES5 浏览器兼容对照表</a>。</p>
+
+<p>从上面的代码我们可以看到，判断两个对象内容是否相同，我们需要遍历对象的所有属性，并依次判断每个键对应的值是否相同。这里的实现并不严谨，有很多情况还无法处理。</p>
+
+<ul>
+  <li>对象嵌套的情况，比如一个对象属性的值是另外一个对象；</li>
+  <li>对象属性的值是 <code>NaN</code>，我们知道 JavaScript 的 <code>NaN</code> 和自己是不相同的，比如 <code>console.log(NaN === NaN) // false</code></li>
+  <li>…</li>
+</ul>
+
+<p>这里我们来看一个产品级的实现，代码来自 <a href="https://github.com/lodash/lodash/blob/master/lodash.src.js">Lo-Dash 库</a>：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">baseIsEqualDeep</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">equalFunc</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">,</span> <span class="nx">isLoose</span><span class="p">,</span> <span class="nx">stackA</span><span class="p">,</span> <span class="nx">stackB</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">objIsArr</span> <span class="o">=</span> <span class="nx">isArray</span><span class="p">(</span><span class="nx">object</span><span class="p">),</span>
+          <span class="nx">othIsArr</span> <span class="o">=</span> <span class="nx">isArray</span><span class="p">(</span><span class="nx">other</span><span class="p">),</span>
+          <span class="nx">objTag</span> <span class="o">=</span> <span class="nx">arrayTag</span><span class="p">,</span>
+          <span class="nx">othTag</span> <span class="o">=</span> <span class="nx">arrayTag</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">objIsArr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">objTag</span> <span class="o">=</span> <span class="nx">objToString</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">objTag</span> <span class="o">==</span> <span class="nx">argsTag</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">objTag</span> <span class="o">=</span> <span class="nx">objectTag</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">objTag</span> <span class="o">!=</span> <span class="nx">objectTag</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">objIsArr</span> <span class="o">=</span> <span class="nx">isTypedArray</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">othIsArr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">othTag</span> <span class="o">=</span> <span class="nx">objToString</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">other</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">othTag</span> <span class="o">==</span> <span class="nx">argsTag</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">othTag</span> <span class="o">=</span> <span class="nx">objectTag</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">othTag</span> <span class="o">!=</span> <span class="nx">objectTag</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">othIsArr</span> <span class="o">=</span> <span class="nx">isTypedArray</span><span class="p">(</span><span class="nx">other</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="kd">var</span> <span class="nx">objIsObj</span> <span class="o">=</span> <span class="nx">objTag</span> <span class="o">==</span> <span class="nx">objectTag</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isHostObject</span><span class="p">(</span><span class="nx">object</span><span class="p">),</span>
+          <span class="nx">othIsObj</span> <span class="o">=</span> <span class="nx">othTag</span> <span class="o">==</span> <span class="nx">objectTag</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isHostObject</span><span class="p">(</span><span class="nx">other</span><span class="p">),</span>
+          <span class="nx">isSameTag</span> <span class="o">=</span> <span class="nx">objTag</span> <span class="o">==</span> <span class="nx">othTag</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">isSameTag</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="nx">objIsArr</span> <span class="o">||</span> <span class="nx">objIsObj</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">equalByTag</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">objTag</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isLoose</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">objIsWrapped</span> <span class="o">=</span> <span class="nx">objIsObj</span> <span class="o">&amp;&amp;</span> <span class="nx">hasOwnProperty</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="s1">&#39;__wrapped__&#39;</span><span class="p">),</span>
+            <span class="nx">othIsWrapped</span> <span class="o">=</span> <span class="nx">othIsObj</span> <span class="o">&amp;&amp;</span> <span class="nx">hasOwnProperty</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">other</span><span class="p">,</span> <span class="s1">&#39;__wrapped__&#39;</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">objIsWrapped</span> <span class="o">||</span> <span class="nx">othIsWrapped</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">equalFunc</span><span class="p">(</span><span class="nx">objIsWrapped</span> <span class="o">?</span> <span class="nx">object</span><span class="p">.</span><span class="nx">value</span><span class="p">()</span> <span class="o">:</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">othIsWrapped</span> <span class="o">?</span> <span class="nx">other</span><span class="p">.</span><span class="nx">value</span><span class="p">()</span> <span class="o">:</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">,</span> <span class="nx">isLoose</span><span class="p">,</span> <span class="nx">stackA</span><span class="p">,</span> <span class="nx">stackB</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isSameTag</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="c1">// Assume cyclic values are equal.</span>
+      <span class="c1">// For more information on detecting circular references see https://es5.github.io/#JO.</span>
+      <span class="nx">stackA</span> <span class="o">||</span> <span class="p">(</span><span class="nx">stackA</span> <span class="o">=</span> <span class="p">[]);</span>
+      <span class="nx">stackB</span> <span class="o">||</span> <span class="p">(</span><span class="nx">stackB</span> <span class="o">=</span> <span class="p">[]);</span>
+
+      <span class="kd">var</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">stackA</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">length</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">stackA</span><span class="p">[</span><span class="nx">length</span><span class="p">]</span> <span class="o">==</span> <span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">stackB</span><span class="p">[</span><span class="nx">length</span><span class="p">]</span> <span class="o">==</span> <span class="nx">other</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="c1">// Add `object` and `other` to the stack of traversed objects.</span>
+      <span class="nx">stackA</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+      <span class="nx">stackB</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">other</span><span class="p">);</span>
+
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">(</span><span class="nx">objIsArr</span> <span class="o">?</span> <span class="nx">equalArrays</span> <span class="o">:</span> <span class="nx">equalObjects</span><span class="p">)(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">equalFunc</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">,</span> <span class="nx">isLoose</span><span class="p">,</span> <span class="nx">stackA</span><span class="p">,</span> <span class="nx">stackB</span><span class="p">);</span>
+
+      <span class="nx">stackA</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+      <span class="nx">stackB</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="kd">function</span> <span class="nx">baseIsEqual</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">,</span> <span class="nx">isLoose</span><span class="p">,</span> <span class="nx">stackA</span><span class="p">,</span> <span class="nx">stackB</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="nx">other</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">other</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isObjectLike</span><span class="p">(</span><span class="nx">other</span><span class="p">)))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">value</span> <span class="o">!==</span> <span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">other</span> <span class="o">!==</span> <span class="nx">other</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">baseIsEqualDeep</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">baseIsEqual</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">,</span> <span class="nx">isLoose</span><span class="p">,</span> <span class="nx">stackA</span><span class="p">,</span> <span class="nx">stackB</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="kd">function</span> <span class="nx">isEqual</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">customizer</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">customizer</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span> <span class="o">?</span> <span class="nx">customizer</span> <span class="o">:</span> <span class="kc">undefined</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">customizer</span> <span class="o">?</span> <span class="nx">customizer</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">other</span><span class="p">)</span> <span class="o">:</span> <span class="kc">undefined</span><span class="p">;</span>
+      <span class="k">return</span> <span class="nx">result</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="o">?</span> <span class="nx">baseIsEqual</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">other</span><span class="p">,</span> <span class="nx">customizer</span><span class="p">)</span> <span class="o">:</span> <span class="o">!!</span><span class="nx">result</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>代码很长，我这里就不一一解释了，列举出来只是为了说明实现一个健壮的对象相等性判定函数并不容易，我们最好还是使用 <a href="http://lodash.com/docs#isEqual">Lo-Dash</a> 或者 <a href="http://underscorejs.org/#isEqual">Underscore</a> 这样经过亿万产品检验的类库来做这件事，不用重新发明轮子。他们实现的 API 是一样的 <code>isEqual(...)</code>，我们知道 Lo-Dash 和 Underscore 的 API 是兼容的。关于 Lo-Dash 的诞生还有一个和 Underscore 有关的有趣故事，我们得到的教训就是 <code>别惹大神，否则他会干翻你</code>！</p>
+
+<p>把 Lo-Dash 或者 Underscore 应用到我们前面的代码中：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// Outputs: true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isEqual</span><span class="p">(</span><span class="nx">obj1</span><span class="p">,</span> <span class="nx">obj2</span><span class="p">));</span></code></pre></div>
+
+<p>和我们的预期完全一致。</p>
+
+<h2 id="section-2">资源</h2>
+
+<p><a href="http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html">Object Equality in JavaScript</a></p>
+
+<p><a href="https://lodash.com/">Lo-Dash</a></p>
+
+<p><a href="http://underscorejs.org/">Underscore</a></p>
+
+<p><a href="http://stackoverflow.com/questions/201183/how-to-determine-equality-for-two-javascript-objects">How to determine equality for two JavaScript objects?</a></p>
+
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/07/09/javascript-promises/" data-toggle="tooltip" data-placement="top" title="JavaScript Promises">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Code Thoughts 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
