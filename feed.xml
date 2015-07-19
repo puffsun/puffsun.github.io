@@ -5,12 +5,12 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 19 Jul 2015 10:37:22 +0800</pubDate>
-    <lastBuildDate>Sun, 19 Jul 2015 10:37:22 +0800</lastBuildDate>
+    <pubDate>Sun, 19 Jul 2015 10:39:39 +0800</pubDate>
+    <lastBuildDate>Sun, 19 Jul 2015 10:39:39 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>JavaScript BDD 之 Mocha，Chai，Sinon</title>
+        <title>用 Mocha/Chai/Sinon 测试 JavaScript 代码</title>
         <description>&lt;h2 id=&quot;section&quot;&gt;引言&lt;/h2&gt;
 
 &lt;p&gt;JavaScript 是一门动态语言，它没有类似静态语言的编译期语法检查，为了使得代码易于维护和重构，我们需要用自动化测试覆盖 JavaScript 代码。这篇文章将会介绍如何使用 Mocha 为 JavaScript 代码写自动化测试，主要是单元测试，因为单元测试是开发者日常工作中最常接触的自动化测试了。&lt;/p&gt;
