@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 19 Jul 2015 10:41:07 +0800</pubDate>
-    <lastBuildDate>Sun, 19 Jul 2015 10:41:07 +0800</lastBuildDate>
+    <pubDate>Sun, 19 Jul 2015 10:41:49 +0800</pubDate>
+    <lastBuildDate>Sun, 19 Jul 2015 10:41:49 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -619,9 +619,9 @@
 
 &lt;p&gt;&lt;a href=&quot;http://thejsguy.com/2015/01/12/jasmine-vs-mocha-chai-and-sinon.html&quot;&gt;Jasmine vs. Mocha, Chai, and Sinon&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Thu, 16 Jul 2015 21:19:50 +0800</pubDate>
-        <link>http://codethoughts.info/javascript/2015/07/16/javascript-bdd-with-mocha-chai-sinon/</link>
-        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/07/16/javascript-bdd-with-mocha-chai-sinon/</guid>
+        <pubDate>Sat, 18 Jul 2015 21:19:50 +0800</pubDate>
+        <link>http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/</link>
+        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/</guid>
         
         
         <category>javascript</category>
