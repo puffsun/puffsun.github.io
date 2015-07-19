@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>JavaScript BDD 之 Mocha，Chai，Sinon - George's Code Thoughts</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/07/16/javascript-bdd-with-mocha-chai-sinon/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Code Thoughts</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JavaScript BDD 之 Mocha，Chai，Sinon</h1>
+                    
+                    <span class="meta">Posted by George Sun on July 16, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h2 id="section">引言</h2>
+
+<p>JavaScript 是一门动态语言，它没有类似静态语言的编译期语法检查，为了使得代码易于维护和重构，我们需要用自动化测试覆盖 JavaScript 代码。这篇文章将会介绍如何使用 Mocha 为 JavaScript 代码写自动化测试，主要是单元测试，因为单元测试是开发者日常工作中最常接触的自动化测试了。</p>
+
+<p>从文章标题也可以看出，我们这里将会使用 <a href="https://en.wikipedia.org/wiki/Behavior-driven_development">BDD</a> 风格的测试代码，这种风格的测试写出的代码类似自然语言，常见的一些语法比如 <code>describe</code>, <code>expect</code>, <code>should</code> 等等。熟悉 Ruby 的人都应该知道 Ruby 社区大名鼎鼎的 <a href="http://rspec.info/">RSpec</a>，在 JavaScript 社区也有类似的测试框架，比如我们今天要介绍的 <a href="http://mochajs.org/">Mocha</a> 就是其中一种比较流行的 BDD 测试框架，利用它可以写出和 Spec 风格非常接近的测试代码，另外一个是 <a href="https://github.com/jasmine/jasmine">Jasmine</a>，因为篇幅原因，我们今天不会涉及到。</p>
+
+<h2 id="bdd-vs-tdd">BDD vs. TDD</h2>
+<p>事实上，Mocha 既支持 TDD 风格的测试代码，也支持 BDD 风格的测试代码，我们来看两段分别演示了这两种风格的测试代码。</p>
+
+<p>需要测试的Node.js代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// src/main.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="kc">NaN</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">n</span> <span class="o">*</span> <span class="nx">factorial</span><span class="p">(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">};</span></code></pre></div>
+
+<p>这是TDD 风格的测试代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// test/tdd_main.js</span>
+<span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">assert</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;assert&#39;</span><span class="p">),</span>
+    <span class="nx">factorial</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../src/main&#39;</span><span class="p">);</span>
+
+<span class="nx">suite</span><span class="p">(</span><span class="s1">&#39;Test&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+    <span class="nx">setup</span><span class="p">(</span><span class="kd">function</span> <span class="p">(){</span>
+        <span class="c1">// Create any objects that we might need</span>
+    <span class="p">});</span>
+
+    <span class="nx">suite</span><span class="p">(</span><span class="s1">&#39;#factorial()&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+        <span class="nx">test</span><span class="p">(</span><span class="s1">&#39;equals 1 for sets of zero length&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">factorial</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+        <span class="p">});</span>
+
+        <span class="nx">test</span><span class="p">(</span><span class="s1">&#39;equals 1 for sets of length one&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">factorial</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+        <span class="p">});</span>
+
+        <span class="nx">test</span><span class="p">(</span><span class="s1">&#39;equals 2 for sets of length two&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">factorial</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+        <span class="p">});</span>
+
+        <span class="nx">test</span><span class="p">(</span><span class="s1">&#39;equals 6 for sets of length three&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nx">factorial</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
+
+<p>如何安装 Mocha 请参考本文下一节，安装完毕之后在项目根目录下运行 <code>mocha --ui tdd  test/tdd_main.js</code> 可以运行以上测试代码，这里需要指定测试的风格，否则会出现 <code>suite is not defined</code> 错误。</p>
+
+<p>这是 BDD 风格的测试代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// test/bdd_main.js</span>
+<span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">assert</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;assert&#39;</span><span class="p">),</span>
+    <span class="nx">should</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;chai&#39;</span><span class="p">).</span><span class="nx">should</span><span class="p">(),</span>
+    <span class="nx">factorial</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../src/main&#39;</span><span class="p">);</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Test&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+    <span class="nx">before</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+        <span class="c1">// Stuff to do before the tests, like imports, what not</span>
+    <span class="p">});</span>
+
+    <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;#factorial()&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+        <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should return 1 when given 0&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">factorial</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should return 1 when given 1&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">factorial</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should return 2 when given 2&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">factorial</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should return 6 when given 3&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+            <span class="nx">factorial</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+
+    <span class="nx">after</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 清理需要释放的资源</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
+
+<p>在根目录下运行 <code>mocha --ui bdd  test/bdd_main.js</code> 可以运行以上测试代码。</p>
+
+<p>对 TDD 风格的测试在本文中的介绍到此为止，我们接下来主要介绍如何用 Mocha 及其配套库来为我们的 JavaScript 代码写 BDD 风格的测试代码。Mocha 常见的配套库有<a href="http://chaijs.com/">Chai</a> 和 <a href="http://sinonjs.org/">Sinon</a>，首先我们来看看它们都是什么。</p>
+
+<h2 id="mocha-">准备 Mocha 测试环境</h2>
+
+<p><a href="http://mochajs.org/">Mocha</a> 是一个 JavaScript 测试框架，可以用来运行测试代码，它没有内置的 Assertion，Mock 和 Stub 功能。一般我们用 <a href="http://chaijs.com/">Chai</a> 来为它提供断言，用 <a href="http://sinonjs.org/">Sinon</a> 为它提供 Mock 和 Stub 功能。Mocha 可以用来测试 Node.js 和 浏览器的 JavaScript 代码。本文中的样例代码都是 Node.js 代码，如果你需要用它来测试运行在浏览器中的 JavaScript 代码，可以参考它的主页去设置测试环境。</p>
+
+<p>Mocha 用于运行测试代码，我们需要全局安装：
+<code>npm install -g mocha</code></p>
+
+<p>安装 Chai：
+<code>npm install -D chai</code>， -D 等同于 –save-dev，参见<a href="https://docs.npmjs.com/misc/config">npm configuration</a></p>
+
+<p>安装 Sinon：
+<code>npm install -D sinon</code></p>
+
+<h2 id="section-1">需要测试的代码</h2>
+
+<p>为了全面的展示 Mocha 和 Jasmine 这两个测试框架，我们这里用它来测试一段比较复杂的代码。这段代码是用 JavaScript 实现了 <a href="https://en.wikipedia.org/wiki/Directed_graph">有向图</a>，并且图的边可以带有权重。如果你对这段代码有兴趣，可以研究一下具体的实现，代码也有详细的注释；而如果你仅仅对如何写测试有兴趣，那么可以忽略具体的实现，把它仅仅当成黑盒子。在阅读代码的时候请注意，我们这里所写的是 Node.js 代码，它用 CommonJS 来管理依赖。简单讲，就是用 <code>module.exports</code> 来导出公开的接口，没有指定导出的函数很变量无法被其他源文件的代码引用，它们的范围就会被局限在自身的源文件中；如果需要应用其他源文件的依赖，则需要 <code>require</code> 来指定需要导入的依赖。除了 <a href="https://en.wikipedia.org/wiki/Directed_graph">有向图</a>，我还用 JavaScript 实现了其他常见数据结构和算法，并且都有测试覆盖，如果有兴趣，可以参考我的 GitHub Repo: <a href="https://github.com/puffsun/js_datastructures_algorithms">Data Structures and Algorithms with JavaScript</a>，里面有详细的指示如何去运行这个 Repo 里的测试代码，所有的测试都使用 Mocha 框架编写。</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="cm">/*</span>
+<span class="cm">Graph implemented as a modified incidence list. O(1) for every typical</span>
+<span class="cm">operation except `removeNode()` at O(E) where E is the number of edges.</span>
+
+<span class="cm">## Overview example:</span>
+
+<span class="cm">```js</span>
+<span class="cm">var graph = new Graph;</span>
+<span class="cm">graph.addNode(&#39;A&#39;); // =&gt; a node object. For more info, log the output or check</span>
+<span class="cm">                    // the documentation for addNode</span>
+<span class="cm">graph.addNode(&#39;B&#39;);</span>
+<span class="cm">graph.addNode(&#39;C&#39;);</span>
+<span class="cm">graph.addEdge(&#39;A&#39;, &#39;C&#39;); // =&gt; an edge object</span>
+<span class="cm">graph.addEdge(&#39;A&#39;, &#39;B&#39;);</span>
+<span class="cm">graph.getEdge(&#39;B&#39;, &#39;A&#39;); // =&gt; undefined. Directed edge!</span>
+<span class="cm">graph.getEdge(&#39;A&#39;, &#39;B&#39;); // =&gt; the edge object previously added</span>
+<span class="cm">graph.getEdge(&#39;A&#39;, &#39;B&#39;).weight = 2 // weight is the only built-in handy property</span>
+<span class="cm">                                   // of an edge object. Feel free to attach</span>
+<span class="cm">                                   // other properties</span>
+<span class="cm">graph.getInEdgesOf(&#39;B&#39;); // =&gt; array of edge objects, in this case only one;</span>
+<span class="cm">                         // connecting A to B</span>
+<span class="cm">graph.getOutEdgesOf(&#39;A&#39;); // =&gt; array of edge objects, one to B and one to C</span>
+<span class="cm">graph.getAllEdgesOf(&#39;A&#39;); // =&gt; all the in and out edges. Edge directed toward</span>
+<span class="cm">                          // the node itself are only counted once</span>
+<span class="cm">forEachNode(function(nodeObject) {</span>
+<span class="cm">  console.log(node);</span>
+<span class="cm">});</span>
+<span class="cm">forEachEdge(function(edgeObject) {</span>
+<span class="cm">  console.log(edgeObject);</span>
+<span class="cm">});</span>
+<span class="cm">graph.removeNode(&#39;C&#39;); // =&gt; &#39;C&#39;. The edge between A and C also removed</span>
+<span class="cm">graph.removeEdge(&#39;A&#39;, &#39;B&#39;); // =&gt; the edge object removed</span>
+<span class="cm">```</span>
+
+<span class="cm">## Properties:</span>
+
+<span class="cm">- nodeSize: total number of nodes.</span>
+<span class="cm">- edgeSize: total number of edges.</span>
+<span class="cm"> */</span>
+
+<span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">hasProp</span> <span class="o">=</span> <span class="p">{}.</span><span class="nx">hasOwnProperty</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Graph</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">nodeSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">edgeSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">addNode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    The `id` is a unique identifier for the node, and should **not** change</span>
+<span class="cm">    after it&#39;s added. It will be used for adding, retrieving and deleting</span>
+<span class="cm">    related edges too.</span>
+
+<span class="cm">    **Note** that, internally, the ids are kept in an object. JavaScript&#39;s</span>
+<span class="cm">    object hashes the id `&#39;2&#39;` and `2` to the same key, so please stick to a</span>
+<span class="cm">    simple id data type such as number or string.</span>
+
+<span class="cm">    _Returns:_ the node object. Feel free to attach additional custom properties</span>
+<span class="cm">    on it for graph algorithms&#39; needs. **Undefined if node id already exists**,</span>
+<span class="cm">    as to avoid accidental overrides.</span>
+<span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">id</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">nodeSize</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">_outEdges</span><span class="o">:</span> <span class="p">{},</span>
+            <span class="nx">_inEdges</span><span class="o">:</span> <span class="p">{}</span>
+        <span class="p">};</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getNode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    _Returns:_ the node object. Feel free to attach additional custom properties</span>
+<span class="cm">    on it for graph algorithms&#39; needs.</span>
+<span class="cm">     */</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">removeNode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    _Returns:_ the node object removed, or undefined if it didn&#39;t exist in the</span>
+<span class="cm">    first place.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">nodeToRemove</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">id</span><span class="p">],</span>
+        <span class="nx">outEdgeId</span><span class="p">,</span> <span class="nx">inEdgeId</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">nodeToRemove</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">outEdgeId</span> <span class="k">in</span> <span class="nx">nodeToRemove</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">nodeToRemove</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">,</span> <span class="nx">outEdgeId</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">removeEdge</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">outEdgeId</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">inEdgeId</span> <span class="k">in</span> <span class="nx">nodeToRemove</span><span class="p">.</span><span class="nx">_inEdges</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">nodeToRemove</span><span class="p">.</span><span class="nx">_inEdges</span><span class="p">,</span> <span class="nx">inEdgeId</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">removeEdge</span><span class="p">(</span><span class="nx">inEdgeId</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">nodeSize</span><span class="o">--</span><span class="p">;</span>
+        <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">nodeToRemove</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">addEdge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fromId</span><span class="p">,</span> <span class="nx">toId</span><span class="p">,</span> <span class="nx">weight</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">edgeToAdd</span><span class="p">,</span> <span class="nx">fromNode</span><span class="p">,</span> <span class="nx">toNode</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">weight</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    `fromId` and `toId` are the node id specified when it was created using</span>
+<span class="cm">    `addNode()`. `weight` is optional and defaults to 1. Ignoring it effectively</span>
+<span class="cm">    makes this an unweighted graph. Under the hood, `weight` is just a normal</span>
+<span class="cm">    property of the edge object.</span>
+
+<span class="cm">    _Returns:_ the edge object created. Feel free to attach additional custom</span>
+<span class="cm">    properties on it for graph algorithms&#39; needs. **Or undefined** if the nodes</span>
+<span class="cm">    of id `fromId` or `toId` aren&#39;t found, or if an edge already exists between</span>
+<span class="cm">    the two nodes.</span>
+<span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="nx">fromId</span><span class="p">,</span> <span class="nx">toId</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">fromNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">fromId</span><span class="p">];</span>
+    <span class="nx">toNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">toId</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fromNode</span> <span class="o">||</span> <span class="o">!</span><span class="nx">toNode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">edgeToAdd</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">weight</span><span class="o">:</span> <span class="nx">weight</span>
+    <span class="p">};</span>
+    <span class="nx">fromNode</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">[</span><span class="nx">toId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">edgeToAdd</span><span class="p">;</span>
+    <span class="nx">toNode</span><span class="p">.</span><span class="nx">_inEdges</span><span class="p">[</span><span class="nx">fromId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">edgeToAdd</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">edgeSize</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">edgeToAdd</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getEdge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fromId</span><span class="p">,</span> <span class="nx">toId</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    _Returns:_ the edge object, or undefined if the nodes of id `fromId` or</span>
+<span class="cm">    `toId` aren&#39;t found.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">fromNode</span><span class="p">,</span> <span class="nx">toNode</span><span class="p">;</span>
+    <span class="nx">fromNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">fromId</span><span class="p">];</span>
+    <span class="nx">toNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">toId</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">fromNode</span> <span class="o">&amp;&amp;</span> <span class="nx">toNode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fromNode</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">[</span><span class="nx">toId</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">removeEdge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fromId</span><span class="p">,</span> <span class="nx">toId</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    _Returns:_ the edge object removed, or undefined of edge wasn&#39;t found.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">edgeToDelete</span><span class="p">,</span> <span class="nx">fromNode</span><span class="p">,</span> <span class="nx">toNode</span><span class="p">;</span>
+    <span class="nx">fromNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">fromId</span><span class="p">];</span>
+    <span class="nx">toNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">toId</span><span class="p">];</span>
+    <span class="nx">edgeToDelete</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="nx">fromId</span><span class="p">,</span> <span class="nx">toId</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">edgeToDelete</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">delete</span> <span class="nx">fromNode</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">[</span><span class="nx">toId</span><span class="p">];</span>
+    <span class="k">delete</span> <span class="nx">toNode</span><span class="p">.</span><span class="nx">_inEdges</span><span class="p">[</span><span class="nx">fromId</span><span class="p">];</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">edgeSize</span><span class="o">--</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">edgeToDelete</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getInEdgesOf</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    _Returns:_ an array of edge objects that are directed toward the node, or</span>
+<span class="cm">    empty array if no such edge or node exists.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">fromId</span><span class="p">,</span> <span class="nx">inEdges</span><span class="p">,</span> <span class="nx">ref</span><span class="p">,</span> <span class="nx">toNode</span><span class="p">;</span>
+    <span class="nx">toNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">nodeId</span><span class="p">];</span>
+    <span class="nx">inEdges</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">toNode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">ref</span> <span class="o">=</span> <span class="nx">toNode</span><span class="p">.</span><span class="nx">_inEdges</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// same as undefined</span>
+        <span class="nx">ref</span> <span class="o">=</span> <span class="k">void</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">fromId</span> <span class="k">in</span> <span class="nx">ref</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">ref</span><span class="p">,</span> <span class="nx">fromId</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">inEdges</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="nx">fromId</span><span class="p">,</span> <span class="nx">nodeId</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">inEdges</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getOutEdgesOf</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    _Returns:_ an array of edge objects that go out of the node, or empty array</span>
+<span class="cm">    if no such edge or node exists.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">fromNode</span><span class="p">,</span> <span class="nx">outEdges</span><span class="p">,</span> <span class="nx">ref</span><span class="p">,</span> <span class="nx">toId</span><span class="p">;</span>
+    <span class="nx">fromNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">nodeId</span><span class="p">];</span>
+    <span class="nx">outEdges</span> <span class="o">=</span> <span class="p">[];</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">fromNode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">ref</span> <span class="o">=</span> <span class="nx">fromNode</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">ref</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">toId</span> <span class="k">in</span> <span class="nx">ref</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">ref</span><span class="p">,</span> <span class="nx">toId</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">outEdges</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">,</span> <span class="nx">toId</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">outEdges</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getAllEdgesOf</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    **Note:** not the same as concatenating `getInEdgesOf()` and</span>
+<span class="cm">    `getOutEdgesOf()`. Some nodes might have an edge pointing toward itself.</span>
+<span class="cm">    This method solves that duplication.</span>
+
+<span class="cm">    _Returns:_ an array of edge objects linked to the node, no matter if they&#39;re</span>
+<span class="cm">    outgoing or coming. Duplicate edge created by self-pointing nodes are</span>
+<span class="cm">    removed. Only one copy stays. Empty array if node has no edge.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">inEdges</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">),</span>
+        <span class="nx">outEdges</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getOutEdgesOf</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">),</span>
+        <span class="nx">selfEdge</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="nx">nodeId</span><span class="p">,</span> <span class="nx">nodeId</span><span class="p">),</span>
+        <span class="nx">i</span><span class="p">,</span> <span class="nx">len</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">inEdges</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">outEdges</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span><span class="o">=</span> <span class="nx">inEdges</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">inEdges</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="nx">selfEdge</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">swap</span><span class="p">(</span><span class="nx">inEdges</span><span class="p">[</span><span class="nx">inEdges</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="nx">inEdges</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+            <span class="nx">inEdges</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">inEdges</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">outEdges</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">swap</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
+    <span class="nx">b</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEachNode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">operation</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    Traverse through the graph in an arbitrary manner, visiting each node once.</span>
+<span class="cm">    Pass a function of the form `fn(nodeObject, nodeId)`.</span>
+
+<span class="cm">    _Returns:_ undefined.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">nodeId</span><span class="p">,</span> <span class="nx">nodeObject</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">nodeId</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">,</span> <span class="nx">nodeId</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">nodeObject</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">nodeId</span><span class="p">];</span>
+        <span class="nx">operation</span><span class="p">(</span><span class="nx">nodeObject</span><span class="p">,</span> <span class="nx">nodeId</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">Graph</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEachEdge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">operation</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    Traverse through the graph in an arbitrary manner, visiting each edge once.</span>
+<span class="cm">    Pass a function of the form `fn(edgeObject)`.</span>
+
+<span class="cm">    _Returns:_ undefined.</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">edgeObject</span><span class="p">,</span> <span class="nx">nodeId</span><span class="p">,</span> <span class="nx">nodeObject</span><span class="p">,</span> <span class="nx">toId</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">nodeId</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">,</span> <span class="nx">nodeId</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">nodeObject</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="nx">nodeId</span><span class="p">];</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">toId</span> <span class="k">in</span> <span class="nx">nodeObject</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">nodeObject</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">,</span> <span class="nx">toId</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="nx">edgeObject</span> <span class="o">=</span> <span class="nx">nodeObject</span><span class="p">.</span><span class="nx">_outEdges</span><span class="p">[</span><span class="nx">toId</span><span class="p">];</span>
+            <span class="nx">operation</span><span class="p">(</span><span class="nx">edgeObject</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Graph</span><span class="p">;</span></code></pre></div>
+
+<h2 id="section-2">测试代码</h2>
+
+<p>下面我们来看看测试代码，我们这里不会全面覆盖上面需要测试的源码，如果希望查看完整的测试源码，请参见<a href="https://github.com/puffsun/js_datastructures_algorithms/tree/master/test/datastructures/graph">puffsun/js_datastructures_algorithms</a>。</p>
+
+<p>首先引入依赖，并声明测试上下文（Context）和初始化代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">Graph</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;../../../src/datastructures/graph/graph&quot;</span><span class="p">),</span>
+    <span class="nx">expect</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;chai&#39;</span><span class="p">).</span><span class="nx">expect</span><span class="p">,</span>
+    <span class="nx">sinon</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;sinon&quot;</span><span class="p">);</span>
+
+
+<span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;Test Graph&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">before</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;top before&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">after</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;top after&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;top beforeEach&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">afterEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;top afterEach&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span></code></pre></div>
+
+<p>上面的代码中我们可以看到函数 <code>before(...)</code>，<code>after(...)</code>，<code>beforeEach(...)</code>，<code>afterEach(...)</code>，他们的区别是 <code>before</code> 和 <code>after</code> 仅仅会在所有测试运行之前和之后运行一次，而另外两个则会在每一个测试用例运行之前都被调用，他们用于初始化和清理一些资源。</p>
+
+<p>接下来我们来看看如何测试新增图节点的函数 <code>addNode(...)</code>，这里的代码是嵌套在上面的 <code>describe("Test Graph", function() {}</code> 中间的，测试代码如下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;Add node&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">graph</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Graph</span><span class="p">();</span>
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should have 0 edge and 0 node initially&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">nodeSize</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">edgeSize</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return the node object added, or undefined if the id exists&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">((</span><span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">))</span> <span class="k">instanceof</span> <span class="nb">Object</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">((</span><span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">))</span> <span class="k">instanceof</span> <span class="nb">Object</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">((</span><span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="kc">null</span><span class="p">))</span> <span class="k">instanceof</span> <span class="nb">Object</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return undefined if the node id already exists&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="kc">null</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should have kept the node size constant with non-insertions&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">nodeSize</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
+
+<p>Mocha 通过 Chai 这个断言库可以支持 <code>assert</code>，<code>should</code> 和 <code>expect</code> 等多种断言方式，我们在前面已经见过了 <code>should</code> 方式的断言，这里我们使用 <code>expect</code> 风格的断言，基本语法为 <code>expect(...).to.equal()</code>。如果是数组我们就需要 Chai 提供的另一个比较函数<code>eql(...)</code>，来看另一段测试代码体会一下它们的区别，这段代码测试获取有向图中指向某节点的所有边：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;Get all in edges&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">graph</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Graph</span><span class="p">(),</span>
+            <span class="nx">graph2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Graph</span><span class="p">();</span>
+
+        <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return empty array for a non-existant node&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">getOutEdgesOf</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([]);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">getOutEdgesOf</span><span class="p">(</span><span class="k">void</span> <span class="mi">0</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([]);</span>
+        <span class="p">});</span>
+
+        <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return empty array for no edges&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">addNodesTo</span><span class="p">(</span><span class="nx">graph</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([]);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([]);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([]);</span>
+        <span class="p">});</span>
+
+        <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return the in edges&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">addNodesTo</span><span class="p">(</span><span class="nx">graph2</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+
+            <span class="cm">/*</span>
+<span class="cm">            1 &lt;- 2 &lt;-&gt; 3</span>
+<span class="cm">            |^   ^     ^</span>
+<span class="cm">            v \  |     |</span>
+<span class="cm">            4   \5     6 &lt;-&gt;</span>
+<span class="cm">             */</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">).</span><span class="nx">length</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">).</span><span class="nx">length</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">).</span><span class="nx">length</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">).</span><span class="nx">length</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([]);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">).</span><span class="nx">length</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getInEdgesOf</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">)).</span><span class="nx">to</span><span class="p">.</span><span class="nx">contain</span><span class="p">(</span><span class="nx">graph2</span><span class="p">.</span><span class="nx">getEdge</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;6&quot;</span><span class="p">));</span>
+        <span class="p">});</span>
+    <span class="p">});</span></code></pre></div>
+
+<p>我们可以看到 <code>eql</code> 比较的是数组的元素内容，只要两个数组中元素相同，且顺序相同，<code>eql</code> 函数就认为它们是相同的，而 <code>equal</code> 函数则不然，它比较的是对象在内存中的地址，两个对象必须指向同一个对象实例才认为他们是相同的，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">expect</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]).</span><span class="nx">to</span><span class="p">.</span><span class="nx">eql</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]);</span>     <span class="c1">// true</span>
+            <span class="nx">expect</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]);</span>   <span class="c1">// false</span></code></pre></div>
+
+<p>对于 JavaScript 对象相等性的比较细节请参考我的上一篇博客 <a href="http://codethoughts.info/javascript/2015/07/12/javascript-object-equality/">判定 JavaScript 对象是否相等</a>。</p>
+
+<p><code>addNodesTo(...)</code> 是一个测试辅助函数，定义如下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">addNodesTo</span><span class="p">(</span><span class="nx">graph</span><span class="p">,</span> <span class="nx">addEdges</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">initEdgeSize</span><span class="p">,</span> <span class="nx">initNodeSize</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">addEdges</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">addEdges</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">initNodeSize</span> <span class="o">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">nodeSize</span><span class="p">;</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">);</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">);</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">);</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">);</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">);</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">addNode</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">nodeSize</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">initNodeSize</span> <span class="o">+</span> <span class="mi">6</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">addEdges</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="cm">/*</span>
+<span class="cm">        1 &lt;- 2 &lt;-&gt; 3</span>
+<span class="cm">        |^   ^     ^</span>
+<span class="cm">        v \  |     |</span>
+<span class="cm">        4   \5     6 &lt;-&gt;</span>
+<span class="cm">         */</span>
+        <span class="nx">initEdgeSize</span> <span class="o">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">edgeSize</span><span class="p">;</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">initEdgeSize</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">addEdge</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">edgeSize</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">initEdgeSize</span> <span class="o">+</span> <span class="mi">8</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>如果需要测试函数是否被调用，或者调用的次数是否符合预期，我们需要对象的 Mock 和 Stub 功能，这里就去要 <a href="http://sinonjs.org/">Sinon.js</a> 的支持了，来看一段测试代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;Traverse through each node&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">graph</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Graph</span><span class="p">();</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;shouldn&#39;t call the callback for an empty graph&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">sinon</span><span class="p">.</span><span class="nx">spy</span><span class="p">();</span>
+
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">forEachNode</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="nx">sinon</span><span class="p">.</span><span class="nx">assert</span><span class="p">.</span><span class="nx">notCalled</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should reach each node once&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">sinon</span><span class="p">.</span><span class="nx">spy</span><span class="p">();</span>
+        <span class="nx">addNodesTo</span><span class="p">(</span><span class="nx">graph</span><span class="p">);</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">forEachNode</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">callback</span><span class="p">.</span><span class="nx">callCount</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should pass nodeObject and nodeId to the callback&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">sinon</span><span class="p">.</span><span class="nx">spy</span><span class="p">();</span>
+        <span class="nx">graph</span><span class="p">.</span><span class="nx">forEachNode</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">callback</span><span class="p">.</span><span class="nx">lastCall</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">callback</span><span class="p">.</span><span class="nx">lastCall</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">instanceof</span> <span class="nb">Object</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">callback</span><span class="p">.</span><span class="nx">lastCall</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="nx">to</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
+
+<p>这里可以看到，我们可以通过 <code>var callback = sinon.spy();</code> 来创建函数的 Stub，这里被称为 <code>Spy</code>，通过 <code>sinon.assert.notCalled</code> 来测试函数是否已经被调用。另外，我们还可以通过 <code>callback.lastCall</code> 来获取最后一次调用的函数，并通过 <code>args</code> 来取得函数的入参。这里只是展示了 Sinon.js 一小部分功能，更多细节请参考 <a href="http://sinonjs.org/docs/">Sinon.js 的文档</a>。</p>
+
+<p>完整的测试代码和 Gruntfile.js 构建脚本请参见<a href="https://github.com/puffsun/js_datastructures_algorithms/blob/master/test/datastructures/graph/graph_spec.js">GitHub Repo - graph_spec.js</a> 和 <a href="https://github.com/puffsun/js_datastructures_algorithms/blob/master/Gruntfile.js">Gruntfile.js</a>，Repo 的 README 文件还详细介绍了如何运行所有的测试代码。</p>
+
+<p>另外一个比较流行的 JavaScript  BDD测试框架是<a href="https://github.com/jasmine/jasmine">Jasmine</a>。它的思路和 Mocha 不同，是一个完备的测试框架，内置了断言库，Mock/Stub 等高级功能，如果你喜欢一栈式的解决方案，可以考虑使用它。事实上，Mocha 可以写出和 Jasmine 风格非常相似的测试代码，只是 Mocha 需要和其他的库比如 Chai 和 Sinon 配合使用，而 Jasmine 是一栈式方案，可以根据你的喜好来选择，我个人更喜欢 Mocha 带来的灵活性。</p>
+
+<h2 id="section-3">资源</h2>
+
+<p><a href="https://github.com/puffsun/js_datastructures_algorithms">Data Structures and Algorithms with JavaScript</a></p>
+
+<p><a href="http://mochajs.org/">Mocha 主页</a></p>
+
+<p><a href="http://chaijs.com/">Chai 主页</a></p>
+
+<p><a href="http://sinonjs.org/">Sinon 主页</a></p>
+
+<p><a href="https://github.com/jasmine/jasmine">Jasmine</a></p>
+
+<p><a href="http://thejsguy.com/2015/01/12/jasmine-vs-mocha-chai-and-sinon.html">Jasmine vs. Mocha, Chai, and Sinon</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/07/12/javascript-object-equality/" data-toggle="tooltip" data-placement="top" title="判定 JavaScript 对象是否相等">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Code Thoughts 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>
