@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 19 Jul 2015 13:02:04 +0800</pubDate>
-    <lastBuildDate>Sun, 19 Jul 2015 13:02:04 +0800</lastBuildDate>
+    <pubDate>Sun, 19 Jul 2015 15:52:51 +0800</pubDate>
+    <lastBuildDate>Sun, 19 Jul 2015 15:52:51 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -126,7 +126,7 @@
 
 &lt;h2 id=&quot;section-1&quot;&gt;需要测试的代码&lt;/h2&gt;
 
-&lt;p&gt;为了全面的展示 Mocha 和 Jasmine 这两个测试框架，我们这里用它来测试一段比较复杂的代码。这段代码是用 JavaScript 实现了 &lt;a href=&quot;https://en.wikipedia.org/wiki/Directed_graph&quot;&gt;有向图&lt;/a&gt;，并且图的边可以带有权重。如果你对这段代码有兴趣，可以研究一下具体的实现，代码也有详细的注释；而如果你仅仅对如何写测试有兴趣，那么可以忽略具体的实现，把它仅仅当成黑盒子。在阅读代码的时候请注意，我们这里所写的是 Node.js 代码，它用 CommonJS 来管理依赖。简单讲，就是用 &lt;code&gt;module.exports&lt;/code&gt; 来导出公开的接口，没有指定导出的函数很变量无法被其他源文件的代码引用，它们的范围就会被局限在自身的源文件中；如果需要应用其他源文件的依赖，则需要 &lt;code&gt;require&lt;/code&gt; 来指定需要导入的依赖。除了 &lt;a href=&quot;https://en.wikipedia.org/wiki/Directed_graph&quot;&gt;有向图&lt;/a&gt;，我还用 JavaScript 实现了其他常见数据结构和算法，并且都有测试覆盖，如果有兴趣，可以参考我的 GitHub Repo: &lt;a href=&quot;https://github.com/puffsun/js_datastructures_algorithms&quot;&gt;Data Structures and Algorithms with JavaScript&lt;/a&gt;，里面有详细的指示如何去运行这个 Repo 里的测试代码，所有的测试都使用 Mocha 框架编写。&lt;/p&gt;
+&lt;p&gt;为了全面的展示 Mocha 测试框架，我们这里用它来测试一段比较复杂的代码。这段代码是用 JavaScript 实现了 &lt;a href=&quot;https://en.wikipedia.org/wiki/Directed_graph&quot;&gt;有向图&lt;/a&gt;，并且图的边可以带有权重。如果你对这段代码有兴趣，可以研究一下具体的实现，代码也有详细的注释；而如果你仅仅对如何写测试有兴趣，那么可以忽略具体的实现，把它仅仅当成黑盒子。在阅读代码的时候请注意，我们这里所写的是 Node.js 代码，它用 CommonJS 来管理依赖。简单讲，就是用 &lt;code&gt;module.exports&lt;/code&gt; 来导出公开的接口，没有指定导出的函数很变量无法被其他源文件的代码引用，它们的范围就会被局限在自身的源文件中；如果需要应用其他源文件的依赖，则需要 &lt;code&gt;require&lt;/code&gt; 来指定需要导入的依赖。除了 &lt;a href=&quot;https://en.wikipedia.org/wiki/Directed_graph&quot;&gt;有向图&lt;/a&gt;，我还用 JavaScript 实现了其他常见数据结构和算法，并且都有测试覆盖，如果有兴趣，可以参考我的 GitHub Repo: &lt;a href=&quot;https://github.com/puffsun/js_datastructures_algorithms&quot;&gt;Data Structures and Algorithms with JavaScript&lt;/a&gt;，里面有详细的指示如何去运行这个 Repo 里的测试代码，所有的测试都使用 Mocha 框架编写。&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/*&lt;/span&gt;
 &lt;span class=&quot;cm&quot;&gt;Graph implemented as a modified incidence list. O(1) for every typical&lt;/span&gt;
