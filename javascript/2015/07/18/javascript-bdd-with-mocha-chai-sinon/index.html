@@ -155,7 +155,7 @@
     <span class="p">});</span>
 <span class="p">});</span></code></pre></div>
 
-<p>如何安装 Mocha 请参考本文下一节，安装完毕之后在项目根目录下运行 <code>mocha --ui tdd  test/tdd_main.js</code> 可以运行以上测试代码，这里需要指定测试的风格，否则会出现 <code>suite is not defined</code> 错误。</p>
+<p>如何安装 Mocha 请参考本文下一节，安装完毕之后在项目根目录下运行 <code>mocha --ui tdd  test/tdd_main.js</code> 可以运行以上测试代码，这里需要指定测试代码为 <code>tdd</code>，否则会出现 <code>suite is not defined</code> 错误。</p>
 
 <p>这是 BDD 风格的测试代码：</p>
 
@@ -194,7 +194,7 @@
     <span class="p">});</span>
 <span class="p">});</span></code></pre></div>
 
-<p>在根目录下运行 <code>mocha --ui bdd  test/bdd_main.js</code> 可以运行以上测试代码。</p>
+<p>在根目录下运行 <code>mocha --ui bdd  test/bdd_main.js</code> 可以运行以上测试代码，这里需要指定测试代码为 <code>bdd</code> 测试。</p>
 
 <p>对 TDD 风格的测试在本文中的介绍到此为止，我们接下来主要介绍如何用 Mocha 及其配套库来为我们的 JavaScript 代码写 BDD 风格的测试代码。Mocha 常见的配套库有<a href="http://chaijs.com/">Chai</a> 和 <a href="http://sinonjs.org/">Sinon</a>，首先我们来看看它们都是什么。</p>
 
