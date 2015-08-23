@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 23 Aug 2015 15:43:10 +0800</pubDate>
-    <lastBuildDate>Sun, 23 Aug 2015 15:43:10 +0800</lastBuildDate>
+    <pubDate>Sun, 23 Aug 2015 18:44:25 +0800</pubDate>
+    <lastBuildDate>Sun, 23 Aug 2015 18:44:25 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -341,7 +341,7 @@ mv ~/Downloads/react-0.13.3/ ~/source/react-startkit/react
 
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;babel &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;/ --watch --out-dir build/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;我们可以看到，Babel 支持的功能多得多，从 JSX 转译为 JavaScript 只是其中的一部分功能而已。另外，Babel 也支持和 &lt;code&gt;JSXTransformer.js&lt;/code&gt; 一样的在客户端转译的功能，我们需要 Babel 安装文件中一个叫做 &lt;code&gt;browser.js&lt;/code&gt; 的源文件。和 &lt;code&gt;JSXTransfomer.js&lt;/code&gt; 一样，我们需要把这个文件拷贝到项目目录中：&lt;/p&gt;
+&lt;p&gt;我们可以看到，Babel 支持的功能多得多，从 JSX 转译为 JavaScript 只是其中的一部分功能而已，其实这也意味着通过 Babel Transpiler，我们可以在 React.js 应用中使用 ES2015 中引入的新特性。另外，Babel 也支持和 &lt;code&gt;JSXTransformer.js&lt;/code&gt; 一样的在客户端转译的功能，我们需要 Babel 安装文件中一个叫做 &lt;code&gt;browser.js&lt;/code&gt; 的源文件。和 &lt;code&gt;JSXTransfomer.js&lt;/code&gt; 一样，我们需要把这个文件拷贝到项目目录中：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;cp /usr/local/lib/node_modules/babel/node_modules/babel-core/browser.js ~/source/react-startkit/babel/browser.js&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 

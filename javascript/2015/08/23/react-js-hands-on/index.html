@@ -428,7 +428,7 @@ mv ~/Downloads/react-0.13.3/ ~/source/react-startkit/react
 
 <span class="nv">$ </span>babel <span class="nb">source</span>/ --watch --out-dir build/</code></pre></div>
 
-<p>我们可以看到，Babel 支持的功能多得多，从 JSX 转译为 JavaScript 只是其中的一部分功能而已。另外，Babel 也支持和 <code>JSXTransformer.js</code> 一样的在客户端转译的功能，我们需要 Babel 安装文件中一个叫做 <code>browser.js</code> 的源文件。和 <code>JSXTransfomer.js</code> 一样，我们需要把这个文件拷贝到项目目录中：</p>
+<p>我们可以看到，Babel 支持的功能多得多，从 JSX 转译为 JavaScript 只是其中的一部分功能而已，其实这也意味着通过 Babel Transpiler，我们可以在 React.js 应用中使用 ES2015 中引入的新特性。另外，Babel 也支持和 <code>JSXTransformer.js</code> 一样的在客户端转译的功能，我们需要 Babel 安装文件中一个叫做 <code>browser.js</code> 的源文件。和 <code>JSXTransfomer.js</code> 一样，我们需要把这个文件拷贝到项目目录中：</p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">cp /usr/local/lib/node_modules/babel/node_modules/babel-core/browser.js ~/source/react-startkit/babel/browser.js</code></pre></div>
 
