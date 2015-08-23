@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Yet another tech blog!">
+
+    <title>React.js 初体验 - George's Code Thoughts</title>
+
+    <link rel="canonical" href="http://codethoughts.info/javascript/2015/08/23/react-js-hands-on/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href='//fonts.useso.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">George's Code Thoughts</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About me</a>
+                </li>
+                
+                <li>
+                    <a href="/contact/">Contact</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>React.js 初体验</h1>
+                    
+                    <span class="meta">Posted by George Sun on August 23, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<p>目前最火的 JavaScript 类库非 React.js 莫属，这几天花了点时间试玩，这篇就是一些心得体会，另外会通过一个 Hello world 项目来讲解 React.js 的一些概念和技术。</p>
+
+<h2 id="section">简介</h2>
+
+<p>从 <a href="http://facebook.github.io/react/">React.js 首页</a> 的简介中可以看出，React应该被用作 MVC 的 View 层。React 把 View 层看做由一个或者多个组件组成，就像搭积木一样。在开发 React 应用的时候，你应该把你期望应用所拥有的 View 分割成单个的组件(Component)，并用这些组件来组合出一个完整的 View。React 另外一个比较重要的概念是虚拟 DOM (Virtual DOM)，这里我暂时不再赘述，毕竟这只是一篇入门的文章，感兴趣的读者可以参考 <a href="http://fluentconf.com/fluent2014/public/schedule/detail/32395">The Secrets of React’s virtual DOM</a> 和 <a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a>。我们首先来设置 React.js 开发环境并开发一个React 版的 Hello world。</p>
+
+<h2 id="section-1">设置环境</h2>
+
+<p>首先我们需要下载 React 库。访问 <a href="http://reactjs.com">http://reactjs.com</a>，你会被重定向到<a href="http://facebook.github.io/react/">http://facebook.github.io/react/</a>。点击 <a href="http://facebook.github.io/react/downloads.html">Download React v0.13.3</a>，在打开的新页面上点击 <a href="http://facebook.github.io/react/downloads/react-0.13.3.zip">Download Starter Kit 0.13.3</a>。下载完成之后把这个 zip 包解压到某个目录下，比如：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">mkdir ~/source/react-startkit
+mv ~/Downloads/react-0.13.3/ ~/source/react-startkit/react
+<span class="nb">cd</span> ~/source/react-startkit/react</code></pre></div>
+
+<p>好了，基本设置到此为止，接下来该看实际的代码了。首先我会用 JavaScript 开发这个应用，文章的后半部分我会用 JSX 重写该 Hello world， 并介绍一些配套的工具和类库。</p>
+
+<h2 id="hello-react">Hello React</h2>
+
+<p>新建一个源文件 <code>~/source/react-startkit/react/helloworld.html</code>：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">hello</span> <span class="nx">React</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="err">/head&gt;</span>
+  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="o">&gt;</span>
+    <span class="c">&lt;!--</span> <span class="nx">React</span> <span class="err">应用在这里渲染</span> <span class="o">--&gt;</span>
+    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;react/build/react.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+    <span class="c1">//  JavaScript 代码在这里</span>
+    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+  <span class="o">&lt;</span><span class="err">/body&gt;</span>
+<span class="o">&lt;</span><span class="err">/html&gt;</span></code></pre></div>
+
+<p>上面的代码没有需要解释的地方，接下来我们看如何利用引入的 React.js 来实现 Hello world 应用。在 <code>&lt;script&gt;</code> 标签内键入如下代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="nx">React</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">h1</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s2">&quot;Hello world!&quot;</span><span class="p">),</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">)</span>
+<span class="p">);</span></code></pre></div>
+
+<p>刷新一下浏览器，一个崭新的 React hello world 就成功运行了。以 Chrome 浏览器为例，如果你在 <code>Hello world</code> 上右击并选择 <code>Inspect Element</code>，你会在 Chrome Dev Tools 里看到 <code>&lt;div&gt;</code> 标签内被填入了如下内容：</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;app&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h1</span> <span class="na">data-reactid=</span><span class="s">&quot;.0&quot;</span><span class="nt">&gt;</span>Hello world!<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>上面的 <code>&lt;h1&gt;</code> 标签就是 React.js 生成的内容。事实上，你可以通过 Chrome Developer Tools 达到同样的目的，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">h</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="nx">React</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">h1</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s2">&quot;Hello world!&quot;</span><span class="p">),</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">h</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">());</span> <span class="c1">// &lt;h1 data-reactid=&quot;.0&quot;&gt;Hello world!&lt;/h1&gt;</span></code></pre></div>
+
+<p>下面我们来看看上面代码中需要注意的几个地方。</p>
+
+<h2 id="react">近距离看 React</h2>
+
+<p>首先，我们注意到了引入 React.js 以后，我们的应用中存在一个全局变量 <code>React</code>，React 提供的 API 都是通过它来暴露的。所幸它所提供的 API 数量不算多，也算是帮助我们这些苦逼的程序员们节约了一点有限的脑细胞。我们可以通过 Chrome Developer Console 来探索一下：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">React</span><span class="p">);</span>
+<span class="c1">// 输出：</span>
+    <span class="nx">Children</span><span class="o">:</span> <span class="nb">Object</span>
+    <span class="nx">Component</span><span class="o">:</span> <span class="nx">ReactComponent</span><span class="p">(</span><span class="nx">props</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span>
+    <span class="nx">DOM</span><span class="o">:</span> <span class="nb">Object</span>
+    <span class="nx">PropTypes</span><span class="o">:</span> <span class="nb">Object</span>
+    <span class="nx">__spread</span><span class="o">:</span> <span class="nx">assign</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">sources</span><span class="p">)</span>
+    <span class="nx">cloneElement</span><span class="o">:</span> <span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">props</span><span class="p">,</span> <span class="nx">children</span><span class="p">)</span>
+    <span class="nx">constructAndRenderComponent</span><span class="o">:</span> <span class="p">(</span><span class="nx">constructor</span><span class="p">,</span> <span class="nx">props</span><span class="p">,</span> <span class="nx">container</span><span class="p">)</span>
+    <span class="nx">constructAndRenderComponentByID</span><span class="o">:</span> <span class="p">(</span><span class="nx">constructor</span><span class="p">,</span> <span class="nx">props</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+    <span class="nx">createClass</span><span class="o">:</span> <span class="p">(</span><span class="nx">spec</span><span class="p">)</span>
+    <span class="nx">createElement</span><span class="o">:</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">props</span><span class="p">,</span> <span class="nx">children</span><span class="p">)</span>
+    <span class="nx">createFactory</span><span class="o">:</span> <span class="p">(</span><span class="nx">type</span><span class="p">)</span>
+    <span class="nx">createMixin</span><span class="o">:</span> <span class="p">(</span><span class="nx">mixin</span><span class="p">)</span>
+    <span class="nx">findDOMNode</span><span class="o">:</span> <span class="nx">findDOMNode</span><span class="p">(</span><span class="nx">componentOrElement</span><span class="p">)</span>
+    <span class="nx">initializeTouchEvents</span><span class="o">:</span> <span class="p">(</span><span class="nx">shouldUseTouch</span><span class="p">)</span>
+    <span class="nx">isValidElement</span><span class="o">:</span> <span class="p">(</span><span class="nx">object</span><span class="p">)</span>
+    <span class="nx">render</span><span class="o">:</span> <span class="p">()</span>
+    <span class="nx">renderToStaticMarkup</span><span class="o">:</span> <span class="nx">renderToStaticMarkup</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span>
+    <span class="nx">renderToString</span><span class="o">:</span> <span class="nx">renderToString</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span>
+    <span class="nx">unmountComponentAtNode</span><span class="o">:</span> <span class="p">(</span><span class="nx">container</span><span class="p">)</span>
+    <span class="nx">version</span><span class="o">:</span> <span class="s2">&quot;0.13.3&quot;</span>
+    <span class="nx">withContext</span><span class="o">:</span> <span class="p">(</span><span class="nx">newContext</span><span class="p">,</span> <span class="nx">scopedCallback</span><span class="p">)</span></code></pre></div>
+
+<p>在上面的代码中，我们见到了其中的 <code>render()</code>, <code>DOM</code>, <code>DOM.h1()</code> 这几个 API，目前我们先只关心它们。</p>
+
+<p>其次，上面的代码已经体现了 React.js 中组件的概念。在开发 React.js 应用的时候，我们通过 React 提供的 API 创建组件，并通过需要的方式来组合组件，从而得到我们需要的应用。在我们的 Hello world 应用中，我们创建了一个自定义组件，虽然特别简单，但它仍然是一个独立的组件。它是通过 <code>React.DOM</code> 所提供的接口方法，叫做 <code>React.DOM.h1()</code>，来创建。事实上 <code>React.DOM</code> 提供了很多类似的接口方法，我们可以通过 Chrome Developer Tools 来看看：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">React</span><span class="p">.</span><span class="nx">DOM</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+
+<span class="c1">// 输出： a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,</span>
+<span class="nx">big</span><span class="p">,</span><span class="nx">blockquote</span><span class="p">,</span><span class="nx">body</span><span class="p">,</span><span class="nx">br</span><span class="p">,</span><span class="nx">button</span><span class="p">,</span><span class="nx">canvas</span><span class="p">,</span><span class="nx">caption</span><span class="p">,</span><span class="nx">cite</span><span class="p">,</span><span class="nx">code</span><span class="p">,</span><span class="nx">col</span><span class="p">,</span>
+<span class="nx">colgroup</span><span class="p">,</span><span class="nx">data</span><span class="p">,</span><span class="nx">datalist</span><span class="p">,</span><span class="nx">dd</span><span class="p">,</span><span class="nx">del</span><span class="p">,</span><span class="nx">details</span><span class="p">,</span><span class="nx">dfn</span><span class="p">,</span><span class="nx">dialog</span><span class="p">,</span><span class="nx">div</span><span class="p">,</span><span class="nx">dl</span><span class="p">,</span><span class="nx">dt</span><span class="p">,</span><span class="nx">em</span><span class="p">,</span>
+<span class="nx">embed</span><span class="p">,</span><span class="nx">fieldset</span><span class="p">,</span><span class="nx">figcaption</span><span class="p">,</span><span class="nx">figure</span><span class="p">,</span><span class="nx">footer</span><span class="p">,</span><span class="nx">form</span><span class="p">,</span><span class="nx">h1</span><span class="p">,</span><span class="nx">h2</span><span class="p">,</span><span class="nx">h3</span><span class="p">,</span><span class="nx">h4</span><span class="p">,</span><span class="nx">h5</span><span class="p">,</span><span class="nx">h6</span><span class="p">,</span>
+<span class="nx">head</span><span class="p">,</span><span class="nx">header</span><span class="p">,</span><span class="nx">hr</span><span class="p">,</span><span class="nx">html</span><span class="p">,</span><span class="nx">i</span><span class="p">,</span><span class="nx">iframe</span><span class="p">,</span><span class="nx">img</span><span class="p">,</span><span class="nx">input</span><span class="p">,</span><span class="nx">ins</span><span class="p">,</span><span class="nx">kbd</span><span class="p">,</span><span class="nx">keygen</span><span class="p">,</span><span class="nx">label</span><span class="p">,</span>
+<span class="nx">legend</span><span class="p">,</span><span class="nx">li</span><span class="p">,</span><span class="nx">link</span><span class="p">,</span><span class="nx">main</span><span class="p">,</span><span class="nx">map</span><span class="p">,</span><span class="nx">mark</span><span class="p">,</span><span class="nx">menu</span><span class="p">,</span><span class="nx">menuitem</span><span class="p">,</span><span class="nx">meta</span><span class="p">,</span><span class="nx">meter</span><span class="p">,</span><span class="nx">nav</span><span class="p">,</span>
+<span class="nx">noscript</span><span class="p">,</span><span class="nx">object</span><span class="p">,</span><span class="nx">ol</span><span class="p">,</span><span class="nx">optgroup</span><span class="p">,</span><span class="nx">option</span><span class="p">,</span><span class="nx">output</span><span class="p">,</span><span class="nx">p</span><span class="p">,</span><span class="nx">param</span><span class="p">,</span><span class="nx">picture</span><span class="p">,</span>
+<span class="nx">pre</span><span class="p">,</span><span class="nx">progress</span><span class="p">,</span><span class="nx">q</span><span class="p">,</span><span class="nx">rp</span><span class="p">,</span><span class="nx">rt</span><span class="p">,</span><span class="nx">ruby</span><span class="p">,</span><span class="nx">s</span><span class="p">,</span><span class="nx">samp</span><span class="p">,</span><span class="nx">script</span><span class="p">,</span><span class="nx">section</span><span class="p">,</span><span class="nx">select</span><span class="p">,</span>
+<span class="nx">small</span><span class="p">,</span><span class="nx">source</span><span class="p">,</span><span class="nx">span</span><span class="p">,</span><span class="nx">strong</span><span class="p">,</span><span class="nx">style</span><span class="p">,</span><span class="nx">sub</span><span class="p">,</span><span class="nx">summary</span><span class="p">,</span><span class="nx">sup</span><span class="p">,</span><span class="nx">table</span><span class="p">,</span>
+<span class="nx">tbody</span><span class="p">,</span><span class="nx">td</span><span class="p">,</span><span class="nx">textarea</span><span class="p">,</span><span class="nx">tfoot</span><span class="p">,</span><span class="nx">th</span><span class="p">,</span><span class="nx">thead</span><span class="p">,</span><span class="nx">time</span><span class="p">,</span><span class="nx">title</span><span class="p">,</span><span class="nx">tr</span><span class="p">,</span><span class="nx">track</span><span class="p">,</span>
+<span class="nx">u</span><span class="p">,</span><span class="nx">ul</span><span class="p">,</span><span class="kd">var</span><span class="p">,</span><span class="nx">video</span><span class="p">,</span><span class="nx">wbr</span><span class="p">,</span><span class="nx">circle</span><span class="p">,</span><span class="nx">clipPath</span><span class="p">,</span><span class="nx">defs</span><span class="p">,</span><span class="nx">ellipse</span><span class="p">,</span><span class="nx">g</span><span class="p">,</span><span class="nx">line</span><span class="p">,</span>
+<span class="nx">linearGradient</span><span class="p">,</span><span class="nx">mask</span><span class="p">,</span><span class="nx">path</span><span class="p">,</span><span class="nx">pattern</span><span class="p">,</span><span class="nx">polygon</span><span class="p">,</span><span class="nx">polyline</span><span class="p">,</span>
+<span class="nx">radialGradient</span><span class="p">,</span><span class="nx">rect</span><span class="p">,</span><span class="nx">stop</span><span class="p">,</span><span class="nx">svg</span><span class="p">,</span><span class="nx">text</span><span class="p">,</span><span class="nx">tspan</span></code></pre></div>
+
+<p>这些都是对 <code>React.createElement(...)</code> 方法的封装，用来方便我们来创建自定义组件。</p>
+
+<p>最后，我们看到了 <code>document.getElementById("app")</code>，它告诉 React.js 在应用的哪个 DOM 节点渲染我们的自定义组件。</p>
+
+<h2 id="jsx">JSX</h2>
+
+<p>上面我们是通过纯粹的 JavaScript 来创建 React.js 自定义组件，对于我们的 Hello world 应用它还可以保证代码的可维护性，一旦组件比较复杂，并有多层嵌套的时候，代码很快就失去控制了，比如下面的代码：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+	<span class="nx">React</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">h1</span><span class="p">({</span>
+		<span class="nx">id</span><span class="o">:</span> <span class="s2">&quot;my-heading&quot;</span>
+	<span class="p">},</span> 
+	<span class="nx">React</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">span</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span>
+		<span class="nx">React</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">em</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s2">&quot;Hell&quot;</span><span class="p">),</span>
+		<span class="s2">&quot;o&quot;</span>
+	<span class="p">),</span>	<span class="s2">&quot; world!&quot;</span><span class="p">),</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">)</span>
+<span class="p">);</span></code></pre></div>
+
+<p>如果我们使用 JSX，则代码可以像这样写：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+	<span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;my-heading&quot;</span><span class="o">&gt;</span>
+    	<span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">Hell</span><span class="o">&lt;</span><span class="err">/em&gt;o&lt;/span&gt; world!</span>
+	<span class="o">&lt;</span><span class="err">/h1&gt;,</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">)</span>
+<span class="p">);</span></code></pre></div>
+
+<p>我们可以看到上面的代码很像 HTML，它是 React.js 所提供的特殊语法，可以用来简化自定义组件的编写。问题是它不是合法的 JavaScript 代码，那如何才能运行它呢？我们需要一个转译器(Transpiler)来预处理它。当然，你也想到了，React.js 也提供了对应的工具，也可以通过第三方工具来做。为了让文章不再拗口，我下面将会直接使用 Transpile 和 Polyfill 这两个术语不加翻译。</p>
+
+<h2 id="transpile-vs-polyfill">Transpile vs. Polyfill</h2>
+
+<p>Polyfill 对于前端工程师来说一定不会陌生。由于 JavaScript 社区的爆发性增长，也由于 ES 标准在浏览器中的实现总是滞后于 ES 标准推出的时间。那么对于一些新特性，比如 <code>Array.map</code> 就需要 Polyfill 类库来实现，比如：</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">map</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">map</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// implement the method</span>
+  <span class="p">};</span>
+<span class="p">}</span></code></pre></div>
+
+<p>那对于一些新的语法，比如 ES2015 的 <code>class</code>，没法用 Polyfill 来实现，就需要一些 Transpiler 来对代码进行预处理。Transpile 过程其实就是把新语法翻译成浏览器已经支持的语法的过程。其实也不难理解，类似 CoffeeScript 代码被翻译成 JavaScript 的过程。</p>
+
+<h2 id="jsx-transpile">JSX Transpile</h2>
+
+<p>可以有几种办法来转译 JSX，这篇文章里我要介绍的是分别是从客户端，通过 react-tools，和通过 Babel 来转译。</p>
+
+<h3 id="transpile">客户端 Transpile</h3>
+
+<p><a href="https://facebook.github.io/react/downloads/react-0.13.3.zip">React Starter Kit</a> 提供了 <code>JSXTransformer.js</code>，我们可以通过它实现在浏览器中 Transpile JSX：</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/path/to/react.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/path/to/JSXTransformer.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/jsx&quot;</span><span class="nt">&gt;</span> <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="cm">/*...*/</span><span class="p">);</span>
+<span class="nt">&lt;/script&gt;</span></code></pre></div>
+
+<p>这种办法的优点是你可以快速使用 React.js，并充分利用 JSX 的语法来简化组件的开发；缺点是性能会比较差。因为脚本加载以后，在运行之前，<code>JSXTransformer.js</code> 要首先把 JSX 转换成 JavaScript 才可以在浏览器中运行。</p>
+
+<h3 id="react-tools">React-tools</h3>
+
+<p>任何一个正式的项目都会有自己的标准构建流程，我们要做的就是把 JSX 转译过程加入到这个构建流程中。首先我们需要安装 react-tools:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>npm install -g react-tools
+<span class="nv">$ </span>jsx -h
+
+  Usage: jsx <span class="o">[</span>options<span class="o">]</span> &lt;<span class="nb">source </span>directory&gt; &lt;output directory&gt; <span class="o">[</span>&lt;module ID&gt; <span class="o">[</span>&lt;module ID&gt; ...<span class="o">]]</span>
+
+  Options:
+
+    -h, --help                               output usage information
+    -V, --version                            output the version number
+    -c, --config <span class="o">[</span>file<span class="o">]</span>                      JSON configuration file <span class="o">(</span>no file or - means STDIN<span class="o">)</span>
+    -w, --watch                              Continually rebuild
+    -x, --extension &lt;js <span class="p">|</span> coffee <span class="p">|</span> ...&gt;      File extension to assume when resolving module identifiers
+    --relativize                             Rewrite all module identifiers to be relative
+    --follow-requires                        Scan modules <span class="k">for</span> required dependencies
+    --use-provides-module                    Respect @providesModules pragma in files
+    --cache-dir &lt;directory&gt;                  Alternate directory to use <span class="k">for</span> disk cache
+    --no-cache-dir                           Disable the disk cache
+    --source-charset &lt;utf8 <span class="p">|</span> win1252 <span class="p">|</span> ...&gt;  Charset of <span class="nb">source</span> <span class="o">(</span>default: utf8<span class="o">)</span>
+    --output-charset &lt;utf8 <span class="p">|</span> win1252 <span class="p">|</span> ...&gt;  Charset of output <span class="o">(</span>default: utf8<span class="o">)</span>
+    --harmony                                Turns on JS transformations such as ES6 Classes etc.
+    --target <span class="o">[</span>version<span class="o">]</span>                       Specify your target version of ECMAScript. Valid values are <span class="s2">&quot;es3&quot;</span> and <span class="s2">&quot;es5&quot;</span>. The default is <span class="s2">&quot;es5&quot;</span>. <span class="s2">&quot;es3&quot;</span> will avoid uses of defineProperty and will quote reserved words. WARNING: <span class="s2">&quot;es5&quot;</span> is not properly supported, even with the use of es5shim, es5sham. If you need to support IE8, use <span class="s2">&quot;es3&quot;</span>.
+    --strip-types                            Strips out <span class="nb">type </span>annotations.
+    --es6module                              Parses the file as a valid ES6 module. <span class="o">(</span>Note that this means implicit strict mode<span class="o">)</span>
+    --non-strict-es6module                   Parses the file as an ES6 module, except disables implicit strict-mode. <span class="o">(</span>This is useful <span class="k">if</span> you<span class="s1">&#39;re porting non-ES6 modules to ES6, but haven&#39;</span>t yet verified that they are strict-mode safe yet<span class="o">)</span>
+    --source-map-inline                      Embed inline sourcemap in transformed <span class="nb">source</span>
+
+<span class="nv">$ </span>jsx --watch <span class="nb">source</span>/ build/</code></pre></div>
+
+<p>通过 react-tools 可以把 JSX 代码转译成 JavaScript 代码，从而浏览器可以理解并运行。</p>
+
+<h3 id="babel">Babel</h3>
+
+<p>Babel 是一个开源项目，它支持 JSX 转换为 JavaScript 代码的功能，但也包括了其他的功能，包括吧 ES2015 标准的语法转译为目前浏览器支持的语法。详细的项目介绍可以参考 <a href="https://babeljs.io/">Babel 主页</a>。事实上从 React.js v0.14 开始，<code>JSXTransformer.js</code> 将不再包括在 React.js 的安装包中， 它也不再是默认的 JSX Transpiler，React.js 将默认使用 <a href="https://babeljs.io/">Babel</a> 来实现JSX转译。</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>npm install --global babel
+<span class="nv">$ </span>babel -h
+
+  Usage: babel <span class="o">[</span>options<span class="o">]</span> &lt;files ...&gt;
+
+  Options:
+
+    -h, --help                           output usage information
+    -f, --filename <span class="o">[</span>filename<span class="o">]</span>            filename to use when reading from stdin - this will be used in <span class="nb">source</span>-maps, errors etc
+    --module-id <span class="o">[</span>string<span class="o">]</span>                 specify a custom name <span class="k">for</span> module ids
+    --retain-lines                       retain line numbers - will result in really ugly code
+    --no-non-standard                    <span class="nb">enable</span>/disable support <span class="k">for</span> JSX and Flow <span class="o">(</span>on by default<span class="o">)</span>
+    --experimental                       allow use of experimental transformers
+    --no-highlight-code                  <span class="nb">enable</span>/disable ANSI syntax highlighting of code frames <span class="o">(</span>on by default<span class="o">)</span>
+    -e, --stage <span class="o">[</span>number<span class="o">]</span>                 ECMAScript proposal stage version to allow <span class="o">[</span>0-4<span class="o">]</span>
+    -b, --blacklist <span class="o">[</span>transformerList<span class="o">]</span>    blacklist of transformers to NOT use
+    -l, --whitelist <span class="o">[</span>transformerList<span class="o">]</span>    whitelist of transformers to ONLY use
+    --optional <span class="o">[</span>transformerList<span class="o">]</span>         list of optional transformers to <span class="nb">enable</span>
+    -m, --modules <span class="o">[</span>string<span class="o">]</span>               module formatter <span class="nb">type </span>to use <span class="o">[</span>common<span class="o">]</span>
+    -M, --module-ids                     insert an explicit id <span class="k">for</span> modules
+    -L, --loose <span class="o">[</span>transformerList<span class="o">]</span>        list of transformers to <span class="nb">enable </span>loose mode ON
+    -P, --jsx-pragma <span class="o">[</span>string<span class="o">]</span>            custom pragma to use with JSX <span class="o">(</span>same functionality as @jsx comments<span class="o">)</span>
+    --plugins <span class="o">[</span>list<span class="o">]</span>
+    --ignore <span class="o">[</span>list<span class="o">]</span>                      list of glob paths to **not** compile
+    --only <span class="o">[</span>list<span class="o">]</span>                        list of glob paths to **only** compile
+    --no-comments                        strip/output comments in generated output <span class="o">(</span>on by default<span class="o">)</span>
+    --compact <span class="o">[</span>booleanString<span class="o">]</span>            <span class="k">do</span> not include superfluous whitespace characters and line terminators <span class="o">[</span><span class="nb">true</span><span class="p">|</span><span class="nb">false</span><span class="p">|</span>auto<span class="o">]</span>
+    -k, --keep-module-id-extensions      keep extensions when generating module ids
+    -a, --auxiliary-comment <span class="o">[</span>string<span class="o">]</span>     <span class="o">[</span>DEPRECATED<span class="o">]</span> renamed to auxiliaryCommentBefore
+    --auxiliary-comment-before <span class="o">[</span>string<span class="o">]</span>  attach a comment before all helper declarations and auxiliary code
+    --auxiliary-comment-after <span class="o">[</span>string<span class="o">]</span>   attach a comment after all helper declarations and auxiliary code
+    -r, --external-helpers               uses a reference to <span class="sb">`</span>babelHelpers<span class="sb">`</span> instead of placing helpers at the top of your code.
+    -s, --source-maps <span class="o">[</span>booleanString<span class="o">]</span>    <span class="o">[</span><span class="nb">true</span><span class="p">|</span><span class="nb">false</span><span class="p">|</span>inline<span class="o">]</span>
+    --source-map-name <span class="o">[</span>string<span class="o">]</span>           DEPRECATED - Please use sourceMapTarget
+    --source-map-target <span class="o">[</span>string<span class="o">]</span>         <span class="nb">set</span> <span class="sb">`</span>file<span class="sb">`</span> on returned <span class="nb">source </span>map
+    --source-file-name <span class="o">[</span>string<span class="o">]</span>          <span class="nb">set</span> <span class="sb">`</span>sources<span class="o">[</span>0<span class="o">]</span><span class="sb">`</span> on returned <span class="nb">source </span>map
+    --source-root <span class="o">[</span>filename<span class="o">]</span>             the root from which all sources are relative
+    --module-root <span class="o">[</span>filename<span class="o">]</span>             optional prefix <span class="k">for</span> the AMD module formatter that will be prepend to the filename on module definitions
+    --babelrc <span class="o">[</span>list<span class="o">]</span>                     Specify a custom list of babelrc files to use
+    --source-type <span class="o">[</span>string<span class="o">]</span>
+    -x, --extensions <span class="o">[</span>extensions<span class="o">]</span>        List of extensions to compile when a directory has been input <span class="o">[</span>.es6,.js,.es,.jsx<span class="o">]</span>
+    -w, --watch                          Recompile files on changes
+    -o, --out-file <span class="o">[</span>out<span class="o">]</span>                 Compile all input files into a single file
+    -d, --out-dir <span class="o">[</span>out<span class="o">]</span>                  Compile an input directory of modules into an output directory
+    -D, --copy-files                     When compiling a directory copy over non-compilable files
+    -q, --quiet                          Don<span class="err">&#39;</span>t log anything
+    -V, --version                        output the version number
+
+  Transformers:
+
+    - <span class="o">[</span>asyncToGenerator<span class="o">]</span>
+    - <span class="o">[</span>bluebirdCoroutines<span class="o">]</span>
+    - es3.memberExpressionLiterals
+    - es3.propertyLiterals
+    - es5.properties.mutators
+    - es6.arrowFunctions
+    - es6.blockScoping
+    - es6.classes
+    - es6.constants
+    - es6.destructuring
+    - es6.forOf
+    - es6.literals
+    - es6.modules
+    - es6.objectSuper
+    - es6.parameters
+    - es6.properties.computed
+    - es6.properties.shorthand
+    - es6.regex.sticky
+    - es6.regex.unicode
+    - <span class="o">[</span>es6.spec.arrowFunctions<span class="o">]</span>
+    - <span class="o">[</span>es6.spec.blockScoping<span class="o">]</span>
+    - <span class="o">[</span>es6.spec.modules<span class="o">]</span>
+    - <span class="o">[</span>es6.spec.symbols<span class="o">]</span>
+    - <span class="o">[</span>es6.spec.templateLiterals<span class="o">]</span>
+    - es6.spread
+    - es6.tailCall
+    - es6.templateLiterals
+    - <span class="o">[</span>es7.asyncFunctions<span class="o">]</span>
+    - <span class="o">[</span>es7.classProperties<span class="o">]</span>
+    - <span class="o">[</span>es7.comprehensions<span class="o">]</span>
+    - <span class="o">[</span>es7.decorators<span class="o">]</span>
+    - <span class="o">[</span>es7.doExpressions<span class="o">]</span>
+    - <span class="o">[</span>es7.exponentiationOperator<span class="o">]</span>
+    - <span class="o">[</span>es7.exportExtensions<span class="o">]</span>
+    - <span class="o">[</span>es7.functionBind<span class="o">]</span>
+    - <span class="o">[</span>es7.objectRestSpread<span class="o">]</span>
+    - <span class="o">[</span>es7.trailingFunctionCommas<span class="o">]</span>
+    - <span class="o">[</span><span class="nb">eval</span><span class="o">]</span>
+    - flow
+    - <span class="o">[</span>jscript<span class="o">]</span>
+    - <span class="o">[</span>minification.constantFolding<span class="o">]</span>
+    - <span class="o">[</span>minification.deadCodeElimination<span class="o">]</span>
+    - <span class="o">[</span>minification.memberExpressionLiterals<span class="o">]</span>
+    - <span class="o">[</span>minification.propertyLiterals<span class="o">]</span>
+    - <span class="o">[</span>minification.removeConsole<span class="o">]</span>
+    - <span class="o">[</span>minification.removeDebugger<span class="o">]</span>
+    - <span class="o">[</span>optimisation.flow.forOf<span class="o">]</span>
+    - <span class="o">[</span>optimisation.modules.system<span class="o">]</span>
+    - <span class="o">[</span>optimisation.react.constantElements<span class="o">]</span>
+    - <span class="o">[</span>optimisation.react.inlineElements<span class="o">]</span>
+    - react
+    - react.displayName
+    - <span class="o">[</span>reactCompat<span class="o">]</span>
+    - regenerator
+    - <span class="o">[</span>runtime<span class="o">]</span>
+    - spec.blockScopedFunctions
+    - spec.functionName
+    - <span class="o">[</span>spec.protoToAssign<span class="o">]</span>
+    - <span class="o">[</span>spec.undefinedToVoid<span class="o">]</span>
+    - strict
+    - <span class="o">[</span>utility.inlineEnvironmentVariables<span class="o">]</span>
+    - validation.react
+    - <span class="o">[</span>validation.undeclaredVariableCheck<span class="o">]</span>
+
+  Module formatters:
+
+    - amd
+    - amdStrict
+    - common
+    - commonStrict
+    - ignore
+    - system
+    - umd
+    - umdStrict
+
+<span class="nv">$ </span>babel <span class="nb">source</span>/ --watch --out-dir build/</code></pre></div>
+
+<p>我们可以看到，Babel 支持的功能多得多，从 JSX 转译为 JavaScript 只是其中的一部分功能而已。另外，Babel 也支持和 <code>JSXTransformer.js</code> 一样的在客户端转译的功能，我们需要 Babel 安装文件中一个叫做 <code>browser.js</code> 的源文件。和 <code>JSXTransfomer.js</code> 一样，我们需要把这个文件拷贝到项目目录中：</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">cp /usr/local/lib/node_modules/babel/node_modules/babel-core/browser.js ~/source/react-startkit/babel/browser.js</code></pre></div>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;babel/browser.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre></div>
+
+<p>这样我们就不需要在试用 React.js 之前就编写繁杂的构建脚本了。</p>
+
+<h2 id="section-2">小结</h2>
+
+<p>本文通过一个 Hello world 简单介绍了如何用纯粹的 JavaScript 和 JSX 来利用 React.js 来编写 Web 应用，大致提及React.js 中组件的概念，并介绍了 JSX。另外介绍了几种把 JSX 转译为 JavaScript 代码的办法。如果想了解关于 React.js 的技术细节，可以参考 <a href="https://facebook.github.io/react/index.html">React.js 主页</a>。</p>
+
+<p>另外本文所展示的示例仅仅是一个简单的静态应用，实际项目显然不会如此。我们需要存储和处理不同的状态，不管它是应用内部的状态，还是对外部公开的状态。后续我会继续写一些文章来介绍如何在 React.js 应用中处理 <code>state</code> 和 <code>prop</code>，它们分别对应私有状态和公有状态。另外后续也会介绍 React 的架构 <a href="https://facebook.github.io/react/docs/flux-overview.html">Flux</a>。</p>
+
+<h2 id="section-3">资源</h2>
+
+<p><a href="https://facebook.github.io/react/index.html">React.js 主页</a></p>
+
+<p><a href="https://babeljs.io/">Babel 主页</a></p>
+
+<p><a href="http://shop.oreilly.com/product/0636920042266.do">React: Up &amp; Running</a></p>
+
+<p><a href="http://wwsun.me/posts/react-getting-started.html">谈谈React.js的核心入门知识</a></p>
+
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'puffsun'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/" data-toggle="tooltip" data-placement="top" title="用 Mocha/Chai/Sinon 测试 JavaScript 代码">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/kui_sun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://www.facebook.com/kui.sun.71">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://github.com/puffsun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; George's Code Thoughts 2015</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+</body>
+
+</html>

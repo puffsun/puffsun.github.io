@@ -5,9 +5,374 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 15 Aug 2015 22:34:00 +0800</pubDate>
-    <lastBuildDate>Sat, 15 Aug 2015 22:34:00 +0800</lastBuildDate>
+    <pubDate>Sun, 23 Aug 2015 15:43:10 +0800</pubDate>
+    <lastBuildDate>Sun, 23 Aug 2015 15:43:10 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>React.js 初体验</title>
+        <description>&lt;p&gt;目前最火的 JavaScript 类库非 React.js 莫属，这几天花了点时间试玩，这篇就是一些心得体会，另外会通过一个 Hello world 项目来讲解 React.js 的一些概念和技术。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;简介&lt;/h2&gt;
+
+&lt;p&gt;从 &lt;a href=&quot;http://facebook.github.io/react/&quot;&gt;React.js 首页&lt;/a&gt; 的简介中可以看出，React应该被用作 MVC 的 View 层。React 把 View 层看做由一个或者多个组件组成，就像搭积木一样。在开发 React 应用的时候，你应该把你期望应用所拥有的 View 分割成单个的组件(Component)，并用这些组件来组合出一个完整的 View。React 另外一个比较重要的概念是虚拟 DOM (Virtual DOM)，这里我暂时不再赘述，毕竟这只是一篇入门的文章，感兴趣的读者可以参考 &lt;a href=&quot;http://fluentconf.com/fluent2014/public/schedule/detail/32395&quot;&gt;The Secrets of React’s virtual DOM&lt;/a&gt; 和 &lt;a href=&quot;http://calendar.perfplanet.com/2013/diff/&quot;&gt;React’s diff algorithm&lt;/a&gt;。我们首先来设置 React.js 开发环境并开发一个React 版的 Hello world。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;设置环境&lt;/h2&gt;
+
+&lt;p&gt;首先我们需要下载 React 库。访问 &lt;a href=&quot;http://reactjs.com&quot;&gt;http://reactjs.com&lt;/a&gt;，你会被重定向到&lt;a href=&quot;http://facebook.github.io/react/&quot;&gt;http://facebook.github.io/react/&lt;/a&gt;。点击 &lt;a href=&quot;http://facebook.github.io/react/downloads.html&quot;&gt;Download React v0.13.3&lt;/a&gt;，在打开的新页面上点击 &lt;a href=&quot;http://facebook.github.io/react/downloads/react-0.13.3.zip&quot;&gt;Download Starter Kit 0.13.3&lt;/a&gt;。下载完成之后把这个 zip 包解压到某个目录下，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;mkdir ~/source/react-startkit
+mv ~/Downloads/react-0.13.3/ ~/source/react-startkit/react
+&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~/source/react-startkit/react&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;好了，基本设置到此为止，接下来该看实际的代码了。首先我会用 JavaScript 开发这个应用，文章的后半部分我会用 JSX 重写该 Hello world， 并介绍一些配套的工具和类库。&lt;/p&gt;
+
+&lt;h2 id=&quot;hello-react&quot;&gt;Hello React&lt;/h2&gt;
+
+&lt;p&gt;新建一个源文件 &lt;code&gt;~/source/react-startkit/react/helloworld.html&lt;/code&gt;：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOCTYPE&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hello&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/title&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;meta&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;utf-8&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/head&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;app&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!--&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;应用在这里渲染&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/div&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;script&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;react/build/react.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/script&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//  JavaScript 代码在这里&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/script&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/html&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码没有需要解释的地方，接下来我们看如何利用引入的 React.js 来实现 Hello world 应用。在 &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt; 标签内键入如下代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello world!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;app&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;刷新一下浏览器，一个崭新的 React hello world 就成功运行了。以 Chrome 浏览器为例，如果你在 &lt;code&gt;Hello world&lt;/code&gt; 上右击并选择 &lt;code&gt;Inspect Element&lt;/code&gt;，你会在 Chrome Dev Tools 里看到 &lt;code&gt;&amp;lt;div&amp;gt;&lt;/code&gt; 标签内被填入了如下内容：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;app&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;h1&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;data-reactid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;.0&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;Hello world!&lt;span class=&quot;nt&quot;&gt;&amp;lt;/h1&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的 &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; 标签就是 React.js 生成的内容。事实上，你可以通过 Chrome Developer Tools 达到同样的目的，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello world!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;app&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getDOMNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;h1 data-reactid=&amp;quot;.0&amp;quot;&amp;gt;Hello world!&amp;lt;/h1&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;下面我们来看看上面代码中需要注意的几个地方。&lt;/p&gt;
+
+&lt;h2 id=&quot;react&quot;&gt;近距离看 React&lt;/h2&gt;
+
+&lt;p&gt;首先，我们注意到了引入 React.js 以后，我们的应用中存在一个全局变量 &lt;code&gt;React&lt;/code&gt;，React 提供的 API 都是通过它来暴露的。所幸它所提供的 API 数量不算多，也算是帮助我们这些苦逼的程序员们节约了一点有限的脑细胞。我们可以通过 Chrome Developer Console 来探索一下：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 输出：&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Children&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ReactComponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;PropTypes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;__spread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;assign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sources&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;cloneElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;children&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;constructAndRenderComponent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;constructAndRenderComponentByID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;createClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;children&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;createFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;createMixin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;findDOMNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;findDOMNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;componentOrElement&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;initializeTouchEvents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;shouldUseTouch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;isValidElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;renderToStaticMarkup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;renderToStaticMarkup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;renderToString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;renderToString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;unmountComponentAtNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;container&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;0.13.3&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;withContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;newContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;scopedCallback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在上面的代码中，我们见到了其中的 &lt;code&gt;render()&lt;/code&gt;, &lt;code&gt;DOM&lt;/code&gt;, &lt;code&gt;DOM.h1()&lt;/code&gt; 这几个 API，目前我们先只关心它们。&lt;/p&gt;
+
+&lt;p&gt;其次，上面的代码已经体现了 React.js 中组件的概念。在开发 React.js 应用的时候，我们通过 React 提供的 API 创建组件，并通过需要的方式来组合组件，从而得到我们需要的应用。在我们的 Hello world 应用中，我们创建了一个自定义组件，虽然特别简单，但它仍然是一个独立的组件。它是通过 &lt;code&gt;React.DOM&lt;/code&gt; 所提供的接口方法，叫做 &lt;code&gt;React.DOM.h1()&lt;/code&gt;，来创建。事实上 &lt;code&gt;React.DOM&lt;/code&gt; 提供了很多类似的接口方法，我们可以通过 Chrome Developer Tools 来看看：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;,&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 输出： a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;big&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;blockquote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;br&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;canvas&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;caption&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;cite&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;col&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;colgroup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;datalist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;details&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dfn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dialog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;em&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;embed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fieldset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;figcaption&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;footer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;form&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;header&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;iframe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;img&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;kbd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keygen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;legend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;li&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;link&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mark&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;menu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;menuitem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;meter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nav&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;noscript&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ol&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;optgroup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;option&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;param&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;picture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;progress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ruby&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;samp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;section&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;small&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;strong&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;summary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;tbody&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;td&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;textarea&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tfoot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;th&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;thead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;track&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ul&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;video&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;wbr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;circle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;clipPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;defs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ellipse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;linearGradient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;polygon&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;polyline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;radialGradient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;svg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tspan&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这些都是对 &lt;code&gt;React.createElement(...)&lt;/code&gt; 方法的封装，用来方便我们来创建自定义组件。&lt;/p&gt;
+
+&lt;p&gt;最后，我们看到了 &lt;code&gt;document.getElementById(&quot;app&quot;)&lt;/code&gt;，它告诉 React.js 在应用的哪个 DOM 节点渲染我们的自定义组件。&lt;/p&gt;
+
+&lt;h2 id=&quot;jsx&quot;&gt;JSX&lt;/h2&gt;
+
+&lt;p&gt;上面我们是通过纯粹的 JavaScript 来创建 React.js 自定义组件，对于我们的 Hello world 应用它还可以保证代码的可维护性，一旦组件比较复杂，并有多层嵌套的时候，代码很快就失去控制了，比如下面的代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;my-heading&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; 
+	&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+		&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;DOM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;em&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hell&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+		&lt;span class=&quot;s2&quot;&gt;&amp;quot;o&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;	&lt;span class=&quot;s2&quot;&gt;&amp;quot; world!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;app&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如果我们使用 JSX，则代码可以像这样写：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;h1&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;my-heading&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+    	&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;em&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Hell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/em&amp;gt;o&amp;lt;/span&amp;gt; world!&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/h1&amp;gt;,&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;app&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我们可以看到上面的代码很像 HTML，它是 React.js 所提供的特殊语法，可以用来简化自定义组件的编写。问题是它不是合法的 JavaScript 代码，那如何才能运行它呢？我们需要一个转译器(Transpiler)来预处理它。当然，你也想到了，React.js 也提供了对应的工具，也可以通过第三方工具来做。为了让文章不再拗口，我下面将会直接使用 Transpile 和 Polyfill 这两个术语不加翻译。&lt;/p&gt;
+
+&lt;h2 id=&quot;transpile-vs-polyfill&quot;&gt;Transpile vs. Polyfill&lt;/h2&gt;
+
+&lt;p&gt;Polyfill 对于前端工程师来说一定不会陌生。由于 JavaScript 社区的爆发性增长，也由于 ES 标准在浏览器中的实现总是滞后于 ES 标准推出的时间。那么对于一些新特性，比如 &lt;code&gt;Array.map&lt;/code&gt; 就需要 Polyfill 类库来实现，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// implement the method&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;那对于一些新的语法，比如 ES2015 的 &lt;code&gt;class&lt;/code&gt;，没法用 Polyfill 来实现，就需要一些 Transpiler 来对代码进行预处理。Transpile 过程其实就是把新语法翻译成浏览器已经支持的语法的过程。其实也不难理解，类似 CoffeeScript 代码被翻译成 JavaScript 的过程。&lt;/p&gt;
+
+&lt;h2 id=&quot;jsx-transpile&quot;&gt;JSX Transpile&lt;/h2&gt;
+
+&lt;p&gt;可以有几种办法来转译 JSX，这篇文章里我要介绍的是分别是从客户端，通过 react-tools，和通过 Babel 来转译。&lt;/p&gt;
+
+&lt;h3 id=&quot;transpile&quot;&gt;客户端 Transpile&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://facebook.github.io/react/downloads/react-0.13.3.zip&quot;&gt;React Starter Kit&lt;/a&gt; 提供了 &lt;code&gt;JSXTransformer.js&lt;/code&gt;，我们可以通过它实现在浏览器中 Transpile JSX：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/path/to/react.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/path/to/JSXTransformer.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;text/jsx&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/*...*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这种办法的优点是你可以快速使用 React.js，并充分利用 JSX 的语法来简化组件的开发；缺点是性能会比较差。因为脚本加载以后，在运行之前，&lt;code&gt;JSXTransformer.js&lt;/code&gt; 要首先把 JSX 转换成 JavaScript 才可以在浏览器中运行。&lt;/p&gt;
+
+&lt;h3 id=&quot;react-tools&quot;&gt;React-tools&lt;/h3&gt;
+
+&lt;p&gt;任何一个正式的项目都会有自己的标准构建流程，我们要做的就是把 JSX 转译过程加入到这个构建流程中。首先我们需要安装 react-tools:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;npm install -g react-tools
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jsx -h
+
+  Usage: jsx &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;options&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;directory&amp;gt; &amp;lt;output directory&amp;gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&amp;lt;module ID&amp;gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&amp;lt;module ID&amp;gt; ...&lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;
+
+  Options:
+
+    -h, --help                               output usage information
+    -V, --version                            output the version number
+    -c, --config &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;file&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                      JSON configuration file &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;no file or - means STDIN&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    -w, --watch                              Continually rebuild
+    -x, --extension &amp;lt;js &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; coffee &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; ...&amp;gt;      File extension to assume when resolving module identifiers
+    --relativize                             Rewrite all module identifiers to be relative
+    --follow-requires                        Scan modules &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; required dependencies
+    --use-provides-module                    Respect @providesModules pragma in files
+    --cache-dir &amp;lt;directory&amp;gt;                  Alternate directory to use &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; disk cache
+    --no-cache-dir                           Disable the disk cache
+    --source-charset &amp;lt;utf8 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; win1252 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; ...&amp;gt;  Charset of &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: utf8&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --output-charset &amp;lt;utf8 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; win1252 &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; ...&amp;gt;  Charset of output &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: utf8&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --harmony                                Turns on JS transformations such as ES6 Classes etc.
+    --target &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;version&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                       Specify your target version of ECMAScript. Valid values are &lt;span class=&quot;s2&quot;&gt;&amp;quot;es3&amp;quot;&lt;/span&gt; and &lt;span class=&quot;s2&quot;&gt;&amp;quot;es5&amp;quot;&lt;/span&gt;. The default is &lt;span class=&quot;s2&quot;&gt;&amp;quot;es5&amp;quot;&lt;/span&gt;. &lt;span class=&quot;s2&quot;&gt;&amp;quot;es3&amp;quot;&lt;/span&gt; will avoid uses of defineProperty and will quote reserved words. WARNING: &lt;span class=&quot;s2&quot;&gt;&amp;quot;es5&amp;quot;&lt;/span&gt; is not properly supported, even with the use of es5shim, es5sham. If you need to support IE8, use &lt;span class=&quot;s2&quot;&gt;&amp;quot;es3&amp;quot;&lt;/span&gt;.
+    --strip-types                            Strips out &lt;span class=&quot;nb&quot;&gt;type &lt;/span&gt;annotations.
+    --es6module                              Parses the file as a valid ES6 module. &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Note that this means implicit strict mode&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --non-strict-es6module                   Parses the file as an ES6 module, except disables implicit strict-mode. &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;This is useful &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; you&lt;span class=&quot;s1&quot;&gt;&amp;#39;re porting non-ES6 modules to ES6, but haven&amp;#39;&lt;/span&gt;t yet verified that they are strict-mode safe yet&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --source-map-inline                      Embed inline sourcemap in transformed &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jsx --watch &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;/ build/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;通过 react-tools 可以把 JSX 代码转译成 JavaScript 代码，从而浏览器可以理解并运行。&lt;/p&gt;
+
+&lt;h3 id=&quot;babel&quot;&gt;Babel&lt;/h3&gt;
+
+&lt;p&gt;Babel 是一个开源项目，它支持 JSX 转换为 JavaScript 代码的功能，但也包括了其他的功能，包括吧 ES2015 标准的语法转译为目前浏览器支持的语法。详细的项目介绍可以参考 &lt;a href=&quot;https://babeljs.io/&quot;&gt;Babel 主页&lt;/a&gt;。事实上从 React.js v0.14 开始，&lt;code&gt;JSXTransformer.js&lt;/code&gt; 将不再包括在 React.js 的安装包中， 它也不再是默认的 JSX Transpiler，React.js 将默认使用 &lt;a href=&quot;https://babeljs.io/&quot;&gt;Babel&lt;/a&gt; 来实现JSX转译。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;npm install --global babel
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;babel -h
+
+  Usage: babel &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;options&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;files ...&amp;gt;
+
+  Options:
+
+    -h, --help                           output usage information
+    -f, --filename &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;filename&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;            filename to use when reading from stdin - this will be used in &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;-maps, errors etc
+    --module-id &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                 specify a custom name &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; module ids
+    --retain-lines                       retain line numbers - will result in really ugly code
+    --no-non-standard                    &lt;span class=&quot;nb&quot;&gt;enable&lt;/span&gt;/disable support &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; JSX and Flow &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;on by default&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --experimental                       allow use of experimental transformers
+    --no-highlight-code                  &lt;span class=&quot;nb&quot;&gt;enable&lt;/span&gt;/disable ANSI syntax highlighting of code frames &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;on by default&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    -e, --stage &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;number&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                 ECMAScript proposal stage version to allow &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;0-4&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    -b, --blacklist &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;transformerList&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    blacklist of transformers to NOT use
+    -l, --whitelist &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;transformerList&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    whitelist of transformers to ONLY use
+    --optional &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;transformerList&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;         list of optional transformers to &lt;span class=&quot;nb&quot;&gt;enable&lt;/span&gt;
+    -m, --modules &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;               module formatter &lt;span class=&quot;nb&quot;&gt;type &lt;/span&gt;to use &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;common&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    -M, --module-ids                     insert an explicit id &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; modules
+    -L, --loose &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;transformerList&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        list of transformers to &lt;span class=&quot;nb&quot;&gt;enable &lt;/span&gt;loose mode ON
+    -P, --jsx-pragma &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;            custom pragma to use with JSX &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;same functionality as @jsx comments&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --plugins &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;list&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    --ignore &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;list&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                      list of glob paths to **not** compile
+    --only &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;list&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                        list of glob paths to **only** compile
+    --no-comments                        strip/output comments in generated output &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;on by default&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    --compact &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;booleanString&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; not include superfluous whitespace characters and line terminators &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;auto&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    -k, --keep-module-id-extensions      keep extensions when generating module ids
+    -a, --auxiliary-comment &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;DEPRECATED&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; renamed to auxiliaryCommentBefore
+    --auxiliary-comment-before &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;  attach a comment before all helper declarations and auxiliary code
+    --auxiliary-comment-after &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   attach a comment after all helper declarations and auxiliary code
+    -r, --external-helpers               uses a reference to &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;babelHelpers&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; instead of placing helpers at the top of your code.
+    -s, --source-maps &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;booleanString&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;inline&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    --source-map-name &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;           DEPRECATED - Please use sourceMapTarget
+    --source-map-target &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;         &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;file&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; on returned &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;map
+    --source-file-name &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;          &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;sources&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;0&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; on returned &lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;map
+    --source-root &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;filename&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;             the root from which all sources are relative
+    --module-root &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;filename&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;             optional prefix &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the AMD module formatter that will be prepend to the filename on module definitions
+    --babelrc &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;list&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                     Specify a custom list of babelrc files to use
+    --source-type &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;string&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    -x, --extensions &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;extensions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        List of extensions to compile when a directory has been input &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;.es6,.js,.es,.jsx&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    -w, --watch                          Recompile files on changes
+    -o, --out-file &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;out&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                 Compile all input files into a single file
+    -d, --out-dir &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;out&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;                  Compile an input directory of modules into an output directory
+    -D, --copy-files                     When compiling a directory copy over non-compilable files
+    -q, --quiet                          Don&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;t log anything
+    -V, --version                        output the version number
+
+  Transformers:
+
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;asyncToGenerator&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluebirdCoroutines&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - es3.memberExpressionLiterals
+    - es3.propertyLiterals
+    - es5.properties.mutators
+    - es6.arrowFunctions
+    - es6.blockScoping
+    - es6.classes
+    - es6.constants
+    - es6.destructuring
+    - es6.forOf
+    - es6.literals
+    - es6.modules
+    - es6.objectSuper
+    - es6.parameters
+    - es6.properties.computed
+    - es6.properties.shorthand
+    - es6.regex.sticky
+    - es6.regex.unicode
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es6.spec.arrowFunctions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es6.spec.blockScoping&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es6.spec.modules&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es6.spec.symbols&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es6.spec.templateLiterals&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - es6.spread
+    - es6.tailCall
+    - es6.templateLiterals
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.asyncFunctions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.classProperties&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.comprehensions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.decorators&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.doExpressions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.exponentiationOperator&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.exportExtensions&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.functionBind&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.objectRestSpread&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;es7.trailingFunctionCommas&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - flow
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;jscript&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;minification.constantFolding&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;minification.deadCodeElimination&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;minification.memberExpressionLiterals&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;minification.propertyLiterals&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;minification.removeConsole&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;minification.removeDebugger&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;optimisation.flow.forOf&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;optimisation.modules.system&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;optimisation.react.constantElements&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;optimisation.react.inlineElements&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - react
+    - react.displayName
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;reactCompat&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - regenerator
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;runtime&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - spec.blockScopedFunctions
+    - spec.functionName
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;spec.protoToAssign&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;spec.undefinedToVoid&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - strict
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;utility.inlineEnvironmentVariables&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    - validation.react
+    - &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;validation.undeclaredVariableCheck&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+  Module formatters:
+
+    - amd
+    - amdStrict
+    - common
+    - commonStrict
+    - ignore
+    - system
+    - umd
+    - umdStrict
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;babel &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;/ --watch --out-dir build/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我们可以看到，Babel 支持的功能多得多，从 JSX 转译为 JavaScript 只是其中的一部分功能而已。另外，Babel 也支持和 &lt;code&gt;JSXTransformer.js&lt;/code&gt; 一样的在客户端转译的功能，我们需要 Babel 安装文件中一个叫做 &lt;code&gt;browser.js&lt;/code&gt; 的源文件。和 &lt;code&gt;JSXTransfomer.js&lt;/code&gt; 一样，我们需要把这个文件拷贝到项目目录中：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;cp /usr/local/lib/node_modules/babel/node_modules/babel-core/browser.js ~/source/react-startkit/babel/browser.js&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;babel/browser.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这样我们就不需要在试用 React.js 之前就编写繁杂的构建脚本了。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;小结&lt;/h2&gt;
+
+&lt;p&gt;本文通过一个 Hello world 简单介绍了如何用纯粹的 JavaScript 和 JSX 来利用 React.js 来编写 Web 应用，大致提及React.js 中组件的概念，并介绍了 JSX。另外介绍了几种把 JSX 转译为 JavaScript 代码的办法。如果想了解关于 React.js 的技术细节，可以参考 &lt;a href=&quot;https://facebook.github.io/react/index.html&quot;&gt;React.js 主页&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;另外本文所展示的示例仅仅是一个简单的静态应用，实际项目显然不会如此。我们需要存储和处理不同的状态，不管它是应用内部的状态，还是对外部公开的状态。后续我会继续写一些文章来介绍如何在 React.js 应用中处理 &lt;code&gt;state&lt;/code&gt; 和 &lt;code&gt;prop&lt;/code&gt;，它们分别对应私有状态和公有状态。另外后续也会介绍 React 的架构 &lt;a href=&quot;https://facebook.github.io/react/docs/flux-overview.html&quot;&gt;Flux&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;资源&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://facebook.github.io/react/index.html&quot;&gt;React.js 主页&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://babeljs.io/&quot;&gt;Babel 主页&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://shop.oreilly.com/product/0636920042266.do&quot;&gt;React: Up &amp;amp; Running&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://wwsun.me/posts/react-getting-started.html&quot;&gt;谈谈React.js的核心入门知识&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 23 Aug 2015 09:18:44 +0800</pubDate>
+        <link>http://codethoughts.info/javascript/2015/08/23/react-js-hands-on/</link>
+        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/08/23/react-js-hands-on/</guid>
+        
+        
+        <category>javascript</category>
+        
+      </item>
     
       <item>
         <title>用 Mocha/Chai/Sinon 测试 JavaScript 代码</title>
@@ -2402,199 +2767,6 @@ JavaScript 中最常见的高阶函数是方法的回调，比如我们用 jQuer
         <pubDate>Thu, 04 Jun 2015 19:23:10 +0800</pubDate>
         <link>http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/</link>
         <guid isPermaLink="true">http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/</guid>
-        
-        
-        <category>javascript</category>
-        
-      </item>
-    
-      <item>
-        <title>深入 JavaScript 模块化模式</title>
-        <description>&lt;h3 id=&quot;section&quot;&gt;译者写在前面的话&lt;/h3&gt;
-&lt;p&gt;看到一篇自己写不出来的好文章，顺手把它翻译了，一来自己可以深入阅读原文，二来也可以帮助希望深入学习 JavaScript 的同行。原文请见 &lt;a href=&quot;http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html&quot;&gt;JavaScript Module Pattern: In-Depth&lt;/a&gt;，转载请注明出处。&lt;/p&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;译文：&lt;/h2&gt;
-&lt;p&gt;模块化是 JavaScript 中很常见的模式，这个模式已经被广泛的理解并接受了，但是它仍然有一些没有引起足够重视的高级用法。在这篇文章中，我会回顾模块化的基础知识并覆盖一些需要引起足够注意力的高级主题，其中甚至有一个是我自己原创的。&lt;/p&gt;
-
-&lt;h2 id=&quot;section-2&quot;&gt;基础知识&lt;/h2&gt;
-&lt;p&gt;我们从一些简单的回顾开始，这些知识在 Eric Miraglia（YUI 作者）在几年前写了关于 &lt;a href=&quot;http://yuiblog.com/blog/2007/06/12/module-pattern/&quot;&gt;JavaScript 模块化的博客&lt;/a&gt; 之后就人尽皆知了。如果你已经非常熟悉 JavaScript 模块化，那么请直接跳至“高级模式”部分。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-3&quot;&gt;匿名闭包&lt;/h3&gt;
-&lt;p&gt;这是 JavaScript 模块化得以实现的基础，也是 JavaScript 最佳的特性，没有之一。我们只需要创建一个匿名函数，并立刻执行它，这个匿名函数中运行的所有的代码就会存活于一个闭包之中，并在应用程序的生命周期内提供私密性和状态。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// 所有的变量和函数都只属于本作用域&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// 但仍然维护着对全局作用域的访问&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}());&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;请注意那个包围在匿名函数外的&lt;code&gt;( )&lt;/code&gt;，为了满足 JavaScript 语法的正确性，我们必须添加它，因为以 function 开头的语句总是被认为是函数声明，被 &lt;code&gt;( )&lt;/code&gt; 括起来以后函数声明则变成了函数表达式。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-4&quot;&gt;全局导入&lt;/h3&gt;
-&lt;p&gt;JavaScript 有一个特性叫做“隐含全局”。任何时候，只要有被使用的变量名，JavaScript 解释器就会沿着作用域链向上查找一个定义了该变量名的 var 声明。如果在这个过程中没有找到这个变量声明，那这个变量就假定是全局的。而如果这个变量是被赋值而且此时这个变量尚不存在，那么这个变量会被创建为全局变量，这也意味着在匿名闭包中可以很容易的创建全局变量。不过，很不幸，这样会导致难以维护的代码，因为对人来说，很难区分在一个源文件中那些变量是全局的。&lt;/p&gt;
-
-&lt;p&gt;幸好，匿名函数为这种情况提供了一个简单的解决方案，我们可以把全局变量作为参数传入匿名函数，从而把他们的导入我们的代码，这样既清晰，相比“默认全局”又可以提高性能，来看一个例子：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;YAHOO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// 现在我们可以在匿名函数中用$访问 jQuery，用 YAHOO 访问全局变量的 YAHOO 了。&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;jQuery&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;YAHOO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;section-5&quot;&gt;模块导出&lt;/h3&gt;
-&lt;p&gt;有时候你声明变量的时候并不想使用全局变量，而是局部变量，这时候你可以通过把变量当做匿名函数的返回值导出来达到目的。这也就是基本的JavaScript 模块模式，来看一个例子：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{},&lt;/span&gt;
-	    &lt;span class=&quot;nx&quot;&gt;privateVariable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-	&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;privateMethod&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-	&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;moduleProperty&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;moduleMethod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}());&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;注意到这里我们声明了一个叫做&lt;code&gt;MODULE&lt;/code&gt;的全局模块，它有两个公有属性：一个叫做&lt;code&gt;MODULE.moduleMethod&lt;/code&gt;的函数，和一个叫做&lt;code&gt;MODULE.moduleProperty&lt;/code&gt;的属性。应该留意的是它利用匿名函数的闭包维护了&lt;code&gt;私有的内部状态&lt;/code&gt;，而且，利用上面我们所学的全局导入，我们可以很容易的导入我们所需要的全局变量。&lt;/p&gt;
-
-&lt;h2 id=&quot;section-6&quot;&gt;高级模式&lt;/h2&gt;
-&lt;p&gt;虽然上面所学的知识已经足够应付大部分的情况，但对于 JavaScript 模块模式，我们仍然可以更进一步，创建一些强大的，可扩展的模式。那我们现在通过一个名叫 &lt;code&gt;MODULE&lt;/code&gt; 的模块来把这些模式过一遍。&lt;/p&gt;
-
-&lt;h3 id=&quot;augmentation&quot;&gt;扩容（Augmentation）&lt;/h3&gt;
-&lt;p&gt;到目前为止我们见到的模块都有一个限制，就是整个模块只能存活于一个源文件中，而任何一个在大型项目中工作过的人都会理解把一个模块分解到多个源文件的价值。还好，我们有一个很漂亮的解决方案叫做 &lt;code&gt;模块扩容&lt;/code&gt;。首先我们导入模块，然后我们增加一些属性，再重新导出这个模块，从而对上述的 &lt;code&gt;MODULE&lt;/code&gt; 模块达到扩容的目的：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;anotherMethod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;c1&quot;&gt;// 增加新方法&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;虽然不是必须的，但我们仍然使用了 var 关键字来保持一致性。上面的代码运行以后，我们的模块将会拥有一个新的公有方法叫做 &lt;code&gt;MODULE.anotherMethod&lt;/code&gt;，这个额外的源文件仍然可以维护它自己的私有内部状态和导入的变量。&lt;/p&gt;
-
-&lt;h3 id=&quot;loose-augmentation&quot;&gt;宽松扩容（Loose Augmentation）&lt;/h3&gt;
-&lt;p&gt;虽然我们上面的例子要求初始的模块必须先被创建，然后才可以进行扩容，但是事实上也不是必须这样做。JavaScript 中为了提高性能，可以异步的加载脚本。我们可以灵活的创建由多个部分组成的模块，并通过宽松扩容来以任何顺序加载它们。要求就是，每个源文件有如下的代码结构：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// add capabilities...&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这个模式中的&lt;code&gt;var&lt;/code&gt;关键字是必须的，另外注意到，被导入的模块如果尚未存在的话，将会被创建，这意味着你可以使用像&lt;a href=&quot;http://labjs.com/&quot;&gt;LAB.js&lt;/a&gt;这样的工具来并行的加载这些模块，而通常情况下多个模块同时加载则会被阻塞。&lt;/p&gt;
-
-&lt;h3 id=&quot;tight-augmentation&quot;&gt;紧缩扩容（Tight Augmentation）&lt;/h3&gt;
-&lt;p&gt;虽然宽松扩容很赞，但是它还是在你的模块上加了一些限制，最关键的问题是你无法安全的覆盖模块(Overwrite)属性。另外在模块初始化的时候，你不能使用来自其他源文件的模块（但是在运行时是可以的）。而紧缩扩容指定了一系列加载顺序，并且运行覆盖，下面是一个简单的例子（为前面的 &lt;code&gt;MODULE&lt;/code&gt; 模块扩容）：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;old_moduleMethod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;moduleMethod&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-	&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;moduleMethod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;c1&quot;&gt;// 方法覆盖，但是仍然通过 old_module.moduleMethod 保持对原有方法的访问&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这里我们覆盖了&lt;code&gt;MODULE.moduleMethod&lt;/code&gt;，但是如果需要的话，我们仍然可以访问被覆盖方法。&lt;/p&gt;
-
-&lt;h3 id=&quot;cloning-and-inheritance&quot;&gt;克隆和继承（Cloning and Inheritance）&lt;/h3&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MODULE_TWO&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;old&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{},&lt;/span&gt;
-		&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;old&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;old&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hasOwnProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;old&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;super_moduleMethod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;old&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;moduleMethod&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;moduleMethod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	    &lt;span class=&quot;c1&quot;&gt;// 覆盖被克隆的方法，并通过 super_moduleMethod 维护对服方法的访问&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这个模式可能是最&lt;code&gt;不灵活&lt;/code&gt;的，虽然它允许一些巧妙的组合(compositions)，但是以付出灵活性为代价。就像我之前所写的，一些作为属性的对象和函数不会被复制，他们仅仅作为一个对象的两个引用而存在。改变其中的一个则会同时改变另外一个。即使我们可以通过递归的克隆来解决这个问题，对函数我们仍然没有更多的办法，除了使用 &lt;code&gt;eval&lt;/code&gt;。在这篇文章包括这个模式仅仅是为了完整性。&lt;/p&gt;
-
-&lt;h3 id=&quot;cross-file-private-state&quot;&gt;跨文件私有状态（Cross-File Private State）&lt;/h3&gt;
-&lt;p&gt;把一个模块分割到多个文件的最大缺陷是每个文件都将会维护它自己的私有状态，并且没有任何途径访问其他文件的私有状态。这个问题有解决方案，下面这个宽松扩容模块（Loose Augmentation Module）的例子可以 &lt;code&gt;维护跨所有扩容模块的私有状态&lt;/code&gt;。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_private&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_private&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_private&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{},&lt;/span&gt;
-		&lt;span class=&quot;nx&quot;&gt;_seal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_seal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_seal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_private&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_seal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_unseal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-		&lt;span class=&quot;nx&quot;&gt;_unseal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_unseal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_unseal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_private&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_private&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_seal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_seal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-			&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_unseal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_unseal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// 永久维护了对_private, _seal, 和 _unseal 私有状态的访问&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;在这里，任何文件都可以在 &lt;code&gt;_private&lt;/code&gt; 中设置它们的局部私有变量，它们立即对其他文件可见。在这个模块完全加载以后，该应用程序应该调用 &lt;code&gt;MODULE._seal()&lt;/code&gt;, 它可以阻止模块外部对内部的 &lt;code&gt;_private&lt;/code&gt; 变量的访问。如果这个模块在整个应用程序的存活期间内被再次扩容，模块内部的方法可以在新文件被加载之前再次调用 &lt;code&gt;_seal()&lt;/code&gt;，然后在方法被执行之后再次调用 &lt;code&gt;_unseal()&lt;/code&gt;。这个模式是我今天在工作的时候突然想到的，而且之前我在其他地方都没见过它。我认为它是一个非常有用的模式，而且这个模式也值得单独写一篇文章。&lt;/p&gt;
-
-&lt;h3 id=&quot;sub-modules&quot;&gt;子模块（Sub-modules）&lt;/h3&gt;
-&lt;p&gt;我们要讨论的最后一个高级模式其实是最简单的，而且已经有很多创建子模块的很好的用例，其实它就像创建普通的模块一样：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;MODULE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sub&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}());&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;虽然看起来很简单，但我认为它值得在这里一提。子模块具有普通模块的所有高级特性，包括扩容和私有状态。&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusions&quot;&gt;结论（Conclusions）&lt;/h2&gt;
-&lt;p&gt;大部分 JavaScript 模块的高级模式可以被组合起来，并得到更多的有用的模式。如果是非选不可的话，我提倡组合 &lt;code&gt;宽松扩容&lt;/code&gt;，&lt;code&gt;私有状态&lt;/code&gt;，和 &lt;code&gt;子模块&lt;/code&gt;来设计复杂应用程序这样一种途径，我自己也曾经这样做过。&lt;/p&gt;
-
-&lt;p&gt;在这篇文章里我还没有讨论过性能，这里我可以给出一个小小的提示：模块模式对 &lt;code&gt;提升性能&lt;/code&gt; 很有好处。模块化的代码可以被很好的压缩，从而可以更快的下载，使用 &lt;code&gt;宽松的扩容(loose augmentation)&lt;/code&gt; 模式使得非阻塞并行下载成为可能，也可以提高下载速度。虽然和其他方法相比，初始化的时间可能略有增加，但是这样的折衷是值得的。并且，只要全局变量都正确导入了，运行时性能应该不会降低，甚至会有所增加，因为局部变量的引用搜索链被模块缩短了。&lt;/p&gt;
-
-&lt;p&gt;最后通过一个例子总结一下：一个用来加载自身的子模块，如果模块尚不存在的话就创建一个新的。为了使程序简短，我去掉了私有状态，但是把它加进来也不是什么难事。这个模式允许并发加载一个具有层级关系的，复杂的代码库，这个代码库包括该模块自身，子模块和其他所有的模块。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UTIL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ajax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ajax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
-
-	&lt;span class=&quot;nx&quot;&gt;my&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;c1&quot;&gt;// ok, so I&amp;#39;m cheating a bit :)&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getJSON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// etc...&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;UTIL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;jQuery&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;我希望你会觉得这篇文章所讲述的东西都很有用，也请你在评论处留下你的想法，现在你可以继续去写更好，也更模块化的 JavaScript 代码了。&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;这篇文章在&lt;a href=&quot;http://ajaxian.com/archives/a-deep-dive-and-analysis-of-the-javascript-module-pattern&quot;&gt;Ajaxian.com&lt;/a&gt; 上被加精了，在那里的评论区有更多的讨论，那些评论和本文下面的这些评论都值得一读。&lt;/em&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;section-7&quot;&gt;资源&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html&quot;&gt;JavaScript Module Pattern: In-Depth&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://yuiblog.com/blog/2007/06/12/module-pattern/&quot;&gt;JavaScript 模块化的博客&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://jquery.com/&quot;&gt;jQuery&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://yuilibrary.com/&quot;&gt;YUI&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 01 Jun 2015 21:44:06 +0800</pubDate>
-        <link>http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/</link>
-        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/</guid>
         
         
         <category>javascript</category>
