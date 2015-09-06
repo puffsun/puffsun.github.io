@@ -100,7 +100,7 @@
 
 				<h2 id="section">简介</h2>
 
-<p>AngularJS 起初由 Google 的一位测试工程师 Misko Hevery编写。在设计之初，易于为应用程序编写测试就是 AngularJS 的核心设计目标之一。 我们知道，在为应用程序编写测试的时候，最困难的部分就是管理应用程序外部依赖，AngularJS 通过模块化和依赖注入使得管理依赖变成一件轻松的事情。另外，AngularJS 可以轻松和第三方的测试框架和类库集成，比如：Mocha/Chai/Sinon，Jasmine，这也是为前端应用开发测试代码的另一个利好，你没必要再去熟悉新的框架或者类库。我在另一篇博客中介绍了如何使用 <a href="http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/">用 Mocha/Chai/Sinon 测试 JavaScript 代码</a>，它着重介绍了如何测试 JavaScript 代码。然而编写 AngularJS 的单元测试又需要学习一些新的知识，这也是这篇文章要讨论的主题。</p>
+<p>AngularJS 起初由 Google 的一位测试工程师 Misko Hevery编写。在设计之初，易于为应用程序编写测试就是 AngularJS 的核心设计目标之一。 我们知道，在为应用程序编写测试的时候，最困难的部分就是管理应用程序外部依赖，AngularJS 通过模块化和依赖注入使得管理依赖变成一件轻松的事情。另外，AngularJS 可以轻松和第三方的测试框架和类库集成，比如：Mocha/Chai/Sinon，Jasmine，这也是为前端应用开发测试代码的另一个利好，你没必要再去熟悉新的框架或者类库。我在另一篇博客中介绍了如何使用 <a href="http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/">用 Mocha/Chai/Sinon 测试 JavaScript 代码</a>，它着重介绍了如何测试 JavaScript 代码。然而编写 AngularJS 应用程序的单元测试又需要学习一些新的知识，这也是这篇文章要讨论的主题。</p>
 
 <p>本文假定你知道什么是单元测试，熟悉 AngularJS 的基本概念，比如 Module，Controller，Service，Directive，依赖注入等。如果这时候你仍然不清楚，可以参考<a href="http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/">关于 Angular.js 你需要知道的知识</a> 和 <a href="http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/">用 Mocha/Chai/Sinon 测试 JavaScript 代码</a> 这两篇文章，或者自行 <a href="www.google.com">Google</a>。</p>
 

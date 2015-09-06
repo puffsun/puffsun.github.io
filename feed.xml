@@ -5,15 +5,15 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 06 Sep 2015 22:17:29 +0800</pubDate>
-    <lastBuildDate>Sun, 06 Sep 2015 22:17:29 +0800</lastBuildDate>
+    <pubDate>Sun, 06 Sep 2015 22:24:51 +0800</pubDate>
+    <lastBuildDate>Sun, 06 Sep 2015 22:24:51 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>AngularJS 单元测试</title>
         <description>&lt;h2 id=&quot;section&quot;&gt;简介&lt;/h2&gt;
 
-&lt;p&gt;AngularJS 起初由 Google 的一位测试工程师 Misko Hevery编写。在设计之初，易于为应用程序编写测试就是 AngularJS 的核心设计目标之一。 我们知道，在为应用程序编写测试的时候，最困难的部分就是管理应用程序外部依赖，AngularJS 通过模块化和依赖注入使得管理依赖变成一件轻松的事情。另外，AngularJS 可以轻松和第三方的测试框架和类库集成，比如：Mocha/Chai/Sinon，Jasmine，这也是为前端应用开发测试代码的另一个利好，你没必要再去熟悉新的框架或者类库。我在另一篇博客中介绍了如何使用 &lt;a href=&quot;http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/&quot;&gt;用 Mocha/Chai/Sinon 测试 JavaScript 代码&lt;/a&gt;，它着重介绍了如何测试 JavaScript 代码。然而编写 AngularJS 的单元测试又需要学习一些新的知识，这也是这篇文章要讨论的主题。&lt;/p&gt;
+&lt;p&gt;AngularJS 起初由 Google 的一位测试工程师 Misko Hevery编写。在设计之初，易于为应用程序编写测试就是 AngularJS 的核心设计目标之一。 我们知道，在为应用程序编写测试的时候，最困难的部分就是管理应用程序外部依赖，AngularJS 通过模块化和依赖注入使得管理依赖变成一件轻松的事情。另外，AngularJS 可以轻松和第三方的测试框架和类库集成，比如：Mocha/Chai/Sinon，Jasmine，这也是为前端应用开发测试代码的另一个利好，你没必要再去熟悉新的框架或者类库。我在另一篇博客中介绍了如何使用 &lt;a href=&quot;http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/&quot;&gt;用 Mocha/Chai/Sinon 测试 JavaScript 代码&lt;/a&gt;，它着重介绍了如何测试 JavaScript 代码。然而编写 AngularJS 应用程序的单元测试又需要学习一些新的知识，这也是这篇文章要讨论的主题。&lt;/p&gt;
 
 &lt;p&gt;本文假定你知道什么是单元测试，熟悉 AngularJS 的基本概念，比如 Module，Controller，Service，Directive，依赖注入等。如果这时候你仍然不清楚，可以参考&lt;a href=&quot;http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/&quot;&gt;关于 Angular.js 你需要知道的知识&lt;/a&gt; 和 &lt;a href=&quot;http://codethoughts.info/javascript/2015/07/18/javascript-bdd-with-mocha-chai-sinon/&quot;&gt;用 Mocha/Chai/Sinon 测试 JavaScript 代码&lt;/a&gt; 这两篇文章，或者自行 &lt;a href=&quot;www.google.com&quot;&gt;Google&lt;/a&gt;。&lt;/p&gt;
 
