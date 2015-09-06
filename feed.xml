@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 06 Sep 2015 21:29:30 +0800</pubDate>
-    <lastBuildDate>Sun, 06 Sep 2015 21:29:30 +0800</lastBuildDate>
+    <pubDate>Sun, 06 Sep 2015 21:34:53 +0800</pubDate>
+    <lastBuildDate>Sun, 06 Sep 2015 21:34:53 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -442,7 +442,11 @@
 
 &lt;p&gt;AngularJS 的单元测试由于依赖注入的存在是比较容易编写的，这也是因为 AngularJS 在设计之初就把易测试性作为设计的首要目标之一。即便如此，AngularJS 也不能阻止我们作为应用程序开发者做傻事，我们要做的就是理解 AngularJS 的设计理念，做正确的事情。为了帮助我们开发者更好的写测试代码，AngularJS 开发者们为我们提供了 &lt;code&gt;angular-mocks&lt;/code&gt; 类库，通过它，我们可以通过依赖注入来解析测试所需要的依赖，比较容易的用测试覆盖我们的代码，从而提高代码质量。&lt;/p&gt;
 
-&lt;h2 id=&quot;section-3&quot;&gt;资源&lt;/h2&gt;
+&lt;h2 id=&quot;section-3&quot;&gt;声明&lt;/h2&gt;
+
+&lt;p&gt;本文部分实例代码来自&lt;a href=&quot;http://www.smashingmagazine.com/2014/10/introduction-to-unit-testing-in-angularjs/&quot;&gt;An Introduction To Unit Testing In AngularJS Applications&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-4&quot;&gt;资源&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://www.smashingmagazine.com/2014/10/introduction-to-unit-testing-in-angularjs/&quot;&gt;An Introduction To Unit Testing In AngularJS Applications&lt;/a&gt;&lt;/p&gt;
 
