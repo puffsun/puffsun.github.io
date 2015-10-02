@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 02 Oct 2015 23:56:11 +0800</pubDate>
-    <lastBuildDate>Fri, 02 Oct 2015 23:56:11 +0800</lastBuildDate>
+    <pubDate>Sat, 03 Oct 2015 06:48:28 +0800</pubDate>
+    <lastBuildDate>Sat, 03 Oct 2015 06:48:28 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -16,7 +16,7 @@
 &lt;h2 id=&quot;section&quot;&gt;简介&lt;/h2&gt;
 &lt;p&gt;AngularJS 新手常犯的一个错误是 Controller 中被塞入了过多的业务逻辑，有些情况下，你甚至可以看到大部分业务逻辑和数据序列化的代码被放在 Controller 中。这是不合适的，AngularJS 的 Controller 应该是薄薄的一层，你的大部分业务逻辑和数据序列化代码应该放在 Service 中。我们知道，AngularJS 的 Controller 每次调用（刷新页面或者改变路由）会生成一个全新的实例，并在调用完毕以后被垃圾回收。而 Service 则是一个单例（每个 $injector 一个唯一的实例）。从提高应用程序的性能的角度来说，我们也应该把绝大部分的逻辑放在 Service 中，从而避免不必要的垃圾回收。&lt;/p&gt;
 
-&lt;p&gt;AngularJS 提高了5个创建 Service 的函数：&lt;/p&gt;
+&lt;p&gt;AngularJS 提供了5个创建 Service 的函数：&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;provider&lt;/li&gt;

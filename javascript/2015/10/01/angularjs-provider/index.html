@@ -103,7 +103,7 @@
 <h2 id="section">简介</h2>
 <p>AngularJS 新手常犯的一个错误是 Controller 中被塞入了过多的业务逻辑，有些情况下，你甚至可以看到大部分业务逻辑和数据序列化的代码被放在 Controller 中。这是不合适的，AngularJS 的 Controller 应该是薄薄的一层，你的大部分业务逻辑和数据序列化代码应该放在 Service 中。我们知道，AngularJS 的 Controller 每次调用（刷新页面或者改变路由）会生成一个全新的实例，并在调用完毕以后被垃圾回收。而 Service 则是一个单例（每个 $injector 一个唯一的实例）。从提高应用程序的性能的角度来说，我们也应该把绝大部分的逻辑放在 Service 中，从而避免不必要的垃圾回收。</p>
 
-<p>AngularJS 提高了5个创建 Service 的函数：</p>
+<p>AngularJS 提供了5个创建 Service 的函数：</p>
 
 <ul>
   <li>provider</li>
