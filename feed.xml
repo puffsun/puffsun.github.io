@@ -5,9 +5,216 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 07 Oct 2015 15:27:57 +0800</pubDate>
-    <lastBuildDate>Wed, 07 Oct 2015 15:27:57 +0800</lastBuildDate>
+    <pubDate>Wed, 09 Dec 2015 22:26:08 +0800</pubDate>
+    <lastBuildDate>Wed, 09 Dec 2015 22:26:08 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Linux 常见性能调优工具</title>
+        <description>&lt;p&gt;我在工作中和业余时间开发的项目中，绝大部分项目的部署环境是 Linux，其中以 Ubuntu 占绝大多数。因此掌握如何在 Linux 环境下用来性能调优的工具也是一个程序员安身立命的技能之一。在这篇文章里，我主要是流水账式的提到一些常见的性能调优工具，以及它们的基本用法。如果希望系统的学习操作系统和应用程序的性能调优，请参考：&lt;a href=&quot;http://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098/&quot;&gt;Systems Performance: Enterprise and the Cloud by Brendan Gregg (Prentice Hall, 2013)&lt;/a&gt;。当然了，这本书也有很高的学习曲线，可以把它作为一本性能调优的参考书来按需查询。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;关于性能调优&lt;/h2&gt;
+&lt;p&gt;性能调优是一个比较大的话题，也是考察一个程序员水平的重要参考因素。限于篇幅，在这里我只作简略的介绍，希望进一步了解的同学请移步 &lt;a href=&quot;http://coolshell.cn/&quot;&gt;酷壳网&lt;/a&gt; 参考陈浩大神的两篇文章：&lt;a href=&quot;http://coolshell.cn/articles/7490.html&quot;&gt;性能调优攻略&lt;/a&gt; 和 &lt;a href=&quot;http://coolshell.cn/articles/6470.html&quot;&gt;由12306.cn谈谈网站性能技术&lt;/a&gt;，或者去 Google 相关文章。&lt;/p&gt;
+
+&lt;p&gt;粗略的讲，系统性能需要考虑两个参数：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;吞吐量 Throughput&lt;/li&gt;
+  &lt;li&gt;延时 Latency&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;吞吐量是系统在指定时间内可以处理的请求数，延时是系统处理一个请求需要消耗的时间。在进行性能调优的时候，需要对这两个参数进行一些折衷，因为在某个稳定的状态下，如果系统再次提升的吞吐量，与此同时会增加系统的延时系统的延时，因为系统的 CPU，内存和带宽资源是一定的，反之也成立。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;性能调优的方式&lt;/h2&gt;
+&lt;p&gt;鉴于现代操作系统和应用程序的复杂性，性能调优的方式也是相当的丰富多彩。譬如 Linux 操作系统自身提供了各种各样的工具来分析和监控系统资源的分配和使用情况，这也是我们这篇文章要介绍的主题。另外，很多服务器，数据库，框架，虚拟机和浏览器等等也分别提供了检测和分析性能问题的工具和接口。我们无法在一篇文章里涵盖，甚至无法在一本书里涵盖。&lt;/p&gt;
+
+&lt;p&gt;另外，比较流行的方式是使用 Profiler 来观测应用程序的资源分配情况，比如 Java 社区很流行的 &lt;a href=&quot;https://www.ej-technologies.com/products/jprofiler/overview.html&quot;&gt;JProfiler&lt;/a&gt;，Java Mission Control 和 VisualVM 都是性能调优的利器，通过他们可以观察到应用程序是否有线程死锁，是否消耗了过多的 CPU，是否有内存溢出以及网络使用情况等等。在 Java 社区以外的平台，比如 Node.js 也有类似的工具。&lt;/p&gt;
+
+&lt;p&gt;对于前端应用，也有很多选择，比如 Google Speed Tracer，Yahoo YSlow 以及 Chrome Developer Tools，如果有需求，可以参阅各自的文档，将来我可能会写一些类似的文章。&lt;/p&gt;
+
+&lt;h2 id=&quot;linux-&quot;&gt;Linux 下性能分析工具&lt;/h2&gt;
+&lt;p&gt;这里才是本文的正题，在这里我们来看看一些常见的性能分析工具，并简略介绍它们的用法。&lt;/p&gt;
+
+&lt;h3 id=&quot;ps-&quot;&gt;用 ps 查看进程&lt;/h3&gt;
+&lt;p&gt;Ubuntu 下的 ps 工具支持多种风格的语法：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Unix 风格 - 一个短横线分隔，比如 ps -ef&lt;/li&gt;
+  &lt;li&gt;BSD 风格 - 没有短横线分隔，比如 ps aux&lt;/li&gt;
+  &lt;li&gt;GNU 风格 - 由两个短横线分隔，比如 ps –version&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;各种风格可以按自己喜好选择，下面来看一些它的常见用法：&lt;/p&gt;
+
+&lt;p&gt;查询指定进程的所有子进程 &lt;code&gt;ps u --ppid 2390&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查询所有进程&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;ps aux &lt;span class=&quot;c&quot;&gt;# BSD 风格&lt;/span&gt;
+ps -ef &lt;span class=&quot;c&quot;&gt;# Unix 风格&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;查看线程 &lt;code&gt;ps m&lt;/code&gt;
+更多用法请参考 &lt;code&gt;man ps&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;top--htop-&quot;&gt;用 top 或 htop 监控进程及系统资源使用情况&lt;/h3&gt;
+
+&lt;p&gt;top 可以用来实时监控最活跃（最消耗 CPU）或者最消耗内存的进程，它也是最为人熟知的 Unix 系统工具之一。下面是它的一些常见命令：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;M (shift + m) 按内存使用量来对进程排序&lt;/li&gt;
+  &lt;li&gt;T (shift + t) 按总 CPU 使用量来对进程排序&lt;/li&gt;
+  &lt;li&gt;P (shift + p) 按当前 CPU 使用率来对进程排序&lt;/li&gt;
+  &lt;li&gt;u 只显示当前用户的进程&lt;/li&gt;
+  &lt;li&gt;f 选择需要显示的统计数据&lt;/li&gt;
+  &lt;li&gt;? 显示使用帮助&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;如果条件允许，一定要使用 htop 工具来替代 top，它提供了更人性化的界面和更多的功能，比如可以显示各个 CPU 的实时使用率以及查找功能等等，可以自己去体验一下。&lt;/p&gt;
+
+&lt;h3 id=&quot;lsof-&quot;&gt;用 lsof 查找打开的文件和打开该文件的进程&lt;/h3&gt;
+&lt;p&gt;如我们所知，在 Unix 下，一切皆资源，无论是文件，文件夹，管道，外设等等，通过 lsof 它们都无所遁形。默认情况下，lsof 输出大量的信息，大家可以在 Linux 命令行输入 &lt;code&gt;lsof&lt;/code&gt; 尝试一下。一般情况下我们会把输出重定向到文件中，并用编辑器打开详细检查，或者对输出用管道过滤。&lt;/p&gt;
+
+&lt;p&gt;默认情况下，lsof 输出下列信息：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;COMMAND 启动进程，并占用资源的命令&lt;/li&gt;
+  &lt;li&gt;PID 当前进程 ID&lt;/li&gt;
+  &lt;li&gt;USER 运行该进程的用户&lt;/li&gt;
+  &lt;li&gt;FD 文件描述符&lt;/li&gt;
+  &lt;li&gt;TYPE 文件类型（普通文件，目录，网络连接等等）&lt;/li&gt;
+  &lt;li&gt;DEVICE 打开文件的设备&lt;/li&gt;
+  &lt;li&gt;SIZE&lt;/li&gt;
+  &lt;li&gt;NODE 文件的 inode&lt;/li&gt;
+  &lt;li&gt;NAME 文件名&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面来看一下 lsof 的常见用法:&lt;/p&gt;
+
+&lt;p&gt;查找打开指定目录下文件的进程: &lt;code&gt;lsof ~&lt;/code&gt;；
+查找指定进程打开的资源： &lt;code&gt;lsof -p &amp;lt;pid&amp;gt;&lt;/code&gt;；
+查看帮助: &lt;code&gt;lsof -h&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;strace--ltrace-&quot;&gt;用 strace 或 ltrace 跟踪程序运行路径&lt;/h3&gt;
+&lt;p&gt;如果你的应用程序异常退出，那么我们上面介绍的工具根本无从下手，因为他们监测的都是活动的进程，这个时候就轮到 strace 和 ltrace 闪亮登场了。这两个命令都可以打印出程序在运行过程中的运行轨迹，区别在于 ltrace 只会打印应用程序对共享库的使用情况，而 strace 则包括系统调用。我们这里着重介绍一下 strace。&lt;/p&gt;
+
+&lt;p&gt;strace 的使用方法很简单，strace 后接需要运行的命令即可，拿 cat 为例：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;strace cat /dev/null
+&lt;span class=&quot;c&quot;&gt;###  Outputs as below&lt;/span&gt;
+execve&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/bin/cat&amp;quot;&lt;/span&gt;, &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;cat&amp;quot;&lt;/span&gt;, &lt;span class=&quot;s2&quot;&gt;&amp;quot;/dev/null&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;, &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;/* &lt;span class=&quot;m&quot;&gt;74&lt;/span&gt; vars */&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+brk&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x1eff000
+access&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/ld.so.nohwcap&amp;quot;&lt;/span&gt;, F_OK&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; -1 ENOENT &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;No such file or directory&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NULL, 8192, PROT_READ&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;PROT_WRITE, MAP_PRIVATE&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_ANONYMOUS, -1, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc9db5000
+access&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/ld.so.preload&amp;quot;&lt;/span&gt;, R_OK&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; -1 ENOENT &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;No such file or directory&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+open&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/ld.so.cache&amp;quot;&lt;/span&gt;, O_RDONLY&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;O_CLOEXEC&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3
+fstat&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;st_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;S_IFREG&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;0644, &lt;span class=&quot;nv&quot;&gt;st_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;85346, ...&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NULL, 85346, PROT_READ, MAP_PRIVATE, 3, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc9da0000
+close&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+access&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/ld.so.nohwcap&amp;quot;&lt;/span&gt;, F_OK&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; -1 ENOENT &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;No such file or directory&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+open&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/lib/x86_64-linux-gnu/libc.so.6&amp;quot;&lt;/span&gt;, O_RDONLY&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;O_CLOEXEC&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3
+&lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, &lt;span class=&quot;s2&quot;&gt;&amp;quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&amp;gt;\0\1\0\0\0\320\37\2\0\0\0\0\0&amp;quot;&lt;/span&gt;..., 832&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 832
+fstat&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;st_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;S_IFREG&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;0755, &lt;span class=&quot;nv&quot;&gt;st_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1840928, ...&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NULL, 3949248, PROT_READ&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;PROT_EXEC, MAP_PRIVATE&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_DENYWRITE, 3, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc97d0000
+mprotect&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x7f5fc998b000, 2093056, PROT_NONE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x7f5fc9b8a000, 24576, PROT_READ&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;PROT_WRITE, MAP_PRIVATE&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_FIXED&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_DENYWRITE, 3, 0x1ba000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc9b8a000
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x7f5fc9b90000, 17088, PROT_READ&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;PROT_WRITE, MAP_PRIVATE&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_FIXED&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_ANONYMOUS, -1, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc9b90000
+close&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NULL, 4096, PROT_READ&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;PROT_WRITE, MAP_PRIVATE&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_ANONYMOUS, -1, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc9d9f000
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NULL, 8192, PROT_READ&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;PROT_WRITE, MAP_PRIVATE&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;MAP_ANONYMOUS, -1, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc9d9d000
+arch_prctl&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ARCH_SET_FS, 0x7f5fc9d9d740&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mprotect&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x7f5fc9b8a000, 16384, PROT_READ&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mprotect&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x60a000, 4096, PROT_READ&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mprotect&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x7f5fc9db7000, 4096, PROT_READ&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+munmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x7f5fc9da0000, 85346&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;           &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+brk&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x1eff000
+brk&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x1f20000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                          &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x1f20000
+open&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/usr/lib/locale/locale-archive&amp;quot;&lt;/span&gt;, O_RDONLY&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;O_CLOEXEC&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3
+fstat&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;st_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;S_IFREG&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;0644, &lt;span class=&quot;nv&quot;&gt;st_size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;7224592, ...&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+mmap&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NULL, 7224592, PROT_READ, MAP_PRIVATE, 3, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0x7f5fc90ec000
+close&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+fstat&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;st_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;S_IFCHR&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;0620, &lt;span class=&quot;nv&quot;&gt;st_rdev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;makedev&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;136, 8&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, ...&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+open&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/dev/null&amp;quot;&lt;/span&gt;, O_RDONLY&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;             &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3
+fstat&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;st_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;S_IFCHR&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;0666, &lt;span class=&quot;nv&quot;&gt;st_rdev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;makedev&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, ...&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+fadvise64&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, 0, 0, POSIX_FADV_SEQUENTIAL&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+&lt;span class=&quot;nb&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3, &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;, 65536&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+close&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+close&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+close&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                                &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+exit_group&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                           &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; ?
++++ exited with &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; +++&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面可以看到，strace 给出了非常详尽的输出，从输出中我们可以看到系统调用，共享库函数调用以及返回值等等，对我们调试程序以及检查程序性能大有帮助。&lt;/p&gt;
+
+&lt;h3 id=&quot;time--cpu-&quot;&gt;用 time 检查程序 CPU 占用时间&lt;/h3&gt;
+&lt;p&gt;这里需要注意的是，Ubuntu 下以及其他常见的 Linux 发行版的 Shell 自带了一个 time 命令，它有别于我们这里要介绍的 time。我们这里想介绍的 time 工具位于 /usr/bin/time。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;/usr/bin/time ls -l
+0.00user 0.00system 0:00.00elapsed 33%CPU &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0avgtext+0avgdata 1376maxresident&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;k
+8inputs+0outputs &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1major+429minor&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;pagefaults 0swaps&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;从输出可以看到，CPU 时间分为应用占用时间和内核调用占用时间，另外该命令还输出了应用运行的总时间，在此期间，CPU 可能会被分配去做优先级更高的任务，这也会在总时间总体现出来。随后的信息反应了运行 &lt;code&gt;ls -l&lt;/code&gt; 命令的内存使用状况。&lt;/p&gt;
+
+&lt;h3 id=&quot;uptime-&quot;&gt;用 uptime 查看系统负载&lt;/h3&gt;
+&lt;p&gt;这个命令很直观：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;uptime
+ 21:33:27 up  2:19,  &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; users,  load average: 0.00, 0.05, 0.11&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;需要解释的是后面的三个数据，他们分别表示了系统在最近1分钟，5分钟和15分钟内的负载状况。如果负载达到1，那么系统是处在满载的状况，这时候需要我们进一步调查为什么系统会有如此高的负载。另外，负载也有可能高于1的情况，比如双核CPU，最高的系统负载是2。&lt;/p&gt;
+
+&lt;h3 id=&quot;vmstat--cpu-&quot;&gt;用 vmstat 监测 CPU 和内存使用情况&lt;/h3&gt;
+&lt;p&gt;vmstat 有着悠久的历史，在检测的同时也不会给操作系统带来很多额外的开销，所以是系统性能监测的拿手兵器之一。我们来看一下 vmstat 的输出是什么样，这是理解 vmstat 的关键：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;vmstat 2
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;216&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;341616&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;122896&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;501616&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;38&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;35&lt;/span&gt;   &lt;span class=&quot;m&quot;&gt;52&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;191&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;97&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  0
+ &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;216&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;341676&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;122896&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;501648&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;208&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1456&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;92&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  0
+ &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;216&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;341612&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;122904&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;501648&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;     &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;    &lt;span class=&quot;m&quot;&gt;34&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;163&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1193&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;94&lt;/span&gt;  &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;  0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的命令，vmstat 会每间隔两秒打印一行。procs 表示进程，memory 表示内存，swap 表示页面在内存中的交换情况， io 表示硬盘使用状况，system 表示内黑的系统调用情况，cpu 表示 CPU 时间的占用情况。具体到每一项可以参考 man &lt;code&gt;vmstat&lt;/code&gt;，其中有详细的解释。&lt;/p&gt;
+
+&lt;h3 id=&quot;iostat-&quot;&gt;用 iostat 监测输入输出&lt;/h3&gt;
+&lt;p&gt;事实上，我们可以用 &lt;code&gt;vmstat -d&lt;/code&gt; 来查看详细的输入输出信息，不过这个命令的输出过于详细，也不太好观察。所以需要查看输入输出数据的时候，我们首先会考虑 iostat。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;iostat
+Linux 3.13.0-44-generic &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;sung2-vm&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; 	12/09/2015 _x86_64_ &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt; CPU&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           2.02    0.17    0.55    0.11    0.00   97.16
+
+Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+sda              12.26       107.60        98.81     &lt;span class=&quot;m&quot;&gt;995651&lt;/span&gt;     914324&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在最下面，我们可以看到每个硬盘的读写情况。我们还可以指定 iostat 调用的时间间隔 &lt;code&gt;iostat 2&lt;/code&gt;，这样 iostat 每隔两秒会输出一次，便于我们实时观测。如果需要更详尽的输出，可以指定 &lt;code&gt;iostat -p ALL&lt;/code&gt;，其他用法请参考 &lt;code&gt;man iostat&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;iotop-&quot;&gt;用 iotop 实时观测硬盘输入输出&lt;/h3&gt;
+&lt;p&gt;类似 top 命令，这个命令实时输出每个进程对硬盘的读写状况，这里不再赘述，可以参考 &lt;code&gt;man iotop&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;pidstat-&quot;&gt;用 pidstat 实时监测进程&lt;/h3&gt;
+&lt;p&gt;通过以上命令，如果定位到某个进行资源使用情况有异常，可以用 pidstat 来监测指定进程的资源状况，该命令的输出格式和 vmstat 类似。请参考 &lt;code&gt;man pidstat&lt;/code&gt; 查阅输出的每一列所表示的含义以及它的用法。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;结语&lt;/h2&gt;
+&lt;p&gt;这里我们只是覆盖了一些常见的系统性能调优工具，正如我们前面所述，Linux 操作系统自身以及社区提供了大量的工具用来监测系统的性能，如下的一篇文章里就有一些非常有趣并有用的工具，我们没有覆盖带，有兴趣的同学可以参考：&lt;a href=&quot;http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/&quot;&gt;20 Command Line Tools to Monitor Linux Performance&lt;/a&gt;。如果希望系统的学习系统性能调优，请参考：&lt;a href=&quot;http://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098/&quot;&gt;Systems Performance: Enterprise and the Cloud by Brendan Gregg (Prentice Hall, 2013)&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;资源&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098/&quot;&gt;Systems Performance: Enterprise and the Cloud by Brendan Gregg (Prentice Hall, 2013)&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/&quot;&gt;20 Command Line Tools to Monitor Linux Performance&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.amazon.com/How-Linux-Works-Superuser-Should/dp/1593275676&quot;&gt;How Linux Worls 2nd edition&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 09 Dec 2015 19:05:38 +0800</pubDate>
+        <link>http://codethoughts.info/linux/2015/12/09/linux-performance-tuning-tools/</link>
+        <guid isPermaLink="true">http://codethoughts.info/linux/2015/12/09/linux-performance-tuning-tools/</guid>
+        
+        
+        <category>linux</category>
+        
+      </item>
     
       <item>
         <title>AngularJS providers</title>
@@ -2661,257 +2868,6 @@ JavaScript 中最常见的高阶函数是方法的回调，比如我们用 jQuer
         <pubDate>Mon, 22 Jun 2015 17:41:48 +0800</pubDate>
         <link>http://codethoughts.info/javascript/2015/06/22/javascript-functions/</link>
         <guid isPermaLink="true">http://codethoughts.info/javascript/2015/06/22/javascript-functions/</guid>
-        
-        
-        <category>javascript</category>
-        
-      </item>
-    
-      <item>
-        <title>重新认识 JavaScript Prototypes</title>
-        <description>&lt;h2 id=&quot;section&quot;&gt;为什么要写这篇文章&lt;/h2&gt;
-
-&lt;p&gt;前面的&lt;a href=&quot;http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/&quot;&gt;一篇文章&lt;/a&gt;，我讲过希望写JavaScript 语言的几个方面，其中一个知识点就包括 Prototype。另外，在这里我列一下我已经写过或者翻译过的 JavaScript 的文章便于检索。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/angular.js/2015/05/15/things-i-wish-i-were-told-about-angular-js/&quot;&gt;关于 Angular.js 你需要知道的知识&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/05/22/javascript-closure-inside-out/&quot;&gt;JavaScript 闭包详解&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/01/javascript-module-pattern-in-depth/&quot;&gt;深入 JavaScript 模块化模式&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/&quot;&gt;寻找 JavaScript 的 this&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/16/javascript-property-descriptors/&quot;&gt;JavaScript 属性描述符&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/&quot;&gt;JavaScript Getters 和 Setters&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Prototype 是 JavaScript 中很重要的一个知识点，是学习 JavaScript 要清楚理解的一个概念。比如 &lt;a href=&quot;https://en.wikipedia.org/wiki/JavaScript&quot;&gt;Wikipedia 的 JavaScript 条目&lt;/a&gt; 是这样来解释 JavaScript 语言的：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;JavaScript is classified as a &lt;a href=&quot;https://en.wikipedia.org/wiki/Prototype-based_programming&quot;&gt;prototype-based&lt;/a&gt; &lt;a href=&quot;https://en.wikipedia.org/wiki/Scripting_language&quot;&gt;scripting language&lt;/a&gt; with &lt;a href=&quot;https://en.wikipedia.org/wiki/Dynamic_language&quot;&gt;dynamic typing&lt;/a&gt; and &lt;a href=&quot;https://en.wikipedia.org/wiki/First-class_functions&quot;&gt;first-class functions&lt;/a&gt;. This mix of features makes it a &lt;a href=&quot;https://en.wikipedia.org/wiki/Multi-paradigm&quot;&gt;multi-paradigm language&lt;/a&gt;, supporting &lt;a href=&quot;https://en.wikipedia.org/wiki/Object-oriented_programming&quot;&gt;object-oriented&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Imperative_programming&quot;&gt;imperative&lt;/a&gt;, and &lt;a href=&quot;https://en.wikipedia.org/wiki/Functional_programming&quot;&gt;functional&lt;/a&gt; programming styles.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;翻译一下：JavaScript 是基于 Prototype 的脚本语言，它是动态类型的，并且在 JavaScript 里函数是一等公民。这些混合的特性使得 JavaScript 成为了支持面向对象、命令式和函数式的多范型语言。&lt;/p&gt;
-
-&lt;p&gt;短短两句话，包含了很多内容。我们这里对多范型、动态类型等暂且按下不表，以后的文章可能会陆续涉及，因为它们都是比较大的主题。在这篇文章里我先跟大家大致的聊聊 Prototype，以及为什么 JavaScript 被称为是基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言，另外看看目前对于 Prototype 的使用一个比较大误区，也就是很多人和很多现存的类库利用 Prototype 来为 JavaScript 语言构建面向对象的继承和多态特性，当然了，这也可能是本文比较有争议的地方。&lt;/p&gt;
-
-&lt;h2 id=&quot;prototype-&quot;&gt;Prototype 是什么&lt;/h2&gt;
-&lt;p&gt;所有的 JavaScript 对象都有一个隐含的属性来指向另外一个对象，我们称这个隐含的属性为 &lt;code&gt;Prototype&lt;/code&gt;。当然了这个属性有可能是 &lt;code&gt;null&lt;/code&gt;，比如用这种方式创建的对象：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;但无论如何，除了特别指定的情况之外，JavaScript 的对象都有一个非空的 &lt;code&gt;Prototype&lt;/code&gt; 来指向另外一个对象。关于 &lt;code&gt;Object.create(...)&lt;/code&gt;，可以参考 &lt;a href=&quot;https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/create&quot;&gt;Mozilla MDN&lt;/a&gt; 的解释，你也可以简单理解为它创建了一个新的 JavaScript 对象，并为新创建的对象和原对象之间建立了 &lt;code&gt;Prototype&lt;/code&gt; 连接。接下来让我们看看常规的，也就是 Prototype 非空的情况：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;anotherObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// create an object linked to `anotherObject`&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;anotherObject&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 2&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;found: &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// found: a&lt;/span&gt;
-
-&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;myObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hasOwnProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// false&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这段代码有几点需要注意的地方：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;在 &lt;a href=&quot;http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/&quot;&gt;JavaScript Getters 和 Setters&lt;/a&gt; 这篇文章中，我提到 JavaScript 的[[Get]]和[[Put]]操作。&lt;code&gt;myObject.a;&lt;/code&gt; 就触发了[[Get]]操作，它首先在对象 &lt;code&gt;myObject&lt;/code&gt; 上搜索，如果没有发现需要的属性，就会沿着 &lt;code&gt;Prototype&lt;/code&gt; 链继续向上搜索，并在 &lt;code&gt;anotherObject&lt;/code&gt; 上发现了需要的属性；&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;for...in&lt;/code&gt; 和 &lt;code&gt;in&lt;/code&gt; 都会检查对象的 &lt;code&gt;Prototype&lt;/code&gt; 链，而 &lt;code&gt;Object.hasOwnProperty(...)&lt;/code&gt; 不会；&lt;/li&gt;
-  &lt;li&gt;对 &lt;code&gt;Prototype&lt;/code&gt; 链的搜索到 &lt;code&gt;Object.prototype&lt;/code&gt; 终止，在这个对象上定义了很多工具方法，比如 &lt;code&gt;toString()&lt;/code&gt;, &lt;code&gt;valueOf()&lt;/code&gt;, 上面提到的 &lt;code&gt;hasOwnProperty()&lt;/code&gt; 等等。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;javascript--prototype-&quot;&gt;为什么说 JavaScript 是基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言&lt;/h2&gt;
-
-&lt;p&gt;根据 &lt;a href=&quot;https://en.wikipedia.org/wiki/Prototype-based_programming&quot;&gt;Wikipedia 的解释&lt;/a&gt;，基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言是面向对象编程得一种风格。和传统的面向对象语言不同，基于 &lt;code&gt;Prototype&lt;/code&gt; 的语言借助于 &lt;code&gt;Prototype&lt;/code&gt; 来进行代码复用。这里我们暂时抛开抽象的概念，先通过一段代码来描述 JavaScript 如何进行面向对象编程：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fooA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fooB&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;fooA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;a&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;fooB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;b&amp;quot;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// here, we make a new `Bar.prototype`&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// linked to `Foo.prototype`&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// Beware! Now `Bar.prototype.constructor` is gone,&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// and might need to be manually &amp;quot;fixed&amp;quot; if you&amp;#39;re&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// in the habit of relying on such properties!&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myLabel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;obj a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;a&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myLabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;obj a&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这段代码模拟了传统的面向对象编程，在这里 &lt;code&gt;Foo&lt;/code&gt; 作为父类，而 &lt;code&gt;Bar&lt;/code&gt; 作为子类，&lt;code&gt;Foo&lt;/code&gt; 和 &lt;code&gt;Bar&lt;/code&gt;之间通过 &lt;code&gt;Prototype&lt;/code&gt; 链来建立了继承关系。在这段代码里我们需要注意如下的几点：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;code&gt;Bar.prototype = Object.create( Foo.prototype );&lt;/code&gt; 创建了 &lt;code&gt;Bar&lt;/code&gt; 和 &lt;code&gt;Foo&lt;/code&gt; 的父子关系，在这行代码运行之前，&lt;code&gt;Bar.prototype&lt;/code&gt; 指向 &lt;code&gt;Object.prototype&lt;/code&gt;，这之后则指向了 &lt;code&gt;Foo.prototype&lt;/code&gt;；&lt;/li&gt;
-  &lt;li&gt;JavaScript ES6 引入了设置对象 &lt;code&gt;Prototype&lt;/code&gt; 链的标准做法，它通过修改现有的 &lt;code&gt;Prototype&lt;/code&gt; 来实现，而不是通过像 &lt;code&gt;Object.prototype&lt;/code&gt;一样通过新创建一个对象来替换原有的对象来实现，同时它也保证了 &lt;code&gt;constructor&lt;/code&gt; 的一致性，虽然在实际中 &lt;code&gt;constructor&lt;/code&gt; 基本上没有什么用处；&lt;/li&gt;
-  &lt;li&gt;在每个 &lt;code&gt;Prototype&lt;/code&gt; 链上都有一个 &lt;code&gt;constructor&lt;/code&gt; 属性。这里我们不想花很多篇幅来讲述 &lt;code&gt;constructor&lt;/code&gt;，如果你有兴趣可以参考一下 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/constructor&quot;&gt;Mozilla MDN 的一篇文档&lt;/a&gt;，以后我也可能会用一片博客来讲述。这里我想说的是，&lt;code&gt;Bar.prototype = Object.create( Foo.prototype );&lt;/code&gt; 会改变 &lt;code&gt;Bar.prototype&lt;/code&gt; 的 &lt;code&gt;constructor&lt;/code&gt;，如果你想保持一致性，可以用 &lt;code&gt;Bar.prototype.constructor = Bar&lt;/code&gt; 来修正它；&lt;/li&gt;
-  &lt;li&gt;传统的面向对象语言，继承隐含的意义是拷贝，而 JavaScript 的继承隐含的意义是引用关系。比如 &lt;code&gt;var fooA = new Foo( &quot;a&quot; );&lt;/code&gt;，如果在传统的面向对象则意味着类 &lt;code&gt;Foo&lt;/code&gt; 中定义的方法和属性会被拷贝到对象 &lt;code&gt;fooA&lt;/code&gt; 上，而在 JavaScript 中仅仅是把 &lt;code&gt;fooA&lt;/code&gt; 的 &lt;code&gt;Prototype&lt;/code&gt; 链指向了 &lt;code&gt;Foo&lt;/code&gt;，没有任何拷贝发生，也就是说有部分函数(不是方法)是这个继承链上所有的实例共享的，一旦被修改了，会影响到所有的现有实例；&lt;/li&gt;
-  &lt;li&gt;在上面的 &lt;code&gt;Foo&lt;/code&gt; 函数和 &lt;code&gt;Bar&lt;/code&gt; 函数里出现了 &lt;code&gt;this&lt;/code&gt;，如果你不理解，可以参考我之前的一篇文章：&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/04/javascript-find-the-lost-this/&quot;&gt;寻找 JavaScript 的 this&lt;/a&gt;；&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;javascript-&quot;&gt;JavaScript 不是“传统”的面向对象语言&lt;/h2&gt;
-
-&lt;p&gt;这一节我们我们来讨论一下用 JavaScript 来模拟传统面向对象编程的弊端在哪里。&lt;/p&gt;
-
-&lt;p&gt;首先，JavaScript 没有真正意义上“类”的概念，即使看起来像，比如上面的代码片段里的 &lt;code&gt;function Foo(...)&lt;/code&gt;，它仅仅是看起来像类，而事实上只不过是 JavaScript 中的一个对象而已，和传统的面向对象语言中的类完成的功能大相径庭。在传统的面向对象语言中，类定义了实例的模板和继承关系，在创建实例的时候把属性深度克隆到对象实例上；而 JavaScript 中的“类”仅仅是作为 &lt;code&gt;Prototype&lt;/code&gt; 链的一环，并被该链上的“下游类”共享，它仅仅是一个对象，并不是真真意义上的类。比如：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getPrototypeOf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这里，&lt;code&gt;new Foo()&lt;/code&gt; 会创建一个新的对象叫做 &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;a&lt;/code&gt; 被链接到 &lt;code&gt;Foo.prototype&lt;/code&gt; 上。这段代码里，没有实例化任何类，也没有任何拷贝行为发生，仅仅是两个对象通过 &lt;code&gt;Prototype&lt;/code&gt; 链被连接到了一起。事实上，我们通过 &lt;code&gt;Object.create(...)&lt;/code&gt; 可以得到更直观的结果，关于 &lt;code&gt;Object.create()&lt;/code&gt;，请参见 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create&quot;&gt;Mozilla MDN 文档&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;在 JavaScript 程序中很多误解的根源在于 &lt;code&gt;基于 Prototype 的继承&lt;/code&gt; 这一术语。由于面向对象编程在现代程序设计中的巨大影响力，很多人一见到这一术语，就自然而然的把 &lt;code&gt;类&lt;/code&gt;、&lt;code&gt;构造函数&lt;/code&gt;、&lt;code&gt;实例&lt;/code&gt;、&lt;code&gt;多态&lt;/code&gt;等术语一个萝卜一个坑的往 JavaScript 代码里靠，这通常会得到令人沮丧的结果，也是很多人对于 JavaScript 这门语言怨声载道的根源。正如我们上面提到的，继承隐含的意义是拷贝，而 JavaScript 的 &lt;code&gt;基于原型的继承&lt;/code&gt; 没有任何拷贝发生，它实际上上对象通过 &lt;code&gt;Prototype&lt;/code&gt; 来作为另外一个对象的代理(Delegation)，这也是我们下一节要讲述的内容。&lt;/p&gt;
-
-&lt;p&gt;说到这里，可能有人会问，那我通过自己实现拷贝，不就可以解决这一问题了吗？比如很多 JavaScript 类库会提供的 &lt;code&gt;mixin&lt;/code&gt; 方法，会手工的把父类的属性和方法拷贝到子类上：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// vastly simplified `mixin(..)` example:&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sourceObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sourceObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// only copy if not already present&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sourceObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;targetObj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Vehicle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;engines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-
-    &lt;span class=&quot;nx&quot;&gt;ignition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Turning on my engine.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-
-    &lt;span class=&quot;nx&quot;&gt;drive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ignition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Steering and moving forward!&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Car&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Vehicle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;wheels&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-
-    &lt;span class=&quot;nx&quot;&gt;drive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;Vehicle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;drive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Rolling on all &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;wheels&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; wheels!&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的代码解决了部分问题，但是仍然存在和传统的面向对象集成较大的差异：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;JavaScript 的函数没有真真意义上的拷贝，虽然在“子类”和“父类”上都存在一个叫做 &lt;code&gt;drive&lt;/code&gt; 的方法，它不是真正的深度克隆，仅仅是两个变量同时引用到了同一个函数，也就是说一旦通过一个实例修改了该函数，其他现有的实例都收影响；&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;Vehicle.drive.call( this );&lt;/code&gt; 这行代码是非常丑陋的多态；&lt;/li&gt;
-  &lt;li&gt;通过 &lt;code&gt;Prototype&lt;/code&gt; 实现的多态会导致&lt;code&gt;变量隐藏 (Variable Shadowing)&lt;/code&gt;，它会导致很多难以发现的问题，需要尽量避免。关于变量隐藏，可以参考我的上一篇博客的最后一节：&lt;a href=&quot;http://codethoughts.info/javascript/2015/06/18/javascript-getters-and-setters/&quot;&gt;JavaScript Getters 和 Setters&lt;/a&gt;。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;应该使用代理，而不是继承&lt;/h2&gt;
-
-&lt;p&gt;很多人，在学习和使用 JavaScript 语言的时候，都会觉得它非常棘手。比如，在传统的面向对象语言中，几行代码就可以实现的继承、封装和多态，为什么到了 JavaScript 代码里需要这么多复杂的机制，为什么会有这么多“坑”？于是很多人在接触 JavaScript 语言后，迅速转向了某个 JavaScript 框架，期望利用框架这个黑盒子能够解决用 JavaScript 来进行自己所熟悉的面向对象编程的问题。但事实上，框架面临一样的问题，它只不过是把问题掩盖了，日后还会在某个地方浮现出来。&lt;/p&gt;
-
-&lt;p&gt;事实上，导致这些混淆的根源是 JavaScript 不应该被当做一门传统的面向对象编程语言。在 JavaScript 中，对象之间通过 &lt;code&gt;Prototype&lt;/code&gt; 链来代理，其实在脑海中想象的 JavaScript 运行时内存应该是数不清的对象通过多个 &lt;code&gt;Prototype&lt;/code&gt; 链被相互链接在一起。&lt;/p&gt;
-
-&lt;p&gt;下面我们通过两段代码来展示 JavaScript 中模拟传统的面向对象和对象代理之间的区别，这样你可以更好的体会对象代理的优势所在。&lt;/p&gt;
-
-&lt;p&gt;首先来看一段模拟传统面向对象的代码，我们成为 OO(Object Oriented)：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I am &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello, &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b1&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b2&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这段代码应该不需要多余的解释了，下面是通过对象之间的代理实现同样的功能，我们称之为OLOO (Object Linked to Other Objects)：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;who&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I am &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;me&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Foo&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello, &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;identify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b1&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Bar&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b2&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;nx&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;speak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;我们这里没有 &lt;code&gt;New&lt;/code&gt;，没有类似 &lt;code&gt;类&lt;/code&gt; 的结构，也没有类似 &lt;code&gt;继承&lt;/code&gt; 的结构，仅仅是三个对象通过 &lt;code&gt;Prototype&lt;/code&gt; 链通过&lt;em&gt;代理 (Delegation)&lt;/em&gt;来实现类似的功能。相比上面一段代码在概念上要易于理解得多，并且，需要维护的代码也变少了，虽然在这里体现不明显。关于 &lt;code&gt;OLOO&lt;/code&gt; 设计模式我可能会在以后的博客中详述，这里限于篇幅就不多谈了。&lt;/p&gt;
-
-&lt;h2 id=&quot;section-2&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;面向对象仅仅是一种设计模式，虽然目前它仍然是主流，但是并不是编程语言与生俱来的东西；更重要的是，面向对象设计(OOP)和 JavaScript 语言存在很大的阻抗，并不是一种适合应用在 JavaScript 程序设计中的模式，在 JavaScript 程序中，运用OLOO (Object Linked to Other Objects) 模式可以设计出更简单，也更易于维护的代码，并且应该成为主流，关于 OLOO，可以参考 &lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes/ch6.md&quot;&gt;You Don’t Know JS 系列的这一章&lt;/a&gt;。&lt;/p&gt;
-
-&lt;h2 id=&quot;section-3&quot;&gt;资源&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/getify/You-Dont-Know-JS/blob/master/this%20%26%20object%20prototypes&quot;&gt;You Don’t Know JS: this &amp;amp; Object Prototypes&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create&quot;&gt;Mozilla MDN - Object.create()&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Prototype-based_programming&quot;&gt;Wikipedia - Prototype-based programming&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/JavaScript&quot;&gt;Wikipedia - JavaScript&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 21 Jun 2015 09:13:17 +0800</pubDate>
-        <link>http://codethoughts.info/javascript/2015/06/21/javascript-prototypes-relearning/</link>
-        <guid isPermaLink="true">http://codethoughts.info/javascript/2015/06/21/javascript-prototypes-relearning/</guid>
         
         
         <category>javascript</category>
