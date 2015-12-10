@@ -5,8 +5,8 @@
     <description>Yet another tech blog!</description>
     <link>http://codethoughts.info/</link>
     <atom:link href="http://codethoughts.info/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 09 Dec 2015 22:37:35 +0800</pubDate>
-    <lastBuildDate>Wed, 09 Dec 2015 22:37:35 +0800</lastBuildDate>
+    <pubDate>Thu, 10 Dec 2015 14:54:12 +0800</pubDate>
+    <lastBuildDate>Thu, 10 Dec 2015 14:54:12 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -197,7 +197,7 @@ sda              12.26       107.60        98.81     &lt;span class=&quot;m&quot
 &lt;p&gt;通过以上命令，如果定位到某个进行资源使用情况有异常，可以用 pidstat 来监测指定进程的资源状况，该命令的输出格式和 vmstat 类似。请参考 &lt;code&gt;man pidstat&lt;/code&gt; 查阅输出的每一列所表示的含义以及它的用法。&lt;/p&gt;
 
 &lt;h2 id=&quot;section-2&quot;&gt;结语&lt;/h2&gt;
-&lt;p&gt;这里我们只是覆盖了一些常见的系统性能调优工具，正如我们前面所述，Linux 操作系统自身以及社区提供了大量的工具用来监测系统的性能，如下的一篇文章里就有一些非常有趣并有用的工具，我们没有覆盖带，有兴趣的同学可以参考：&lt;a href=&quot;http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/&quot;&gt;20 Command Line Tools to Monitor Linux Performance&lt;/a&gt;。如果希望系统的学习系统性能调优，请参考：&lt;a href=&quot;http://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098/&quot;&gt;Systems Performance: Enterprise and the Cloud by Brendan Gregg (Prentice Hall, 2013)&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;这里我们只是覆盖了一些常见的系统性能调优工具，正如我们前面所述，Linux 操作系统自身以及社区提供了大量的工具用来监测系统的性能，如下的一篇文章里就有一些非常有趣并有用的工具，我们没有覆盖到，有兴趣的同学可以参考：&lt;a href=&quot;http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/&quot;&gt;20 Command Line Tools to Monitor Linux Performance&lt;/a&gt;。如果希望系统的学习系统性能调优，请参考：&lt;a href=&quot;http://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098/&quot;&gt;Systems Performance: Enterprise and the Cloud by Brendan Gregg (Prentice Hall, 2013)&lt;/a&gt;。&lt;/p&gt;
 
 &lt;h2 id=&quot;section-3&quot;&gt;资源&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&quot;http://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098/&quot;&gt;Systems Performance: Enterprise and the Cloud by Brendan Gregg (Prentice Hall, 2013)&lt;/a&gt;&lt;/p&gt;
